@@ -1,0 +1,1959 @@
+{
+  "annotator": "opencode-agent",
+  "audit_events": [
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T11:13:00.412535+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "89af5ba715987404dacd4ef3117fe5317f3d90a447338587c0bb5c9dc84a084b"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T11:13:00.415916+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "019f122d2dbbae983fba4309bea4d7818599a87cbc16cf02f3f235fd43d9f5c3"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T11:13:00.417893+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "29f069c029b9946b059113ca0b68f6513f20eb903f25c821a685cd954818766e"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T11:13:00.419822+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "3c8e8e07e9fdac83bcf36e1dcbe00e4eafae7855222ee9aea927bd2afbdf20ec"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T11:13:00.421815+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "8ea1f91cc28b2850f36c25c9f3f87c5f69f5b0484debbaf0e06867e73b3c7d97"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T11:13:00.423913+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "2b4a67d911c5db1d45287b759f56d2ce9c332c5156635af659750548a37e03bf"
+    },
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T11:13:36.979523+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "89af5ba715987404dacd4ef3117fe5317f3d90a447338587c0bb5c9dc84a084b"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T11:13:36.981667+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "019f122d2dbbae983fba4309bea4d7818599a87cbc16cf02f3f235fd43d9f5c3"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T11:13:36.983700+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "29f069c029b9946b059113ca0b68f6513f20eb903f25c821a685cd954818766e"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T11:13:36.985673+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "3c8e8e07e9fdac83bcf36e1dcbe00e4eafae7855222ee9aea927bd2afbdf20ec"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T11:13:36.987601+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "8ea1f91cc28b2850f36c25c9f3f87c5f69f5b0484debbaf0e06867e73b3c7d97"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T11:13:36.989529+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "2b4a67d911c5db1d45287b759f56d2ce9c332c5156635af659750548a37e03bf"
+    },
+    {
+      "case_id": "x5j1-r7",
+      "created_at": "2026-09-20T11:13:36.991475+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "018e3d46513fd02bdb6d64453bd927b3fb6275d4e9072658069dcbf74daea0df"
+    },
+    {
+      "case_id": "u2k7-d5",
+      "created_at": "2026-09-20T11:13:36.993377+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "018e3d46513fd02bdb6d64453bd927b3fb6275d4e9072658069dcbf74daea0df"
+    },
+    {
+      "case_id": "l8q3-v9",
+      "created_at": "2026-09-20T11:13:36.995324+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "018e3d46513fd02bdb6d64453bd927b3fb6275d4e9072658069dcbf74daea0df"
+    },
+    {
+      "case_id": "p3w8-h2",
+      "created_at": "2026-09-20T11:13:36.997296+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "018e3d46513fd02bdb6d64453bd927b3fb6275d4e9072658069dcbf74daea0df"
+    },
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T11:59:58.708299+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "8d8e2426f556b146b62fa3bf4f97f3fa15064c8da134271040d58d7911e403ce"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T11:59:58.724072+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "e65054027e0e4798b95ab5254f72b3b276859f1214277113f201ea74c1c5eb2b"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T11:59:58.732032+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "b0e8d3a792fb552810599a9a2c00dfcf5cc26feccf0e25cd15319e3aef92d781"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T11:59:58.739848+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "497ac56da099f5b89ccecf1bba0afbcbcc15c28a4e98292bbb5c1451b929f353"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T11:59:58.747890+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "8c16ecce30bec9d348af96e4cd0992d73d2faf496db554e7a8536dad9b2c56c6"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T11:59:58.754977+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "581f1657d5976a9b85381ffdfe5e886b06516942c71304ea1be89f9177723ac9"
+    },
+    {
+      "case_id": "x5j1-r7",
+      "created_at": "2026-09-20T11:59:58.757565+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "4876b66273f14fa585283b4246abb3d29d5dfa416f21a90014021778bf398074"
+    },
+    {
+      "case_id": "u2k7-d5",
+      "created_at": "2026-09-20T11:59:58.759673+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "4876b66273f14fa585283b4246abb3d29d5dfa416f21a90014021778bf398074"
+    },
+    {
+      "case_id": "l8q3-v9",
+      "created_at": "2026-09-20T11:59:58.762916+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "4876b66273f14fa585283b4246abb3d29d5dfa416f21a90014021778bf398074"
+    },
+    {
+      "case_id": "p3w8-h2",
+      "created_at": "2026-09-20T11:59:58.764977+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "4876b66273f14fa585283b4246abb3d29d5dfa416f21a90014021778bf398074"
+    },
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T14:09:24.166651+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "3fc3683c409e4e5285d0b2dc7bf9c2c4fc13eba99f798bdb2e96feaa89e54fe2"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T14:09:24.182497+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "2570dd93912bc05edbabcb4154d5e578f01da336f4e579e315e7ff7fe2447568"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T14:09:24.190385+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "9966eb4adaf53d3f99a93cf168103568797043990ce5099746aa684293b13b79"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T14:09:24.198222+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "fd3f3476d0934292e1be6a38b2bfb3e7438142cc3b11a23b945f754a6a97282b"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T14:09:24.207598+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "45acb3ee1584a562e53b1035117a93881ce7651d6600bc9fae8f76187503f6b9"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T14:09:24.213637+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "b2984406ac1cccfa533c316f84aff22d182e8551838d2bf4b6c42b9a0206b669"
+    },
+    {
+      "case_id": "x5j1-r7",
+      "created_at": "2026-09-20T14:09:24.215587+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "5bb73eabb87cc5975e6bc91aad485246078a414bcb2eb25633f817147c1755a4"
+    },
+    {
+      "case_id": "u2k7-d5",
+      "created_at": "2026-09-20T14:09:24.217709+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "dad21f29e97dd3d63e28b8d79c0060082ad90464b4490428d8af6a3e26b5529f"
+    },
+    {
+      "case_id": "l8q3-v9",
+      "created_at": "2026-09-20T14:09:24.219738+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "4df9981cb36565b985ecf993c1800cc1fa27e657a5eb206fb32f63d1ef2601c0"
+    },
+    {
+      "case_id": "p3w8-h2",
+      "created_at": "2026-09-20T14:09:24.222197+00:00",
+      "event": "reference_draft",
+      "payload_sha256": "8f6fbc3c4f3d9360f3bab7faf19c95427485948d2da0f5149a87411210d60120"
+    },
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T14:24:10.715345+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "3fc3683c409e4e5285d0b2dc7bf9c2c4fc13eba99f798bdb2e96feaa89e54fe2"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T14:24:10.732052+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "2570dd93912bc05edbabcb4154d5e578f01da336f4e579e315e7ff7fe2447568"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T14:24:10.740027+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "9966eb4adaf53d3f99a93cf168103568797043990ce5099746aa684293b13b79"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T14:24:10.747692+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "fd3f3476d0934292e1be6a38b2bfb3e7438142cc3b11a23b945f754a6a97282b"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T14:24:10.756205+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "45acb3ee1584a562e53b1035117a93881ce7651d6600bc9fae8f76187503f6b9"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T14:24:10.764125+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "b2984406ac1cccfa533c316f84aff22d182e8551838d2bf4b6c42b9a0206b669"
+    },
+    {
+      "case_id": "x5j1-r7",
+      "created_at": "2026-09-20T14:24:10.767913+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "5bb73eabb87cc5975e6bc91aad485246078a414bcb2eb25633f817147c1755a4"
+    },
+    {
+      "case_id": "u2k7-d5",
+      "created_at": "2026-09-20T14:24:10.770967+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "dad21f29e97dd3d63e28b8d79c0060082ad90464b4490428d8af6a3e26b5529f"
+    },
+    {
+      "case_id": "l8q3-v9",
+      "created_at": "2026-09-20T14:24:10.773200+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "4df9981cb36565b985ecf993c1800cc1fa27e657a5eb206fb32f63d1ef2601c0"
+    },
+    {
+      "case_id": "p3w8-h2",
+      "created_at": "2026-09-20T14:24:10.775741+00:00",
+      "event": "reference_reference_submitted",
+      "payload_sha256": "8f6fbc3c4f3d9360f3bab7faf19c95427485948d2da0f5149a87411210d60120"
+    },
+    {
+      "case_id": "q7m4-x2",
+      "created_at": "2026-09-20T14:44:03.058808+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "8a08251ad8e89e2fc67648b4afa6e4422e844cdca7d829c7618464de172222f9"
+    },
+    {
+      "case_id": "n8v2-k6",
+      "created_at": "2026-09-20T14:44:03.061098+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "01b9011d4d209f5cf3c168d6c0fa946d933953b6a27612a3862a57604d9f4ba6"
+    },
+    {
+      "case_id": "h3d7-w5",
+      "created_at": "2026-09-20T14:44:03.063561+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "519d1071861f603cfa3f9e5aae51b570949a76ec75afc10de989e5229aff7606"
+    },
+    {
+      "case_id": "t6a1-j8",
+      "created_at": "2026-09-20T14:44:03.065805+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "507bfb24b8b82ac960fe99195f7440a78753cde56acc6b7eeb5d5b02ac5ad65e"
+    },
+    {
+      "case_id": "b4l8-s3",
+      "created_at": "2026-09-20T14:44:03.067792+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "b436a5854efba5750d1bb0cc825d06fa8050c44b58937ee1c1b95b220e13267c"
+    },
+    {
+      "case_id": "f2y6-m9",
+      "created_at": "2026-09-20T14:44:03.069868+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "a181c8ee17a08300b29b5dd3416be378abc2cc872287da434026700acc8ec0d6"
+    },
+    {
+      "case_id": "x5j1-r7",
+      "created_at": "2026-09-20T14:44:03.071912+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "2685f3a67cabb068effd023b65ea6c70e2df7939827dc3ce9f268e52fc8302c3"
+    },
+    {
+      "case_id": "u2k7-d5",
+      "created_at": "2026-09-20T14:44:03.073882+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "b5f2f48908ab6975db56a58f91d8c89be93b17587e3eb8b494f5b23a00fa8dcf"
+    },
+    {
+      "case_id": "l8q3-v9",
+      "created_at": "2026-09-20T14:44:03.075876+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "65fe4e9626bbc0b1eb88403c42010a9bb5f5340ed77c6e2cf7d3d12a48488535"
+    },
+    {
+      "case_id": "p3w8-h2",
+      "created_at": "2026-09-20T14:44:03.078402+00:00",
+      "event": "comparison_completed",
+      "payload_sha256": "68daec2b1e43f25e874f71f95d68085ed6d1fe4ab2e363b23aa545423896add1"
+    }
+  ],
+  "cases": [
+    {
+      "actor_type": "agent",
+      "case_id": "q7m4-x2",
+      "comparison": {
+        "confidence": 5,
+        "metric_preferences": {
+          "abstractionQuality": "B",
+          "changeability": "tie",
+          "cognitiveComplexity": "B",
+          "compatibility": "uncertain",
+          "consistency": "tie",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "B",
+          "maintainability": "B",
+          "modularity": "B",
+          "observability": "tie",
+          "performance": "A",
+          "projectStructure": "B",
+          "readability": "tie",
+          "reliability": "B",
+          "scalability": "tie",
+          "security": "tie",
+          "testQuality": "B"
+        },
+        "preferred": "B",
+        "rationale": "B identifies the central correctness and reliability failure and aligns with most priority weaknesses, including abstraction quality and test quality. A incorrectly treats correctness and reliability as non-applicable."
+      },
+      "created_at": "2026-09-20T11:13:00.412260+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "weak",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "uncertain",
+          "consistency": "acceptable",
+          "correctness": "weak",
+          "coupling": "weak",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "weak",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "correctness",
+          "reliability",
+          "coupling",
+          "abstractionQuality",
+          "testQuality"
+        ],
+        "rationale": "The activity now mutates only its serialized/cloned input and returns nothing. That mutation cannot reach the workflow-owned context, so run() returns the original unhydrated artifacts despite awaiting the activity.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "fdc9caea51627eddaaf960008a4dc298243a23d1594a5994cdd3b0b518637af7",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.058663+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "n8v2-k6",
+      "comparison": {
+        "confidence": 4,
+        "metric_preferences": {
+          "abstractionQuality": "tie",
+          "changeability": "A",
+          "cognitiveComplexity": "A",
+          "compatibility": "A",
+          "consistency": "uncertain",
+          "correctness": "A",
+          "coupling": "tie",
+          "documentation": "uncertain",
+          "duplication": "A",
+          "maintainability": "A",
+          "modularity": "A",
+          "observability": "tie",
+          "performance": "tie",
+          "projectStructure": "tie",
+          "readability": "A",
+          "reliability": "A",
+          "scalability": "tie",
+          "security": "B",
+          "testQuality": "tie"
+        },
+        "preferred": "A",
+        "rationale": "A recognizes the behavioral regression and related reliability and compatibility concerns, although it understates several weaknesses and invents a security concern. B marks every dimension non-applicable and misses all reference priorities."
+      },
+      "created_at": "2026-09-20T11:13:00.415572+00:00",
+      "evaluator_identities": {
+        "A": "dspy:opencode-go/glm-5.3-flash",
+        "B": "jev"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "acceptable",
+          "changeability": "weak",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "weak",
+          "consistency": "uncertain",
+          "correctness": "weak",
+          "coupling": "weak",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "weak",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "correctness",
+          "reliability",
+          "compatibility",
+          "changeability",
+          "testQuality"
+        ],
+        "rationale": "Removing both non-internal guards allows internal fix mode to execute the diff and change-request commit path whenever fixCreateChangeRequest is true, overlapping the internal commit path and risking duplicate or empty commits.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "af0fe08553452d8ee7a6eec74e73b4c1cd75efaa13f6105aa03b50e1f64026e2",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.060970+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "h3d7-w5",
+      "comparison": {
+        "confidence": 5,
+        "metric_preferences": {
+          "abstractionQuality": "B",
+          "changeability": "tie",
+          "cognitiveComplexity": "tie",
+          "compatibility": "B",
+          "consistency": "uncertain",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "B",
+          "maintainability": "B",
+          "modularity": "B",
+          "observability": "tie",
+          "performance": "tie",
+          "projectStructure": "B",
+          "readability": "B",
+          "reliability": "B",
+          "scalability": "tie",
+          "security": "tie",
+          "testQuality": "B"
+        },
+        "preferred": "B",
+        "rationale": "B captures the correctness, compatibility, reliability, maintainability, and test-quality weaknesses caused by bypassing unknown-workflow validation. A detects only reliability while treating correctness, compatibility, and most other relevant dimensions as non-applicable."
+      },
+      "created_at": "2026-09-20T11:13:00.417662+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "weak",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "weak",
+          "consistency": "uncertain",
+          "correctness": "weak",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "weak",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "correctness",
+          "compatibility",
+          "reliability",
+          "abstractionQuality",
+          "testQuality"
+        ],
+        "rationale": "An unknown workflow name no longer fails. Instead, the code synthesizes a workflow with no declared inputs, thereby accepting an invalid workflow selection and bypassing required-input resolution against the configured workflow contract.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "857d9e4c0d6ebc7b1d6f774c10057467fa97bba265a62feac9c0bdf3817b9de1",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.063432+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "t6a1-j8",
+      "comparison": {
+        "confidence": 5,
+        "metric_preferences": {
+          "abstractionQuality": "B",
+          "changeability": "tie",
+          "cognitiveComplexity": "B",
+          "compatibility": "tie",
+          "consistency": "uncertain",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "tie",
+          "duplication": "B",
+          "maintainability": "tie",
+          "modularity": "B",
+          "observability": "tie",
+          "performance": "A",
+          "projectStructure": "B",
+          "readability": "B",
+          "reliability": "A",
+          "scalability": "tie",
+          "security": "B",
+          "testQuality": "tie"
+        },
+        "preferred": "B",
+        "rationale": "Both identify the security boundary failure, but B also captures the priority correctness and abstraction weaknesses while correctly treating several unaffected dimensions as sound. A misses correctness and abstraction quality and invents a severe readability problem."
+      },
+      "created_at": "2026-09-20T11:13:00.419596+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "weak",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "acceptable",
+          "consistency": "uncertain",
+          "correctness": "weak",
+          "coupling": "acceptable",
+          "documentation": "not_applicable",
+          "duplication": "acceptable",
+          "maintainability": "acceptable",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "weak",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "security",
+          "correctness",
+          "reliability",
+          "abstractionQuality",
+          "testQuality"
+        ],
+        "rationale": "The removed artifact-ID validation permits separators and '..' segments in a templated ID. Appending '.json' and passing the result to join() does not enforce directory confinement, so a crafted ID can read and JSON-parse a file outside the artifact directory.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "767158e9521ab98aa011fdf9c2c1e75008d462912b00669a3d3d2cb9ce222123",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.065697+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "b4l8-s3",
+      "comparison": {
+        "confidence": 4,
+        "metric_preferences": {
+          "abstractionQuality": "A",
+          "changeability": "B",
+          "cognitiveComplexity": "tie",
+          "compatibility": "uncertain",
+          "consistency": "uncertain",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "B",
+          "maintainability": "B",
+          "modularity": "B",
+          "observability": "tie",
+          "performance": "B",
+          "projectStructure": "B",
+          "readability": "B",
+          "reliability": "B",
+          "scalability": "tie",
+          "security": "tie",
+          "testQuality": "B"
+        },
+        "preferred": "B",
+        "rationale": "B recognizes correctness risk, missing regression coverage, and reliability concerns, aligning better with the reference's highest priorities. It still understates the loop-back defect and incorrectly rates several weak dimensions as strong, while A largely marks the material dimensions non-applicable."
+      },
+      "created_at": "2026-09-20T11:13:00.421582+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "weak",
+          "changeability": "weak",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "uncertain",
+          "consistency": "uncertain",
+          "correctness": "weak",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "weak",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "weak",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "correctness",
+          "reliability",
+          "testQuality",
+          "performance",
+          "abstractionQuality"
+        ],
+        "rationale": "The change removes the loop-back distinction and always adds the target's dependencies to the active set. Jumping back to a loop target therefore reactivates already completed prerequisites, potentially repeating actions and side effects. Historical evidence confirms the need for loop-specific dependency exclusion.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "ab1ba902d9233a98e017d63aba1535553319509dafc32582bcb349aa3cf77ce7",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.067684+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "f2y6-m9",
+      "comparison": {
+        "confidence": 5,
+        "metric_preferences": {
+          "abstractionQuality": "A",
+          "changeability": "A",
+          "cognitiveComplexity": "B",
+          "compatibility": "tie",
+          "consistency": "uncertain",
+          "correctness": "A",
+          "coupling": "A",
+          "documentation": "B",
+          "duplication": "tie",
+          "maintainability": "B",
+          "modularity": "A",
+          "observability": "tie",
+          "performance": "A",
+          "projectStructure": "tie",
+          "readability": "A",
+          "reliability": "A",
+          "scalability": "tie",
+          "security": "tie",
+          "testQuality": "tie"
+        },
+        "preferred": "A",
+        "rationale": "A identifies serious correctness weakness and meaningful reliability, changeability, and maintainability problems, closely matching the reference's priority treatment. B misses correctness and reliability entirely and focuses on secondary complexity and readability concerns."
+      },
+      "created_at": "2026-09-20T11:13:00.423599+00:00",
+      "evaluator_identities": {
+        "A": "dspy:opencode-go/glm-5.3-flash",
+        "B": "jev"
+      },
+      "reference": {
+        "confidence": 5,
+        "dimensions": {
+          "abstractionQuality": "weak",
+          "changeability": "weak",
+          "cognitiveComplexity": "weak",
+          "compatibility": "weak",
+          "consistency": "uncertain",
+          "correctness": "weak",
+          "coupling": "acceptable",
+          "documentation": "not_applicable",
+          "duplication": "acceptable",
+          "maintainability": "weak",
+          "modularity": "weak",
+          "observability": "not_applicable",
+          "performance": "weak",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "weak",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "weak"
+        },
+        "disposition": "material_issue",
+        "priorities": [
+          "correctness",
+          "reliability",
+          "compatibility",
+          "testQuality",
+          "abstractionQuality"
+        ],
+        "rationale": "The replacement is not a valid expression parser. Checking for && before || reverses normal precedence for mixed expressions, splitting ignores nesting and quoted operators, and parentheses are no longer stripped. An operator without surrounding whitespace also satisfies includes() but is not split by the regex, recursively evaluating the unchanged expression until stack exhaustion.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "674f2d13c932bc9a90ed148825ae56589f3f48a93f88c1834c38ba712bf21b55",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.069727+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "x5j1-r7",
+      "comparison": {
+        "confidence": 3,
+        "metric_preferences": {
+          "abstractionQuality": "tie",
+          "changeability": "A",
+          "cognitiveComplexity": "A",
+          "compatibility": "tie",
+          "consistency": "A",
+          "correctness": "A",
+          "coupling": "A",
+          "documentation": "uncertain",
+          "duplication": "A",
+          "maintainability": "A",
+          "modularity": "tie",
+          "observability": "tie",
+          "performance": "tie",
+          "projectStructure": "A",
+          "readability": "tie",
+          "reliability": "tie",
+          "scalability": "B",
+          "security": "tie",
+          "testQuality": "B"
+        },
+        "preferred": "A",
+        "rationale": "A correctly treats most applicable dimensions as acceptable or strong and better reflects the clean refactor. It invents test, documentation, compatibility, and abstraction concerns, but B incorrectly marks many clearly assessable acceptable dimensions non-applicable and still raises unsupported compatibility and abstraction concerns."
+      },
+      "created_at": "2026-09-20T11:13:36.991296+00:00",
+      "evaluator_identities": {
+        "A": "dspy:opencode-go/glm-5.3-flash",
+        "B": "jev"
+      },
+      "reference": {
+        "confidence": 4,
+        "dimensions": {
+          "abstractionQuality": "acceptable",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "acceptable",
+          "consistency": "acceptable",
+          "correctness": "acceptable",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "acceptable",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "acceptable",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "acceptable"
+        },
+        "disposition": "clean",
+        "priorities": [],
+        "rationale": "LocalNodeExecutor delegates directly to the unchanged runAction implementation and preserves its Promise result and error propagation. The small interface creates an execution boundary without moving orchestration decisions into the executor. Historical evidence confirms that control and skip semantics remained in the orchestrator and existing planning coverage was retained.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "82cc3b1e1226cf8d7c17767660e3c35bf4d83fe39fa8163074286a0d0144f5f5",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.071799+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "u2k7-d5",
+      "comparison": {
+        "confidence": 3,
+        "metric_preferences": {
+          "abstractionQuality": "B",
+          "changeability": "B",
+          "cognitiveComplexity": "B",
+          "compatibility": "tie",
+          "consistency": "tie",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "B",
+          "maintainability": "B",
+          "modularity": "B",
+          "observability": "B",
+          "performance": "tie",
+          "projectStructure": "tie",
+          "readability": "B",
+          "reliability": "B",
+          "scalability": "A",
+          "security": "tie",
+          "testQuality": "A"
+        },
+        "preferred": "B",
+        "rationale": "B more consistently recognizes the clean change's applicable quality dimensions and strong implementation, although it invents unsupported test, documentation, and scalability concerns. A incorrectly treats many applicable dimensions as non-applicable and raises several unsupported low-priority issues."
+      },
+      "created_at": "2026-09-20T11:13:36.993163+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 4,
+        "dimensions": {
+          "abstractionQuality": "acceptable",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "acceptable",
+          "consistency": "acceptable",
+          "correctness": "acceptable",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "acceptable",
+          "modularity": "acceptable",
+          "observability": "acceptable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "acceptable",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "acceptable"
+        },
+        "disposition": "clean",
+        "priorities": [],
+        "rationale": "The query derives deterministic pending, running, success, and failure states from workflow-local state without mutating execution. Completion and thrown-error paths record terminal state, and currentNode is reliably cleared in finally. Historical evidence confirms focused coverage of the principal query states.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "c3720ba273e6354300e5edd748079d23b99cbf6eb1cff16033ec63d05a0ddbae",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.073766+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "l8q3-v9",
+      "comparison": {
+        "confidence": 3,
+        "metric_preferences": {
+          "abstractionQuality": "tie",
+          "changeability": "B",
+          "cognitiveComplexity": "B",
+          "compatibility": "tie",
+          "consistency": "tie",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "B",
+          "maintainability": "A",
+          "modularity": "B",
+          "observability": "B",
+          "performance": "A",
+          "projectStructure": "B",
+          "readability": "B",
+          "reliability": "A",
+          "scalability": "A",
+          "security": "tie",
+          "testQuality": "A"
+        },
+        "preferred": "A",
+        "rationale": "A is less comprehensive, but its priority treatment is closer to the clean reference. B invents a high-priority test deficiency despite the reference's focused-test evidence, plus unsupported reliability and documentation weaknesses."
+      },
+      "created_at": "2026-09-20T11:13:36.995089+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 4,
+        "dimensions": {
+          "abstractionQuality": "acceptable",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "acceptable",
+          "consistency": "acceptable",
+          "correctness": "acceptable",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "acceptable",
+          "modularity": "acceptable",
+          "observability": "acceptable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "acceptable",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "acceptable"
+        },
+        "disposition": "clean",
+        "priorities": [],
+        "rationale": "Trace persistence is explicitly opt-in, awaits the filesystem write before reporting the artifact, propagates write failures, and returns no trace path when disabled. The fixed filename is scoped to the supplied working directory, and historical evidence confirms focused verification of the returned path.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "f4bcda31a9a1aad5fedc43682e3f108065068b752a8d506633a4579e76500f2f",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.075741+00:00"
+    },
+    {
+      "actor_type": "agent",
+      "case_id": "p3w8-h2",
+      "comparison": {
+        "confidence": 3,
+        "metric_preferences": {
+          "abstractionQuality": "tie",
+          "changeability": "B",
+          "cognitiveComplexity": "B",
+          "compatibility": "tie",
+          "consistency": "tie",
+          "correctness": "B",
+          "coupling": "B",
+          "documentation": "uncertain",
+          "duplication": "A",
+          "maintainability": "B",
+          "modularity": "B",
+          "observability": "tie",
+          "performance": "tie",
+          "projectStructure": "B",
+          "readability": "B",
+          "reliability": "B",
+          "scalability": "tie",
+          "security": "A",
+          "testQuality": "A"
+        },
+        "preferred": "B",
+        "rationale": "B better recognizes the cohesive migration's applicable dimensions and strong correctness, structure, and consistency. It nevertheless invents unsupported duplication and test weaknesses, while A incorrectly marks numerous applicable dimensions as non-applicable."
+      },
+      "created_at": "2026-09-20T11:13:36.997031+00:00",
+      "evaluator_identities": {
+        "A": "jev",
+        "B": "dspy:opencode-go/glm-5.3-flash"
+      },
+      "reference": {
+        "confidence": 4,
+        "dimensions": {
+          "abstractionQuality": "acceptable",
+          "changeability": "acceptable",
+          "cognitiveComplexity": "acceptable",
+          "compatibility": "acceptable",
+          "consistency": "acceptable",
+          "correctness": "acceptable",
+          "coupling": "acceptable",
+          "documentation": "uncertain",
+          "duplication": "acceptable",
+          "maintainability": "acceptable",
+          "modularity": "acceptable",
+          "observability": "not_applicable",
+          "performance": "not_applicable",
+          "projectStructure": "acceptable",
+          "readability": "acceptable",
+          "reliability": "acceptable",
+          "scalability": "not_applicable",
+          "security": "not_applicable",
+          "testQuality": "acceptable"
+        },
+        "disposition": "clean",
+        "priorities": [],
+        "rationale": "The new passThrough kind is added consistently to the type, validator, and transition logic, and the packaged workflow is migrated from the noop-agent workaround to an explicit target-preserving control node. The change is cohesive and historical evidence confirms joint configuration validation.",
+        "reviewability": "sufficient"
+      },
+      "state_sha256": "28ee440620d59af72cfb4a548b1f2155d0899517f151ad339be456c527d77cfd",
+      "status": "completed",
+      "updated_at": "2026-09-20T14:44:03.078294+00:00"
+    }
+  ],
+  "report": {
+    "annotator": "opencode-agent",
+    "cases": [
+      {
+        "case_id": "q7m4-x2",
+        "confidence": 5,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1227.423,
+            "priorities": [
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "State transitions or side effects are difficult to reason about.",
+                "severity": "low"
+              },
+              {
+                "metric": "coupling",
+                "reason": "A global or implicit dependency makes behavior harder to predict.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "Abstraction and API design is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "readability",
+                "reason": "Responsibilities or transformations are difficult to identify.",
+                "severity": "low"
+              },
+              {
+                "metric": "performance",
+                "reason": "Performance and resource efficiency is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.000443394,
+              "input_tokens": 10557,
+              "output_tokens": 2026,
+              "total_tokens": 12583
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 84577.651,
+            "priorities": [
+              {
+                "metric": "correctness",
+                "reason": "The change creates a meaningful risk of breaking existing behavior.",
+                "severity": "high"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Failures would be difficult to isolate and diagnose.",
+                "severity": "high"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "high"
+              },
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "high"
+              },
+              {
+                "metric": "changeability",
+                "reason": "Hidden dependencies make the impact of a change unpredictable.",
+                "severity": "medium"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.0035040500000000003,
+              "input_tokens": 11487,
+              "output_tokens": 3562,
+              "total_tokens": 15049
+            }
+          }
+        ],
+        "rationale": "B identifies the central correctness and reliability failure and aligns with most priority weaknesses, including abstraction quality and test quality. A incorrectly treats correctness and reliability as non-applicable.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "n8v2-k6",
+        "confidence": 4,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 31680.183,
+            "priorities": [
+              {
+                "metric": "correctness",
+                "reason": "The change creates a meaningful risk of breaking existing behavior.",
+                "severity": "medium"
+              },
+              {
+                "metric": "security",
+                "reason": "Authentication, authorization, or privilege boundaries appear insufficient.",
+                "severity": "medium"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A non-obvious decision or constraint lacks an explanation of why.",
+                "severity": "medium"
+              },
+              {
+                "metric": "compatibility",
+                "reason": "The change appears to break an existing public or integration contract.",
+                "severity": "low"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Reliability and error handling is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.0027690500000000003,
+              "input_tokens": 10827,
+              "output_tokens": 2290,
+              "total_tokens": 13117
+            }
+          },
+          {
+            "evaluator": "jev",
+            "latency_ms": 1177.968,
+            "priorities": [],
+            "slot": "B",
+            "usage": {
+              "cost": 0.00043684200000000006,
+              "input_tokens": 10401,
+              "output_tokens": 2028,
+              "total_tokens": 12429
+            }
+          }
+        ],
+        "rationale": "A recognizes the behavioral regression and related reliability and compatibility concerns, although it understates several weaknesses and invents a security concern. B marks every dimension non-applicable and misses all reference priorities.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "h3d7-w5",
+        "confidence": 5,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1138.396,
+            "priorities": [
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "medium"
+              },
+              {
+                "metric": "readability",
+                "reason": "The control or data flow is not immediately understandable.",
+                "severity": "medium"
+              },
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "Cognitive complexity is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.0004356660000000001,
+              "input_tokens": 10373,
+              "output_tokens": 2026,
+              "total_tokens": 12399
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 38116.535,
+            "priorities": [
+              {
+                "metric": "correctness",
+                "reason": "The change creates a meaningful risk of breaking existing behavior.",
+                "severity": "medium"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "medium"
+              },
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "medium"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A non-obvious decision or constraint lacks an explanation of why.",
+                "severity": "medium"
+              },
+              {
+                "metric": "changeability",
+                "reason": "Hidden dependencies make the impact of a change unpredictable.",
+                "severity": "medium"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.00322475,
+              "input_tokens": 13525,
+              "output_tokens": 2392,
+              "total_tokens": 15917
+            }
+          }
+        ],
+        "rationale": "B captures the correctness, compatibility, reliability, maintainability, and test-quality weaknesses caused by bypassing unknown-workflow validation. A detects only reliability while treating correctness, compatibility, and most other relevant dimensions as non-applicable.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "t6a1-j8",
+        "confidence": 5,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1263.023,
+            "priorities": [
+              {
+                "metric": "security",
+                "reason": "Untrusted input crosses a boundary without sufficient validation or safe handling.",
+                "severity": "high"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "medium"
+              },
+              {
+                "metric": "readability",
+                "reason": "Responsibilities or transformations are difficult to identify.",
+                "severity": "high"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00043906800000000003,
+              "input_tokens": 10454,
+              "output_tokens": 2028,
+              "total_tokens": 12482
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 20828.151,
+            "priorities": [
+              {
+                "metric": "security",
+                "reason": "Untrusted input crosses a boundary without sufficient validation or safe handling.",
+                "severity": "high"
+              },
+              {
+                "metric": "correctness",
+                "reason": "The change creates a meaningful risk of breaking existing behavior.",
+                "severity": "high"
+              },
+              {
+                "metric": "changeability",
+                "reason": "Hidden dependencies make the impact of a change unpredictable.",
+                "severity": "medium"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Routine modification is likely to be slow or error-prone.",
+                "severity": "medium"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "medium"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.00212225,
+              "input_tokens": 11075,
+              "output_tokens": 922,
+              "total_tokens": 11997
+            }
+          }
+        ],
+        "rationale": "Both identify the security boundary failure, but B also captures the priority correctness and abstraction weaknesses while correctly treating several unaffected dimensions as sound. A misses correctness and abstraction quality and invents a severe readability problem.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "b4l8-s3",
+        "confidence": 4,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1267.677,
+            "priorities": [
+              {
+                "metric": "compatibility",
+                "reason": "The change appears to break an existing public or integration contract.",
+                "severity": "low"
+              },
+              {
+                "metric": "readability",
+                "reason": "Names do not communicate intent precisely enough.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "Abstraction and API design is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "Cognitive complexity is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00044217600000000007,
+              "input_tokens": 10528,
+              "output_tokens": 2026,
+              "total_tokens": 12554
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 28565.765,
+            "priorities": [
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "medium"
+              },
+              {
+                "metric": "compatibility",
+                "reason": "The change appears to break an existing public or integration contract.",
+                "severity": "low"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Reliability and error handling is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A non-obvious decision or constraint lacks an explanation of why.",
+                "severity": "low"
+              },
+              {
+                "metric": "correctness",
+                "reason": "The change creates a meaningful risk of breaking existing behavior.",
+                "severity": "low"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.0021773499999999998,
+              "input_tokens": 11399,
+              "output_tokens": 935,
+              "total_tokens": 12334
+            }
+          }
+        ],
+        "rationale": "B recognizes correctness risk, missing regression coverage, and reliability concerns, aligning better with the reference's highest priorities. It still understates the loop-back defect and incorrectly rates several weak dimensions as strong, while A largely marks the material dimensions non-applicable.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "f2y6-m9",
+        "confidence": 5,
+        "disposition": "material_issue",
+        "outputs": [
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 24308.354,
+            "priorities": [
+              {
+                "metric": "correctness",
+                "reason": "An important edge case or invalid state appears insufficiently handled.",
+                "severity": "high"
+              },
+              {
+                "metric": "reliability",
+                "reason": "Errors are swallowed, distorted, or propagated without useful boundaries.",
+                "severity": "medium"
+              },
+              {
+                "metric": "changeability",
+                "reason": "A brittle dependency chain amplifies otherwise local changes.",
+                "severity": "medium"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Routine modification is likely to be slow or error-prone.",
+                "severity": "medium"
+              },
+              {
+                "metric": "consistency",
+                "reason": "The change diverges from an established repository pattern without clear benefit.",
+                "severity": "medium"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00215785,
+              "input_tokens": 11299,
+              "output_tokens": 926,
+              "total_tokens": 12225
+            }
+          },
+          {
+            "evaluator": "jev",
+            "latency_ms": 1139.291,
+            "priorities": [
+              {
+                "metric": "maintainability",
+                "reason": "Routine modification is likely to be slow or error-prone.",
+                "severity": "high"
+              },
+              {
+                "metric": "readability",
+                "reason": "The control or data flow is not immediately understandable.",
+                "severity": "medium"
+              },
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "Control flow is harder to follow than the problem requires.",
+                "severity": "medium"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.000441,
+              "input_tokens": 10500,
+              "output_tokens": 2031,
+              "total_tokens": 12531
+            }
+          }
+        ],
+        "rationale": "A identifies serious correctness weakness and meaningful reliability, changeability, and maintainability problems, closely matching the reference's priority treatment. B misses correctness and reliability entirely and focuses on secondary complexity and readability concerns.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "x5j1-r7",
+        "confidence": 3,
+        "disposition": "clean",
+        "outputs": [
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 17128.948,
+            "priorities": [
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "medium"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A public or changed contract is not documented clearly enough.",
+                "severity": "medium"
+              },
+              {
+                "metric": "compatibility",
+                "reason": "The change appears to break an existing public or integration contract.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "A wrapper or layer adds surface without hiding meaningful complexity.",
+                "severity": "low"
+              },
+              {
+                "metric": "consistency",
+                "reason": "Consistency and conventions is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00212655,
+              "input_tokens": 11267,
+              "output_tokens": 873,
+              "total_tokens": 12140
+            }
+          },
+          {
+            "evaluator": "jev",
+            "latency_ms": 1203.437,
+            "priorities": [
+              {
+                "metric": "compatibility",
+                "reason": "The change appears to break an existing public or integration contract.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "A wrapper or layer adds surface without hiding meaningful complexity.",
+                "severity": "low"
+              },
+              {
+                "metric": "modularity",
+                "reason": "Modularity and cohesion is strong based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "readability",
+                "reason": "Readability and intent is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.000441336,
+              "input_tokens": 10508,
+              "output_tokens": 2026,
+              "total_tokens": 12534
+            }
+          }
+        ],
+        "rationale": "A correctly treats most applicable dimensions as acceptable or strong and better reflects the clean refactor. It invents test, documentation, compatibility, and abstraction concerns, but B incorrectly marks many clearly assessable acceptable dimensions non-applicable and still raises unsupported compatibility and abstraction concerns.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "u2k7-d5",
+        "confidence": 3,
+        "disposition": "clean",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1174.016,
+            "priorities": [
+              {
+                "metric": "observability",
+                "reason": "A credible production failure would not be visible or diagnosable.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "The API exposes details callers should not need to know.",
+                "severity": "low"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Failures would be difficult to isolate and diagnose.",
+                "severity": "low"
+              },
+              {
+                "metric": "reliability",
+                "reason": "A race or concurrency assumption threatens reliable behavior.",
+                "severity": "low"
+              },
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "State transitions or side effects are difficult to reason about.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00044415000000000004,
+              "input_tokens": 10575,
+              "output_tokens": 2026,
+              "total_tokens": 12601
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 20756.507,
+            "priorities": [
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "medium"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A public or changed contract is not documented clearly enough.",
+                "severity": "medium"
+              },
+              {
+                "metric": "scalability",
+                "reason": "A known variation is blocked by an unnecessarily rigid assumption.",
+                "severity": "medium"
+              },
+              {
+                "metric": "changeability",
+                "reason": "Hidden dependencies make the impact of a change unpredictable.",
+                "severity": "low"
+              },
+              {
+                "metric": "correctness",
+                "reason": "An important edge case or invalid state appears insufficiently handled.",
+                "severity": "low"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.00218695,
+              "input_tokens": 11623,
+              "output_tokens": 887,
+              "total_tokens": 12510
+            }
+          }
+        ],
+        "rationale": "B more consistently recognizes the clean change's applicable quality dimensions and strong implementation, although it invents unsupported test, documentation, and scalability concerns. A incorrectly treats many applicable dimensions as non-applicable and raises several unsupported low-priority issues.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      },
+      {
+        "case_id": "l8q3-v9",
+        "confidence": 3,
+        "disposition": "clean",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1209.107,
+            "priorities": [
+              {
+                "metric": "observability",
+                "reason": "A credible production failure would not be visible or diagnosable.",
+                "severity": "medium"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Maintainability is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "abstractionQuality",
+                "reason": "The API exposes details callers should not need to know.",
+                "severity": "low"
+              },
+              {
+                "metric": "coupling",
+                "reason": "Implementation details leak through a module or API boundary.",
+                "severity": "low"
+              },
+              {
+                "metric": "readability",
+                "reason": "Readability and intent is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.00044020200000000005,
+              "input_tokens": 10481,
+              "output_tokens": 2023,
+              "total_tokens": 12504
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 25033.073,
+            "priorities": [
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "high"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A public or changed contract is not documented clearly enough.",
+                "severity": "medium"
+              },
+              {
+                "metric": "reliability",
+                "reason": "A failure path can leave resources or state inconsistent.",
+                "severity": "medium"
+              },
+              {
+                "metric": "changeability",
+                "reason": "Hidden dependencies make the impact of a change unpredictable.",
+                "severity": "low"
+              },
+              {
+                "metric": "correctness",
+                "reason": "An important edge case or invalid state appears insufficiently handled.",
+                "severity": "low"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.0020751499999999996,
+              "input_tokens": 11191,
+              "output_tokens": 793,
+              "total_tokens": 11984
+            }
+          }
+        ],
+        "rationale": "A is less comprehensive, but its priority treatment is closer to the clean reference. B invents a high-priority test deficiency despite the reference's focused-test evidence, plus unsupported reliability and documentation weaknesses.",
+        "status": "completed",
+        "winner": "jev"
+      },
+      {
+        "case_id": "p3w8-h2",
+        "confidence": 3,
+        "disposition": "clean",
+        "outputs": [
+          {
+            "evaluator": "jev",
+            "latency_ms": 1195.99,
+            "priorities": [
+              {
+                "metric": "abstractionQuality",
+                "reason": "Abstraction and API design is acceptable but improvable based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "consistency",
+                "reason": "Consistency and conventions is strong based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "cognitiveComplexity",
+                "reason": "Cognitive complexity is strong based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "readability",
+                "reason": "Readability and intent is strong based on the supplied change context.",
+                "severity": "low"
+              },
+              {
+                "metric": "compatibility",
+                "reason": "Compatibility and API stability is strong based on the supplied change context.",
+                "severity": "low"
+              }
+            ],
+            "slot": "A",
+            "usage": {
+              "cost": 0.000442386,
+              "input_tokens": 10533,
+              "output_tokens": 2030,
+              "total_tokens": 12563
+            }
+          },
+          {
+            "evaluator": "dspy:opencode-go/glm-5.3-flash",
+            "latency_ms": 51951.591,
+            "priorities": [
+              {
+                "metric": "testQuality",
+                "reason": "Important changed behavior lacks meaningful regression coverage.",
+                "severity": "medium"
+              },
+              {
+                "metric": "duplication",
+                "reason": "The same rule or source of truth appears in multiple places.",
+                "severity": "medium"
+              },
+              {
+                "metric": "changeability",
+                "reason": "A domain rule or decision is scattered across multiple locations.",
+                "severity": "low"
+              },
+              {
+                "metric": "maintainability",
+                "reason": "Routine modification is likely to be slow or error-prone.",
+                "severity": "low"
+              },
+              {
+                "metric": "documentation",
+                "reason": "A public or changed contract is not documented clearly enough.",
+                "severity": "low"
+              }
+            ],
+            "slot": "B",
+            "usage": {
+              "cost": 0.00212425,
+              "input_tokens": 11415,
+              "output_tokens": 824,
+              "total_tokens": 12239
+            }
+          }
+        ],
+        "rationale": "B better recognizes the cohesive migration's applicable dimensions and strong correctness, structure, and consistency. It nevertheless invents unsupported duplication and test weaknesses, while A incorrectly marks numerous applicable dimensions as non-applicable.",
+        "status": "completed",
+        "winner": "dspy:opencode-go/glm-5.3-flash"
+      }
+    ],
+    "completed_cases": 10,
+    "dimension_preferences": {
+      "abstractionQuality": {
+        "dspy:opencode-go/glm-5.3-flash": 5,
+        "jev": 1,
+        "tie": 4
+      },
+      "changeability": {
+        "dspy:opencode-go/glm-5.3-flash": 7,
+        "tie": 3
+      },
+      "cognitiveComplexity": {
+        "dspy:opencode-go/glm-5.3-flash": 7,
+        "jev": 1,
+        "tie": 2
+      },
+      "compatibility": {
+        "dspy:opencode-go/glm-5.3-flash": 2,
+        "tie": 6,
+        "uncertain": 2
+      },
+      "consistency": {
+        "dspy:opencode-go/glm-5.3-flash": 1,
+        "tie": 4,
+        "uncertain": 5
+      },
+      "correctness": {
+        "dspy:opencode-go/glm-5.3-flash": 10
+      },
+      "coupling": {
+        "dspy:opencode-go/glm-5.3-flash": 9,
+        "tie": 1
+      },
+      "documentation": {
+        "jev": 1,
+        "tie": 1,
+        "uncertain": 8
+      },
+      "duplication": {
+        "dspy:opencode-go/glm-5.3-flash": 8,
+        "jev": 1,
+        "tie": 1
+      },
+      "maintainability": {
+        "dspy:opencode-go/glm-5.3-flash": 7,
+        "jev": 2,
+        "tie": 1
+      },
+      "modularity": {
+        "dspy:opencode-go/glm-5.3-flash": 9,
+        "tie": 1
+      },
+      "observability": {
+        "dspy:opencode-go/glm-5.3-flash": 2,
+        "tie": 8
+      },
+      "performance": {
+        "dspy:opencode-go/glm-5.3-flash": 2,
+        "jev": 3,
+        "tie": 5
+      },
+      "projectStructure": {
+        "dspy:opencode-go/glm-5.3-flash": 7,
+        "tie": 3
+      },
+      "readability": {
+        "dspy:opencode-go/glm-5.3-flash": 8,
+        "tie": 2
+      },
+      "reliability": {
+        "dspy:opencode-go/glm-5.3-flash": 7,
+        "jev": 2,
+        "tie": 1
+      },
+      "scalability": {
+        "jev": 3,
+        "tie": 7
+      },
+      "security": {
+        "dspy:opencode-go/glm-5.3-flash": 1,
+        "jev": 2,
+        "tie": 7
+      },
+      "testQuality": {
+        "dspy:opencode-go/glm-5.3-flash": 3,
+        "jev": 4,
+        "tie": 3
+      }
+    },
+    "evaluator_efficiency": {
+      "dspy:opencode-go/glm-5.3-flash": {
+        "median_latency_ms": 26799.419,
+        "runs": 10,
+        "total_cost": 0.0244682,
+        "total_tokens": 129512
+      },
+      "jev": {
+        "median_latency_ms": 1199.7134999999998,
+        "runs": 10,
+        "total_cost": 0.004406220000000001,
+        "total_tokens": 125180
+      }
+    },
+    "name": "jev-vs-dspy-glm-5.3-flash",
+    "study_id": "4516d4754764",
+    "total_cases": 10,
+    "wins": {
+      "dspy:opencode-go/glm-5.3-flash": 9,
+      "jev": 1
+    }
+  },
+  "schema_version": 1,
+  "study": {
+    "artifact_sha256": "4516d4754764e397e9642e4c478c5a42dad0539ee98963f9737fda2df1ac5f31",
+    "corpus_sha256": "b9dcbcf829edf5c13efa8e2feb8aeff9f20b5c6ea4ade6e5f297ea453acee271",
+    "id": "4516d4754764",
+    "name": "jev-vs-dspy-glm-5.3-flash",
+    "partition": "test",
+    "rubric_sha256": "2efe9fad698688dd814440451fca015e34603d9c784d34b6258dd41be3a1529b",
+    "run_created_at": "2026-09-20T10:42:53.163121+00:00",
+    "split": "pilot-v1"
+  }
+}

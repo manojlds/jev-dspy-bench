@@ -139,5 +139,22 @@ def adjudicate_serve(
     uvicorn.run(create_app(_root() / database), host=host, port=port)
 
 
+@adjudicate_app.command("export")
+def adjudicate_export(
+    study: str = typer.Argument(...),
+    annotator: str = typer.Option("opencode-agent"),
+    database: Path = typer.Option(Path("artifacts/adjudication/adjudication.sqlite")),
+    output: Path | None = typer.Option(None),
+) -> None:
+    from .adjudication import AdjudicationStore
+
+    destination = output or Path("reports/adjudication") / f"{study}-{annotator}.json"
+    destination = _root() / destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    snapshot = AdjudicationStore(_root() / database).export_snapshot(study, annotator)
+    destination.write_text(json.dumps(snapshot, indent=2, sort_keys=True) + "\n")
+    typer.echo(destination)
+
+
 if __name__ == "__main__":
     app()

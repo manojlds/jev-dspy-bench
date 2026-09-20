@@ -144,6 +144,15 @@ def test_blind_workflow_and_identity_reveal(tmp_path: Path) -> None:
     assert report["completed_cases"] == 1
     assert sum(report["wins"].values()) == 1
     assert set(report["evaluator_efficiency"]) == {"jev", "dspy:test"}
+    snapshot = AdjudicationStore(database).export_snapshot(study, "alice")
+    assert snapshot["cases"][0]["status"] == "completed"
+    assert set(snapshot["cases"][0]["evaluator_identities"].values()) == {
+        "jev",
+        "dspy:test",
+    }
+    serialized = json.dumps(snapshot)
+    assert '"state"' not in serialized
+    assert '"scorecard"' not in serialized
 
 
 def test_agent_seed_is_a_blinded_draft(tmp_path: Path) -> None:

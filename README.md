@@ -143,6 +143,15 @@ separate annotator IDs and every save or submission is recorded in the audit log
 are complete, the **Comparative report** view summarizes case winners, dimension preferences,
 latency, token use, and recorded cost without exposing identities for incomplete comparisons.
 
+Export a sanitized, reviewable snapshot without raw source state or evaluator scorecards:
+
+```bash
+uv run jev-dspy adjudicate export <study-id> --annotator opencode-agent
+```
+
+Tracked exports under `reports/adjudication/` preserve frozen references, blinded comparisons,
+identity reveals, aggregate results, state hashes, and audit-event hashes.
+
 ## Expansion Protocol
 
 Before making comparative quality claims:

@@ -342,6 +342,76 @@ class AdjudicationStore:
             "cases": cases,
         }
 
+    def export_snapshot(self, study_id: str, annotator: str) -> dict[str, Any]:
+        with self.connect() as db:
+            study = db.execute("SELECT * FROM studies WHERE id=?", (study_id,)).fetchone()
+            if not study:
+                raise ValueError("study not found")
+            rows = db.execute(
+                """
+                SELECT c.case_id, c.ordinal, c.state_json, a.actor_type, a.status,
+                       a.reference_json, a.comparison_json, a.created_at, a.updated_at
+                FROM cases c JOIN annotations a
+                  ON a.study_id=c.study_id AND a.case_id=c.case_id AND a.annotator=?
+                WHERE c.study_id=? ORDER BY c.ordinal
+                """,
+                (annotator, study_id),
+            ).fetchall()
+            output_rows = db.execute(
+                "SELECT case_id, slot, evaluator FROM outputs WHERE study_id=? ORDER BY case_id, slot",
+                (study_id,),
+            ).fetchall()
+            audit_rows = db.execute(
+                """
+                SELECT case_id, event, payload_sha256, created_at FROM audit_events
+                WHERE study_id=? AND annotator=? ORDER BY id
+                """,
+                (study_id, annotator),
+            ).fetchall()
+
+        metadata = json.loads(study["metadata_json"])
+        identities: dict[str, dict[str, str]] = {}
+        for row in output_rows:
+            identities.setdefault(row["case_id"], {})[row["slot"]] = row["evaluator"]
+        cases = []
+        for row in rows:
+            cases.append(
+                {
+                    "case_id": row["case_id"],
+                    "actor_type": row["actor_type"],
+                    "status": row["status"],
+                    "state_sha256": hashlib.sha256(row["state_json"].encode()).hexdigest(),
+                    "reference": json.loads(row["reference_json"])
+                    if row["reference_json"]
+                    else None,
+                    "comparison": json.loads(row["comparison_json"])
+                    if row["comparison_json"]
+                    else None,
+                    "evaluator_identities": identities.get(row["case_id"], {})
+                    if row["status"] == "completed"
+                    else {},
+                    "created_at": row["created_at"],
+                    "updated_at": row["updated_at"],
+                }
+            )
+        return {
+            "schema_version": 1,
+            "study": {
+                "id": study["id"],
+                "name": study["name"],
+                "artifact_sha256": study["artifact_sha256"],
+                "run_created_at": metadata.get("createdAt"),
+                "split": metadata.get("split"),
+                "partition": metadata.get("partition"),
+                "corpus_sha256": metadata.get("corpus", {}).get("contentSha256"),
+                "rubric_sha256": metadata.get("rubricSha256"),
+            },
+            "annotator": annotator,
+            "cases": cases,
+            "audit_events": [dict(row) for row in audit_rows],
+            "report": self.comparative_report(study_id, annotator),
+        }
+
     def save_reference(
         self,
         study_id: str,
