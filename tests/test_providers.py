@@ -5,6 +5,7 @@ import httpx
 from jev_dspy_bench.program import _batch_error, _valid_batch
 from jev_dspy_bench.providers.direct import _parse_batch, build_prompt
 from jev_dspy_bench.providers.jev import JEV_ENDPOINT, JevEvaluator
+from jev_dspy_bench.providers.laya import LayaEvaluator
 from jev_dspy_bench.rubric import METRICS, build_categorical_questions
 from jev_dspy_bench.schema import RawMetricBatch, RawMetricDecision, ReviewState
 
@@ -123,3 +124,36 @@ def test_jev_categorical_adapter_maps_direct_verdicts() -> None:
     assert len(card.priorities) == 1
     assert card.priorities[0].metric == "correctness"
     assert not card.metrics["documentation"].applicable
+
+
+def test_laya_adapter_uses_categorical_contract() -> None:
+    class FakeAgent:
+        device = "cpu"
+
+        def predict(self, state: object, questions: dict[str, object]) -> dict[str, object]:
+            assert state == {"task": "task", "diff": "diff", "repositoryContext": "{}"}
+            assert questions == build_categorical_questions()
+            answers = {}
+            for metric in METRICS:
+                answers[f"{metric.key}_verdict"] = {
+                    "type": "choice",
+                    "choice": "acceptable",
+                    "confidence": 0.8,
+                }
+                answers[f"{metric.key}_weakness"] = {
+                    "type": "choice",
+                    "choice": "no_material_issue",
+                }
+            return {
+                "model": "ignored",
+                "answers": answers,
+                "usage": {"input_tokens": 100, "output_tokens": 0},
+            }
+
+    evaluator = LayaEvaluator("test/laya", agent=FakeAgent())
+    card = evaluator.evaluate(ReviewState(task="task", diff="diff", repositoryContext="{}"))
+
+    assert evaluator.id == "laya:test/laya"
+    assert card.model == "laya:test/laya"
+    assert card.usage.cost == 0
+    assert not card.priorities

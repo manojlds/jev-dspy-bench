@@ -16,6 +16,7 @@ from .pricing import cost_basis, with_estimated_cost
 from .program import DspyEvaluator
 from .providers.direct import DirectEvaluator
 from .providers.jev import JevEvaluator
+from .providers.laya import LayaEvaluator
 from .rubric import build_categorical_questions, build_questions
 from .schema import Usage
 
@@ -38,15 +39,18 @@ def run_experiment(root: Path, config: ExperimentConfig) -> Path:
                     try:
                         scorecard = evaluator.evaluate(case.state)
                         runs.append(
-                            {
-                                "caseId": case_id,
-                                "repeat": repeat,
-                                "evaluator": evaluator.id,
-                                "status": "success",
-                                "stateSha256": case.state_sha256,
-                                "latencyMs": round((time.perf_counter() - started) * 1_000, 3),
-                                "scorecard": scorecard.model_dump(),
-                            }
+                            _with_diagnostics(
+                                {
+                                    "caseId": case_id,
+                                    "repeat": repeat,
+                                    "evaluator": evaluator.id,
+                                    "status": "success",
+                                    "stateSha256": case.state_sha256,
+                                    "latencyMs": round((time.perf_counter() - started) * 1_000, 3),
+                                    "scorecard": scorecard.model_dump(),
+                                },
+                                evaluator,
+                            )
                         )
                     except Exception as error:  # benchmark failures are report data
                         runs.append(
@@ -186,6 +190,13 @@ def _build_evaluator(root: Path, config: EvaluatorConfig) -> Any:
             model=config.model or "jev-1.13.0",
             categorical=True,
         )
+    if config.kind == "laya":
+        return LayaEvaluator(
+            config.model or "convaiinnovations/laya",
+            subfolder=config.subfolder,
+            device=config.device,
+            revision=config.revision,
+        )
     if config.kind == "direct":
         return DirectEvaluator(config.model or "", batch_size=config.batchSize)
     program = str(root / config.program) if config.program else None
@@ -193,9 +204,16 @@ def _build_evaluator(root: Path, config: EvaluatorConfig) -> Any:
 
 
 def _protocol_questions(config: ExperimentConfig) -> dict[str, dict[str, object]]:
-    if any(item.kind == "jev-categorical" for item in config.evaluators):
+    if any(item.kind in {"jev-categorical", "laya"} for item in config.evaluators):
         return build_categorical_questions()
     return build_questions()
+
+
+def _with_diagnostics(run: dict[str, Any], evaluator: Any) -> dict[str, Any]:
+    diagnostics = getattr(evaluator, "last_diagnostics", None)
+    if diagnostics:
+        run["diagnostics"] = diagnostics
+    return run
 
 
 def _hash_json(value: object) -> str:

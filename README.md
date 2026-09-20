@@ -215,6 +215,18 @@ A five-repeat Jev protocol experiment using direct categorical verdicts is docum
 It improves class-balanced agreement and clean specificity, but also demonstrates that the current
 aggregate optimizer metric is vulnerable to an always-acceptable baseline.
 
+An open-weight Laya CPU diagnostic is documented in
+[`reports/laya-categorical-native-context.md`](reports/laya-categorical-native-context.md). Reproduce
+it with:
+
+```bash
+USE_TF=0 uv run --with laya==0.3.4 jev-dspy evaluate \
+  --config configs/laya-categorical-expansion-v1.yaml
+```
+
+Laya's native context truncates most benchmark states, so this result is not a full-context
+comparison with Jev or DSPy.
+
 ## Attribution
 
 The 19-dimension rubric is adapted from `jev-review` 0.1.1 under the MIT license, commit

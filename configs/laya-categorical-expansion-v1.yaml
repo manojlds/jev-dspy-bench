@@ -1,0 +1,17 @@
+name: laya-categorical-expansion-v1
+corpus: corpora/expansion-v1
+split: expansion-baseline-v1
+partition: test
+repeat: 1
+live: true
+output: artifacts/runs
+evaluators:
+  - kind: laya
+    model: convaiinnovations/laya
+    revision: 1c5edc17a7acd8701df6fc341c0d179f1c62c982
+    device: cpu
+  - kind: laya
+    model: convaiinnovations/laya
+    revision: 1c5edc17a7acd8701df6fc341c0d179f1c62c982
+    subfolder: typed-decisions
+    device: cpu

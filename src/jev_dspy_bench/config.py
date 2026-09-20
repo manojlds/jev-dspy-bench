@@ -10,9 +10,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 class EvaluatorConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["jev", "jev-categorical", "direct", "dspy"]
+    kind: Literal["jev", "jev-categorical", "laya", "direct", "dspy"]
     model: str | None = None
     program: str | None = None
+    subfolder: str | None = None
+    device: str | None = None
+    revision: str | None = None
     batchSize: int = Field(default=5, ge=1)
 
     @model_validator(mode="after")

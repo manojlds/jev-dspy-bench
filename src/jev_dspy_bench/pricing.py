@@ -32,6 +32,8 @@ PRICES: dict[str, Price] = {
 
 
 def estimate_cost(model: str, usage: Usage) -> float | None:
+    if model.startswith("laya:"):
+        return 0.0
     price = PRICES.get(model)
     if price is None:
         return None
@@ -48,5 +50,7 @@ def with_estimated_cost(model: str, usage: Usage) -> Usage:
 
 
 def cost_basis(model: str) -> str:
+    if model.startswith("laya:"):
+        return "Self-hosted open weights; provider cost is $0, excluding local hardware and electricity."
     price = PRICES.get(model)
     return price.basis if price else "No pricing basis is configured for this resolved model."
