@@ -1,0 +1,15 @@
+diff --git a/.pi/workflows/github-pr-review.yaml b/.pi/workflows/github-pr-review.yaml
+--- a/.pi/workflows/github-pr-review.yaml
++++ b/.pi/workflows/github-pr-review.yaml
+@@ -11,10 +11,9 @@ nodes:
+   fix-diff:
+     action: has-diff
+     needs: [fix-issues]
+-    if: inputs.fixMode != internal
+     output: fixDiff
+ 
+   fix-commit:
+     action: git-commit
+     needs: [fix-diff]
+-    if: artifacts.fixDiff.changed == true && inputs.fixCreateChangeRequest == true && inputs.fixMode != internal
++    if: artifacts.fixDiff.changed == true && inputs.fixCreateChangeRequest == true

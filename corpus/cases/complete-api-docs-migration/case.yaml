@@ -1,0 +1,4 @@
+id: complete-api-docs-migration
+description: API, caller, and documentation migrate together.
+comparison: { group: api-migration, variant: fixed }
+expected: []

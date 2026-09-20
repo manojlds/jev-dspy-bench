@@ -1,0 +1,31 @@
+diff --git a/src/lib/config.ts b/src/lib/config.ts
+--- a/src/lib/config.ts
++++ b/src/lib/config.ts
+@@ -1,5 +1,5 @@
+-export type ControlKind = 'switch' | 'loop' | 'end';
++export type ControlKind = 'switch' | 'loop' | 'end' | 'passThrough';
+ 
+ export function validateControl(kind: string): kind is ControlKind {
+-  return ['switch', 'loop', 'end'].includes(kind);
++  return ['switch', 'loop', 'end', 'passThrough'].includes(kind);
+ }
+@@ -8,5 +8,6 @@ export type ControlNode = { control: ControlKind; target: string };
+ export function nextControlNode(node: ControlNode): string | undefined {
+   if (node.control === 'switch') return node.target;
+   if (node.control === 'loop') return node.target;
++  if (node.control === 'passThrough') return node.target;
+   return undefined;
+ }
+diff --git a/.pi/workflows/local-review.yaml b/.pi/workflows/local-review.yaml
+--- a/.pi/workflows/local-review.yaml
++++ b/.pi/workflows/local-review.yaml
+@@ -1,7 +1,7 @@
+ nodes:
+   continue-review:
+-    agent: task/noop
+-    if: true
++    control: passThrough
++    target: publish
+   publish:
+     action: write-output
+     needs: [continue-review]

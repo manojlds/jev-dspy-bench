@@ -1,0 +1,14 @@
+id: h3d7-w5
+description: Compiled workflow execution changes handling for an unknown workflow name.
+dimensions:
+  - api-contract
+  - validation
+jev:
+  expectedWeakDimensions: [correctness, compatibility]
+expected:
+  - id: HIST-WORKFLOW-001
+    description: Synthesizing a fallback workflow bypasses unknown-workflow and input validation.
+    severity: HIGH
+    category: QUALITY
+    file: src/cli/workflow.ts
+    line: 15

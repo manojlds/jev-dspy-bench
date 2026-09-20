@@ -1,0 +1,6 @@
+id: p3w8-h2
+description: A portability workaround is replaced by an explicit pass-through control node.
+dimensions:
+  - complete-migration
+  - workflow-semantics
+expected: []

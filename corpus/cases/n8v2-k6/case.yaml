@@ -1,0 +1,14 @@
+id: n8v2-k6
+description: Change-request nodes are edited while internal and stacked fix modes share a workflow.
+dimensions:
+  - workflow-semantics
+  - cross-file-context
+jev:
+  expectedWeakDimensions: [correctness, reliability]
+expected:
+  - id: HIST-MODE-001
+    description: Internal mode can enter both the internal commit path and stacked change-request path.
+    severity: HIGH
+    category: QUALITY
+    file: .pi/workflows/github-pr-review.yaml
+    line: 20

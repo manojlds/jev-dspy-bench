@@ -1,0 +1,7 @@
+diff --git a/api.ts b/api.ts
+--- a/api.ts
++++ b/api.ts
+@@ -1,2 +1,2 @@
+-export function oldName(): string { return 'ok'; }
++export function newName(): string { return 'ok'; }
+ export const handler = oldName;

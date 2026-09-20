@@ -1,0 +1,6 @@
+id: x5j1-r7
+description: Node execution is moved behind an interface without changing orchestration semantics.
+dimensions:
+  - safe-refactor
+  - abstraction-boundary
+expected: []

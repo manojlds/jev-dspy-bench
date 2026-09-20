@@ -1,0 +1,11 @@
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -10,6 +10,5 @@ export async function executeWorkflowRun(
+   workflowNodes: Record<string, unknown>
+ ) {
+   const workflow = config.workflows?.[workflowName];
+-  if (!workflow) throw new Error(`Unknown workflow "${workflowName}".`);
+-  return resolveWorkflowInputs(workflow);
++  return resolveWorkflowInputs(workflow ?? { nodes: workflowNodes, inputs: {} });
+ }

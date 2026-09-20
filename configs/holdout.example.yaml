@@ -1,0 +1,13 @@
+name: jev-dspy-holdout
+split: pilot-v1
+partition: test
+repeat: 5
+live: false
+output: artifacts/runs
+evaluators:
+  - kind: jev
+  - kind: direct
+    model: openai/gpt-4o-mini
+  - kind: dspy
+    model: openai/gpt-4o-mini
+    program: artifacts/programs/pilot-mipro.json

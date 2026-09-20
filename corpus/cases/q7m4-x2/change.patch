@@ -1,0 +1,30 @@
+diff --git a/src/temporal/activities.ts b/src/temporal/activities.ts
+--- a/src/temporal/activities.ts
++++ b/src/temporal/activities.ts
+@@ -2,10 +2,8 @@ export type Context = { artifacts: Record<string, unknown> };
+ 
+ export async function hydrateContextActivity(
+   input: { context: Context; load: (value: unknown) => Promise<unknown> }
+-): Promise<Context> {
+-  const artifacts: Record<string, unknown> = {};
++): Promise<void> {
+   for (const [key, value] of Object.entries(input.context.artifacts)) {
+-    artifacts[key] = await input.load(value);
++    input.context.artifacts[key] = await input.load(value);
+   }
+-  return { artifacts };
+ }
+diff --git a/src/temporal/workflows.ts b/src/temporal/workflows.ts
+--- a/src/temporal/workflows.ts
++++ b/src/temporal/workflows.ts
+@@ -1,8 +1,7 @@
+ import { hydrateContextActivity, type Context } from './activities.js';
+ 
+ export async function run(context: Context, load: (value: unknown) => Promise<unknown>) {
+-  const activityInput = structuredClone({ context });
+-  const hydrated = await hydrateContextActivity({ ...activityInput, load });
+-  Object.assign(context.artifacts, hydrated.artifacts);
++  const activityInput = structuredClone({ context });
++  await hydrateContextActivity({ ...activityInput, load });
+   return context;
+ }

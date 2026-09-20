@@ -1,0 +1,22 @@
+diff --git a/src/temporal/executor.ts b/src/temporal/executor.ts
+--- a/src/temporal/executor.ts
++++ b/src/temporal/executor.ts
+@@ -1,6 +1,15 @@
++import { writeFile } from 'fs/promises';
++
+-type Options = { workingDir: string };
+-type Result = { workflowId: string };
++type Options = { workingDir: string; saveTrace?: boolean };
++type Result = { workflowId: string; tracePath?: string };
++
++async function saveTrace(workingDir: string): Promise<string> {
++  const path = `${workingDir}/trace.json`;
++  await writeFile(path, JSON.stringify({ completed: true }));
++  return path;
++}
+ 
+ export async function execute(options: Options): Promise<Result> {
+-  return { workflowId: options.workingDir };
++  const tracePath = options.saveTrace ? await saveTrace(options.workingDir) : undefined;
++  return { workflowId: options.workingDir, tracePath };
+ }

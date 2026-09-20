@@ -1,0 +1,10 @@
+diff --git a/client.ts b/client.ts
+--- a/client.ts
++++ b/client.ts
+@@ -1,3 +1,3 @@
+-/** Use oldName to fetch. */
+-export function oldName(): string { return 'ok'; }
+-export const handler = oldName;
++/** Use newName to fetch. */
++export function newName(): string { return 'ok'; }
++export const handler = newName;

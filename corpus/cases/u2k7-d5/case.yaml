@@ -1,0 +1,6 @@
+id: u2k7-d5
+description: A read-only query exposes deterministic workflow progress.
+dimensions:
+  - clean-feature
+  - state-machine
+expected: []

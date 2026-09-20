@@ -1,0 +1,12 @@
+name: jev-dspy-pilot
+split: pilot-v1
+partition: test
+repeat: 3
+live: false
+output: artifacts/runs
+evaluators:
+  - kind: jev
+  - kind: direct
+    model: openai/gpt-4o-mini
+  - kind: dspy
+    model: openai/gpt-4o-mini

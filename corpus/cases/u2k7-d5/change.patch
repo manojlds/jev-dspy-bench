@@ -1,0 +1,37 @@
+diff --git a/src/temporal/workflows.ts b/src/temporal/workflows.ts
+--- a/src/temporal/workflows.ts
++++ b/src/temporal/workflows.ts
+@@ -1,11 +1,31 @@
+ type Result = { status: 'success' | 'failed' };
+ 
+ export function startWorkflow(runNode: (id: string) => Promise<Result>) {
++  const completed = new Map<string, Result>();
++  let currentNode: string | undefined;
+   let start!: () => void;
+   const startGate = new Promise<void>((resolve) => { start = resolve; });
+   const done = (async () => {
+     await startGate;
+-    return runNode('build');
++    currentNode = 'build';
++    try {
++      const result = await runNode('build');
++      completed.set('build', result);
++      return result;
++    } catch (error) {
++      completed.set('build', { status: 'failed' });
++      throw error;
++    } finally {
++      currentNode = undefined;
++    }
+   })();
++  const getStatus = () => {
++    const terminal = completed.get('build')?.status;
++    return {
++      state: currentNode ? 'running' : terminal ?? 'pending',
++      currentNode,
++      completed: Object.fromEntries(completed),
++    };
++  };
+-  return { start, done };
++  return { start, done, getStatus };
+ }

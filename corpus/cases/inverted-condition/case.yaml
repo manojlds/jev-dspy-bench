@@ -1,0 +1,12 @@
+id: inverted-condition
+description: Authorization condition is inverted.
+comparison: { group: authorization-condition, variant: defect }
+jev:
+  expectedWeakDimensions: [correctness, security]
+expected:
+  - id: INV-001
+    description: Non-admin users are allowed to delete while admins are denied.
+    severity: HIGH
+    category: SECURITY
+    file: access.ts
+    line: 2

@@ -1,0 +1,5 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/138
+proposedRevision: 01f74f2
+confirmingRevision: 9ef54ce6893a6ac45c623af454f3b493703aed2d
+rationale: The fix introduced quote-aware and parenthesis-aware parsing with explicit precedence tests for compound conditions.

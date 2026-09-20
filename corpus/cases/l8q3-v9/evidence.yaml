@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/169
+proposedRevision: 7d04fe4cb5791b3c71e1871a04fc3a7fa5d84558
+confirmingRevision: 7d04fe4cb5791b3c71e1871a04fc3a7fa5d84558
+rationale: The opt-in trace artifact feature was reviewed cleanly and its returned artifact path was covered by a focused executor test.

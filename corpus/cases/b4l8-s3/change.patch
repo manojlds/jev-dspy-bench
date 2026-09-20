@@ -1,0 +1,31 @@
+diff --git a/src/lib/workflow/planning.ts b/src/lib/workflow/planning.ts
+--- a/src/lib/workflow/planning.ts
++++ b/src/lib/workflow/planning.ts
+@@ -3,14 +3,11 @@ type Node = { needs?: string[] };
+ export function computeLoopNodes(
+   nodes: Record<string, Node>,
+   target: string,
+-  downstream: string[],
+-  isLoopBackEdge: boolean
++  downstream: string[]
+ ): Set<string> {
+   const active = new Set([target, ...downstream]);
+-  if (!isLoopBackEdge) {
+-    for (const id of [...active]) {
+-      for (const dependency of nodes[id]?.needs ?? []) active.add(dependency);
+-    }
++  for (const id of [...active]) {
++    for (const dependency of nodes[id]?.needs ?? []) active.add(dependency);
+   }
+   return active;
+ }
+@@ -18,8 +15,8 @@ export function computeLoopNodes(
+ export function activateAfterControl(
+   nodes: Record<string, Node>,
+   target: string,
+   downstream: string[],
+   control: 'loop' | 'switch'
+ ): Set<string> {
+-  return computeLoopNodes(nodes, target, downstream, control === 'loop');
++  return computeLoopNodes(nodes, target, downstream);
+ }

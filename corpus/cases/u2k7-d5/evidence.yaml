@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/167
+proposedRevision: f4bbf54ae0b1215681b568ad90dc8d4ec01f7a95
+confirmingRevision: f4bbf54ae0b1215681b568ad90dc8d4ec01f7a95
+rationale: The feature was reviewed cleanly and added focused tests for pending, running, and successful query states.
