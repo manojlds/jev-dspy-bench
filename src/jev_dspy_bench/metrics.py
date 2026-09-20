@@ -95,12 +95,20 @@ def summarize_references(
                     2 * precision * recall / (precision + recall) if precision + recall else 0.0
                 )
         output[evaluator] = {
-            "cases": len(selected),
+            "cases": len({run["caseId"] for run in selected}),
+            "runs": len(selected),
             "meanReferenceScore": statistics.mean(scores),
             "dimensionAgreement": _rate(sum(dimension_matches), len(dimension_matches)),
             "weakDimensionDetection": _rate(sum(weak_matches), len(weak_matches)),
             "acceptableDimensionAgreement": _rate(sum(acceptable_matches), len(acceptable_matches)),
             "notApplicableAgreement": _rate(sum(applicability_matches), len(applicability_matches)),
+            "balancedDimensionAgreement": _mean_defined(
+                [
+                    _rate(sum(weak_matches), len(weak_matches)),
+                    _rate(sum(acceptable_matches), len(acceptable_matches)),
+                    _rate(sum(applicability_matches), len(applicability_matches)),
+                ]
+            ),
             "meanPriorityF1": statistics.mean(priority_f1),
             "cleanPriorityFreeRate": _rate(sum(clean_priority_free), len(clean_priority_free)),
         }
@@ -208,6 +216,11 @@ def _stability(cards: list[tuple[dict[str, Any], Scorecard]]) -> dict[str, float
 
 def _rate(numerator: int, denominator: int) -> float | None:
     return numerator / denominator if denominator else None
+
+
+def _mean_defined(values: list[float | None]) -> float | None:
+    defined = [value for value in values if value is not None]
+    return statistics.mean(defined) if defined else None
 
 
 def _median(values: list[float]) -> float | None:

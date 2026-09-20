@@ -10,14 +10,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 class EvaluatorConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["jev", "direct", "dspy"]
+    kind: Literal["jev", "jev-categorical", "direct", "dspy"]
     model: str | None = None
     program: str | None = None
     batchSize: int = Field(default=5, ge=1)
 
     @model_validator(mode="after")
     def model_required(self) -> EvaluatorConfig:
-        if self.kind != "jev" and not self.model:
+        if self.kind not in {"jev", "jev-categorical"} and not self.model:
             raise ValueError(f"model is required for {self.kind}")
         return self
 

@@ -73,11 +73,13 @@ def test_reference_summary_separates_verdict_classes() -> None:
     )["test"]
     assert summary == {
         "cases": 1,
+        "runs": 1,
         "meanReferenceScore": 1.0,
         "dimensionAgreement": 1.0,
         "weakDimensionDetection": 1.0,
         "acceptableDimensionAgreement": 1.0,
         "notApplicableAgreement": 1.0,
+        "balancedDimensionAgreement": 1.0,
         "meanPriorityF1": 1.0,
         "cleanPriorityFreeRate": None,
     }

@@ -140,6 +140,55 @@ def normalize_jev_response(response: dict[str, Any]) -> Scorecard:
     return _scorecard(model, metrics, with_estimated_cost(model, usage))
 
 
+def normalize_jev_categorical_response(response: dict[str, Any]) -> Scorecard:
+    answers = response.get("answers")
+    if not isinstance(answers, dict):
+        raise ValueError("Jev response is missing answers")
+    decisions: dict[str, RawMetricDecision] = {}
+    confidences: dict[str, float] = {}
+    for definition in METRICS:
+        verdict = answers.get(f"{definition.key}_verdict")
+        weakness = answers.get(f"{definition.key}_weakness")
+        if not isinstance(verdict, dict) or verdict.get("type") != "choice":
+            raise ValueError(f"Jev omitted categorical verdict for {definition.key}")
+        if not isinstance(weakness, dict) or weakness.get("type") != "choice":
+            raise ValueError(f"Jev omitted weakness for {definition.key}")
+        choice = verdict.get("choice")
+        if choice not in {"weak", "acceptable", "not_applicable"}:
+            raise ValueError(f"Jev selected an unknown verdict for {definition.key}")
+        weakness_choice = weakness.get("choice")
+        if weakness_choice not in definition.weaknesses:
+            raise ValueError(f"Jev selected an unknown weakness for {definition.key}")
+        confidence = float(verdict.get("confidence", -1))
+        if not 0 <= confidence <= 1:
+            raise ValueError(f"invalid Jev verdict confidence for {definition.key}")
+        decisions[definition.key] = RawMetricDecision(
+            applicable=choice != "not_applicable",
+            score=5 if choice == "weak" else 9,
+            weakness=weakness_choice,
+        )
+        confidences[definition.key] = confidence
+
+    raw_usage = response.get("usage", {})
+    input_tokens = int(raw_usage.get("input_tokens", 0))
+    output_tokens = int(raw_usage.get("output_tokens", 0))
+    model = str(response.get("model", ""))
+    scorecard = normalize_decisions(
+        model,
+        decisions,
+        Usage(
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            total_tokens=input_tokens + output_tokens,
+        ),
+    )
+    for metric, confidence in confidences.items():
+        evaluation = scorecard.metrics[metric]
+        if evaluation.applicable:
+            evaluation.confidence = _js_round(confidence, 2)
+    return scorecard
+
+
 def _scorecard(
     model: str,
     metrics: dict[str, ApplicableMetric | NotApplicableMetric],

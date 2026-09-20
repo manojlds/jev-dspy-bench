@@ -210,6 +210,11 @@ This is an in-sample train/development diagnostic and must not be reported as ho
 The published baseline results are in
 [`reports/jev-vs-dspy-uncompiled-expansion-v1.md`](reports/jev-vs-dspy-uncompiled-expansion-v1.md).
 
+A five-repeat Jev protocol experiment using direct categorical verdicts is documented in
+[`reports/jev-categorical-protocol-experiment.md`](reports/jev-categorical-protocol-experiment.md).
+It improves class-balanced agreement and clean specificity, but also demonstrates that the current
+aggregate optimizer metric is vulnerable to an always-acceptable baseline.
+
 ## Attribution
 
 The 19-dimension rubric is adapted from `jev-review` 0.1.1 under the MIT license, commit

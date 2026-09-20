@@ -334,3 +334,40 @@ def build_questions() -> dict[str, dict[str, object]]:
             "criteria": metric.weaknesses,
         }
     return questions
+
+
+def build_categorical_questions() -> dict[str, dict[str, object]]:
+    questions: dict[str, dict[str, object]] = {}
+    for metric in METRICS:
+        questions[f"{metric.key}_verdict"] = {
+            "type": "choice",
+            "instructions": (
+                f"Classify {metric.label} for the implementation in the supplied "
+                "software-change state. Evaluate only concrete evidence in context. "
+                f"{metric.guidance}"
+            ),
+            "criteria": {
+                "weak": (
+                    "The dimension is assessable and has a concrete, material weakness "
+                    "that warrants attention."
+                ),
+                "acceptable": (
+                    "The dimension is assessable and no material weakness is evident; "
+                    "minor improvements do not make it weak."
+                ),
+                "not_applicable": (
+                    "The dimension is irrelevant to this change or the supplied state "
+                    "does not contain enough evidence for a defensible assessment."
+                ),
+            },
+        }
+        questions[f"{metric.key}_weakness"] = {
+            "type": "choice",
+            "instructions": (
+                f"Identify the single most consequential {metric.label} weakness evidenced "
+                "by the supplied software-change state. Choose no_material_issue when no "
+                "listed concern is justified. Do not speculate beyond the state."
+            ),
+            "criteria": metric.weaknesses,
+        }
+    return questions

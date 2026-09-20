@@ -16,7 +16,7 @@ from .pricing import cost_basis, with_estimated_cost
 from .program import DspyEvaluator
 from .providers.direct import DirectEvaluator
 from .providers.jev import JevEvaluator
-from .rubric import build_questions
+from .rubric import build_categorical_questions, build_questions
 from .schema import Usage
 
 
@@ -75,7 +75,7 @@ def run_experiment(root: Path, config: ExperimentConfig) -> Path:
         "partition": config.partition,
         "repeat": config.repeat,
         "corpus": corpus.lock(),
-        "rubricSha256": _hash_json(build_questions()),
+        "rubricSha256": _hash_json(_protocol_questions(config)),
         "preparedStateGuarantee": "Every evaluator for a case receives the same canonical serialized state content; provider request framing and optimized instructions differ.",
         "uncertaintyNote": "LLM confidence is synthetic and is not compared with Jev probabilities.",
         "costBasis": _cost_basis(runs),
@@ -126,6 +126,7 @@ def format_report(report: dict[str, Any]) -> str:
         f"{_percent(values['dimensionAgreement'])} | "
         f"{_percent(values['weakDimensionDetection'])} | "
         f"{_percent(values['acceptableDimensionAgreement'])} | "
+        f"{_percent(values['balancedDimensionAgreement'])} | "
         f"{_percent(values['meanPriorityF1'])} | "
         f"{_percent(values['cleanPriorityFreeRate'])} |"
         for name, values in report.get("referenceAnalysis", {}).items()
@@ -137,12 +138,12 @@ def format_report(report: dict[str, Any]) -> str:
         "## Comparison Summary\n\n" + comparison + "\n\n"
         "## Frozen Reference Agreement\n\n"
         "This is direct agreement with output-independent annotations. Uncertain dimensions are excluded.\n\n"
-        "| Evaluator | Cases | Reference score | Dimension agreement | Weak detection | Acceptable agreement | Priority F1 | Clean priority-free |\n"
-        "|---|---:|---:|---:|---:|---:|---:|---:|\n"
+        "| Evaluator | Cases | Reference score | Dimension agreement | Weak detection | Acceptable agreement | Balanced dimension agreement | Priority F1 | Clean priority-free |\n"
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|\n"
         + (
             "\n".join(reference_rows)
             if reference_rows
-            else "| n/a | 0 | n/a | n/a | n/a | n/a | n/a | n/a |"
+            else "| n/a | 0 | n/a | n/a | n/a | n/a | n/a | n/a | n/a |"
         )
         + "\n\n## Sparse Signals\n\n"
         "Expected-dimension hits are sparse evidence signals, not file-level recall. Clean priority-free "
@@ -179,11 +180,22 @@ def enrich_report_costs(report: dict[str, Any]) -> None:
 
 def _build_evaluator(root: Path, config: EvaluatorConfig) -> Any:
     if config.kind == "jev":
-        return JevEvaluator()
+        return JevEvaluator(model=config.model or "jev-latest")
+    if config.kind == "jev-categorical":
+        return JevEvaluator(
+            model=config.model or "jev-1.13.0",
+            categorical=True,
+        )
     if config.kind == "direct":
         return DirectEvaluator(config.model or "", batch_size=config.batchSize)
     program = str(root / config.program) if config.program else None
     return DspyEvaluator(config.model or "", program_path=program, batch_size=config.batchSize)
+
+
+def _protocol_questions(config: ExperimentConfig) -> dict[str, dict[str, object]]:
+    if any(item.kind == "jev-categorical" for item in config.evaluators):
+        return build_categorical_questions()
+    return build_questions()
 
 
 def _hash_json(value: object) -> str:

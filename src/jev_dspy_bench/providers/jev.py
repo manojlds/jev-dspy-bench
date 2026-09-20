@@ -7,8 +7,8 @@ from typing import Any
 
 import httpx
 
-from ..normalize import normalize_jev_response
-from ..rubric import build_questions
+from ..normalize import normalize_jev_categorical_response, normalize_jev_response
+from ..rubric import build_categorical_questions, build_questions
 from ..schema import ReviewState, Scorecard
 
 JEV_ENDPOINT = "https://api.typesafe.ai/v1/systemone"
@@ -29,6 +29,8 @@ class JevEvaluator:
         timeout_seconds: float = 30,
         max_retries: int = 2,
         client: httpx.Client | None = None,
+        model: str = JEV_MODEL,
+        categorical: bool = False,
     ) -> None:
         self.api_key = (api_key if api_key is not None else os.getenv("JEV_API_KEY", "")).strip()
         if not self.api_key:
@@ -37,12 +39,15 @@ class JevEvaluator:
         self.max_retries = max_retries
         self.client = client or httpx.Client(timeout=timeout_seconds)
         self._owns_client = client is None
+        self.model = model
+        self.categorical = categorical
+        self.id = "jev-categorical" if categorical else "jev"
 
     def evaluate(self, state: ReviewState) -> Scorecard:
         payload = {
             "state": state.model_dump(),
-            "model": JEV_MODEL,
-            "questions": build_questions(),
+            "model": self.model,
+            "questions": build_categorical_questions() if self.categorical else build_questions(),
         }
         for attempt in range(self.max_retries + 1):
             try:
@@ -61,6 +66,8 @@ class JevEvaluator:
             if response.is_success:
                 try:
                     body: dict[str, Any] = response.json()
+                    if self.categorical:
+                        return normalize_jev_categorical_response(body)
                     return normalize_jev_response(body)
                 except (ValueError, TypeError) as error:
                     raise JevError("Jev returned an invalid response") from error

@@ -5,7 +5,7 @@ import httpx
 from jev_dspy_bench.program import _batch_error, _valid_batch
 from jev_dspy_bench.providers.direct import _parse_batch, build_prompt
 from jev_dspy_bench.providers.jev import JEV_ENDPOINT, JevEvaluator
-from jev_dspy_bench.rubric import METRICS
+from jev_dspy_bench.rubric import METRICS, build_categorical_questions
 from jev_dspy_bench.schema import RawMetricBatch, RawMetricDecision, ReviewState
 
 
@@ -74,3 +74,52 @@ def test_jev_adapter_sends_native_questions_and_normalizes() -> None:
     assert card.model == "jev-test"
     assert not card.priorities
     assert JEV_ENDPOINT == "https://api.typesafe.ai/v1/systemone"
+
+
+def test_jev_categorical_adapter_maps_direct_verdicts() -> None:
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.update(json.loads(request.content))
+        answers = {}
+        for metric in METRICS:
+            verdict = (
+                "weak"
+                if metric.key == "correctness"
+                else "not_applicable"
+                if metric.key == "documentation"
+                else "acceptable"
+            )
+            answers[f"{metric.key}_verdict"] = {
+                "type": "choice",
+                "choice": verdict,
+                "confidence": 0.8,
+            }
+            answers[f"{metric.key}_weakness"] = {
+                "type": "choice",
+                "choice": "regression_risk" if metric.key == "correctness" else "no_material_issue",
+            }
+        return httpx.Response(
+            200,
+            json={
+                "model": "jev-1.13.0",
+                "answers": answers,
+                "usage": {"input_tokens": 10, "output_tokens": 5},
+            },
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    evaluator = JevEvaluator(
+        api_key="secret",
+        client=client,
+        model="jev-1.13.0",
+        categorical=True,
+    )
+    card = evaluator.evaluate(ReviewState(task="task", diff="diff", repositoryContext="{}"))
+
+    assert evaluator.id == "jev-categorical"
+    assert captured["model"] == "jev-1.13.0"
+    assert captured["questions"] == build_categorical_questions()
+    assert len(card.priorities) == 1
+    assert card.priorities[0].metric == "correctness"
+    assert not card.metrics["documentation"].applicable
