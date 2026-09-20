@@ -102,6 +102,9 @@ def test_blind_workflow_and_identity_reveal(tmp_path: Path) -> None:
 
     initial = client.get(f"/api/studies/{study}/cases/case-1?annotator=alice").json()
     assert "outputs" not in initial
+    initial_report = client.get(f"/api/studies/{study}/report?annotator=alice").json()
+    assert initial_report["wins"] == {}
+    assert initial_report["evaluator_efficiency"] == {}
 
     response = client.put(
         f"/api/studies/{study}/cases/case-1/reference",
@@ -121,6 +124,8 @@ def test_blind_workflow_and_identity_reveal(tmp_path: Path) -> None:
         "Evaluator A",
         "Evaluator B",
     }
+    blinded_report = client.get(f"/api/studies/{study}/report?annotator=alice").json()
+    assert blinded_report["evaluator_efficiency"] == {}
 
     comparison = {
         "preferred": "A",
@@ -135,6 +140,10 @@ def test_blind_workflow_and_identity_reveal(tmp_path: Path) -> None:
     assert response.json() == {"status": "completed"}
     completed = client.get(f"/api/studies/{study}/cases/case-1?annotator=alice").json()
     assert {output["evaluator"] for output in completed["outputs"]} == {"jev", "dspy:test"}
+    report = client.get(f"/api/studies/{study}/report?annotator=alice").json()
+    assert report["completed_cases"] == 1
+    assert sum(report["wins"].values()) == 1
+    assert set(report["evaluator_efficiency"]) == {"jev", "dspy:test"}
 
 
 def test_agent_seed_is_a_blinded_draft(tmp_path: Path) -> None:

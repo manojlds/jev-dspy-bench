@@ -139,7 +139,9 @@ port. Use `vaibhav dev status` to find the URL. Annotation data is stored under
 
 Each annotator must submit an immutable reference judgment before seeing anonymized evaluator
 outputs. Completing the comparison reveals evaluator identities. Human and agent annotations use
-separate annotator IDs and every save or submission is recorded in the audit log.
+separate annotator IDs and every save or submission is recorded in the audit log. After comparisons
+are complete, the **Comparative report** view summarizes case winners, dimension preferences,
+latency, token use, and recorded cost without exposing identities for incomplete comparisons.
 
 ## Expansion Protocol
 

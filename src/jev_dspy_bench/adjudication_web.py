@@ -54,6 +54,13 @@ def create_app(database: Path) -> FastAPI:
             raise HTTPException(404, "case not found")
         return result
 
+    @app.get("/api/studies/{study_id}/report")
+    def report(study_id: str, annotator: str = Query(min_length=1)) -> dict[str, object]:
+        try:
+            return store.comparative_report(study_id, annotator)
+        except ValueError as error:
+            raise HTTPException(404, str(error)) from error
+
     @app.put("/api/studies/{study_id}/cases/{case_id}/reference")
     def reference(study_id: str, case_id: str, request: ReferenceRequest) -> dict[str, str]:
         try:

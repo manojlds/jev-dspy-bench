@@ -5,6 +5,7 @@ import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
+from statistics import median
 from typing import Any, Literal
 
 import yaml
@@ -238,6 +239,108 @@ class AdjudicationStore:
                     )
                 result["outputs"] = outputs
             return result
+
+    def comparative_report(self, study_id: str, annotator: str) -> dict[str, Any]:
+        with self.connect() as db:
+            study = db.execute("SELECT id, name FROM studies WHERE id=?", (study_id,)).fetchone()
+            if not study:
+                raise ValueError("study not found")
+            rows = db.execute(
+                """
+                SELECT c.case_id, c.ordinal, a.status, a.reference_json, a.comparison_json
+                FROM cases c LEFT JOIN annotations a
+                  ON a.study_id=c.study_id AND a.case_id=c.case_id AND a.annotator=?
+                WHERE c.study_id=? ORDER BY c.ordinal
+                """,
+                (annotator, study_id),
+            ).fetchall()
+            output_rows = db.execute(
+                "SELECT case_id, slot, evaluator, result_json FROM outputs WHERE study_id=?",
+                (study_id,),
+            ).fetchall()
+
+        completed_case_ids = {row["case_id"] for row in rows if row["status"] == "completed"}
+        outputs_by_case: dict[str, list[dict[str, Any]]] = {}
+        efficiency: dict[str, dict[str, list[float]]] = {}
+        for row in output_rows:
+            if row["case_id"] not in completed_case_ids:
+                continue
+            result = json.loads(row["result_json"])
+            usage = result["scorecard"]["usage"]
+            outputs_by_case.setdefault(row["case_id"], []).append(
+                {
+                    "slot": row["slot"],
+                    "evaluator": row["evaluator"],
+                    "priorities": result["scorecard"]["priorities"],
+                    "latency_ms": result.get("latencyMs"),
+                    "usage": usage,
+                }
+            )
+            stats = efficiency.setdefault(
+                row["evaluator"], {"latencies": [], "tokens": [], "costs": []}
+            )
+            if result.get("latencyMs") is not None:
+                stats["latencies"].append(float(result["latencyMs"]))
+            stats["tokens"].append(float(usage["total_tokens"]))
+            if usage.get("cost") is not None:
+                stats["costs"].append(float(usage["cost"]))
+
+        wins: dict[str, int] = {}
+        dimension_preferences: dict[str, dict[str, int]] = {metric: {} for metric in METRIC_KEYS}
+        cases: list[dict[str, Any]] = []
+        completed = 0
+        for row in rows:
+            reference = json.loads(row["reference_json"]) if row["reference_json"] else None
+            comparison = json.loads(row["comparison_json"]) if row["comparison_json"] else None
+            outputs = sorted(outputs_by_case.get(row["case_id"], []), key=lambda item: item["slot"])
+            slot_map = {item["slot"]: item["evaluator"] for item in outputs}
+            winner = None
+            completed_comparison = comparison if row["status"] == "completed" else None
+            if completed_comparison:
+                completed += 1
+                preferred = completed_comparison["preferred"]
+                winner = slot_map.get(preferred, preferred)
+                wins[winner] = wins.get(winner, 0) + 1
+                for metric, choice in completed_comparison["metric_preferences"].items():
+                    preference = slot_map.get(choice, choice)
+                    counts = dimension_preferences[metric]
+                    counts[preference] = counts.get(preference, 0) + 1
+            cases.append(
+                {
+                    "case_id": row["case_id"],
+                    "status": row["status"] or "unstarted",
+                    "disposition": reference["disposition"] if reference else None,
+                    "winner": winner,
+                    "confidence": completed_comparison["confidence"]
+                    if completed_comparison
+                    else None,
+                    "rationale": completed_comparison["rationale"]
+                    if completed_comparison
+                    else None,
+                    "outputs": outputs if completed_comparison else [],
+                }
+            )
+
+        evaluator_efficiency = {
+            evaluator: {
+                "runs": len(values["tokens"]),
+                "median_latency_ms": median(values["latencies"]) if values["latencies"] else None,
+                "total_tokens": int(sum(values["tokens"])),
+                "total_cost": sum(values["costs"]) if values["costs"] else None,
+            }
+            for evaluator, values in efficiency.items()
+        }
+        return {
+            "study_id": study["id"],
+            "name": study["name"],
+            "annotator": annotator,
+            "total_cases": len(rows),
+            "completed_cases": completed,
+            "wins": wins,
+            "evaluator_efficiency": evaluator_efficiency,
+            "dimension_preferences": dimension_preferences,
+            "cases": cases,
+        }
 
     def save_reference(
         self,
