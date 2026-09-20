@@ -10,7 +10,7 @@ from .candidates import promote_candidates, stage_candidates, validate_staged_ca
 from .config import load_config
 from .corpus import Corpus
 from .importer import import_drs_corpus
-from .metrics import agreement, summarize
+from .metrics import agreement, summarize, summarize_references
 from .optimize import compile_program
 from .runner import enrich_report_costs, format_report, run_experiment
 
@@ -145,13 +145,20 @@ def optimize(
 @app.command()
 def report(
     artifact: Path = typer.Argument(..., exists=True, dir_okay=False, resolve_path=True),
+    corpus_path: Path = typer.Option(Path("corpus"), "--corpus"),
 ) -> None:
     data = json.loads(artifact.read_text())
     enrich_report_costs(data)
-    corpus = Corpus(_root() / "corpus")
+    corpus = Corpus(_root() / corpus_path)
     case_ids = {run["caseId"] for run in data.get("runs", [])}
     metadata = {case_id: corpus.load_case(case_id).metadata for case_id in case_ids}
     data["analysis"] = summarize(data.get("runs", []), metadata)
+    references = {}
+    for case_id in case_ids:
+        reference_path = corpus.root / "cases" / case_id / "reference.json"
+        if reference_path.is_file():
+            references[case_id] = json.loads(reference_path.read_text())
+    data["referenceAnalysis"] = summarize_references(data.get("runs", []), references)
     data["agreementWithJev"] = agreement(data.get("runs", []))
     artifact.write_text(json.dumps(data, indent=2) + "\n")
     output = artifact.with_suffix(".md")
@@ -163,11 +170,12 @@ def report(
 def adjudicate_import(
     artifact: Path = typer.Argument(..., exists=True, dir_okay=False, resolve_path=True),
     database: Path = typer.Option(Path("artifacts/adjudication/adjudication.sqlite")),
+    corpus: Path = typer.Option(Path("corpus")),
 ) -> None:
     from .adjudication import AdjudicationStore
 
     store = AdjudicationStore(_root() / database)
-    study_id = store.import_artifact(artifact, _root() / "corpus")
+    study_id = store.import_artifact(artifact, _root() / corpus)
     typer.echo(study_id)
 
 

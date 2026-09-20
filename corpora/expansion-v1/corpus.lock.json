@@ -129,8 +129,9 @@
     "manifests/expansion-v1.yaml": "80b0e2444acecd1459e0069b20c185c7c32867c4bb3e841d3922e757fa1ef25c",
     "manifests/jev-calibration-v1.yaml": "e1495fab785e1bafd2ceba474c5946d88b4e28cbc9934a1429a07dee00008679",
     "manifests/jev-historical-pilot-v1.yaml": "7f69f554e8d4df2a3fd03a30ebdcc21ddf0638af4fe717461c03ba42c4d6a7e6",
+    "splits/expansion-baseline-v1.yaml": "029370952de39c9e11207077cff4ae668682e172faba13c1f50a3606dc17fb67",
     "splits/expansion-v1.yaml": "ee603d8fdeb623b5edc8b1a34c89bc714b5ab02fbf26eeace7af9f593228df5f",
     "splits/pilot-v1.yaml": "25628501a383b879a0c17c909b6800691e3f932536e4a320d8ce43a8bc962324"
   },
-  "contentSha256": "c7154760fa916921807d34b8a07c956816188ac241a3c9c81dcb7e5ab6599fd5"
+  "contentSha256": "c8662ecdd98bff50ad33cae2bf4d1a6a6715389b0d9ff4c54eaff0bea2895aac"
 }

@@ -297,6 +297,16 @@ def promote_candidates(
     (destination / "splits" / "expansion-v1.yaml").write_text(
         yaml.safe_dump(split, sort_keys=False)
     )
+    baseline_split = {
+        "name": "expansion-baseline-v1",
+        "policy": "Diagnostic baseline over labeled train and development cases; not a holdout.",
+        "train": [],
+        "dev": [],
+        "test": train + dev,
+    }
+    (destination / "splits" / "expansion-baseline-v1.yaml").write_text(
+        yaml.safe_dump(baseline_split, sort_keys=False)
+    )
 
     files = {
         str(path.relative_to(destination)): hashlib.sha256(path.read_bytes()).hexdigest()

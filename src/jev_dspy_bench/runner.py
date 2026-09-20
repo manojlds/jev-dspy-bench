@@ -11,7 +11,7 @@ import yaml
 
 from .config import EvaluatorConfig, ExperimentConfig
 from .corpus import Corpus
-from .metrics import agreement, summarize
+from .metrics import agreement, summarize, summarize_references
 from .pricing import cost_basis, with_estimated_cost
 from .program import DspyEvaluator
 from .providers.direct import DirectEvaluator
@@ -66,6 +66,7 @@ def run_experiment(root: Path, config: ExperimentConfig) -> Path:
             if close:
                 close()
     metadata = {case_id: case.metadata for case_id, case in cases.items()}
+    references = _load_references(corpus, case_ids)
     report = {
         "schemaVersion": 1,
         "name": config.name,
@@ -79,6 +80,7 @@ def run_experiment(root: Path, config: ExperimentConfig) -> Path:
         "uncertaintyNote": "LLM confidence is synthetic and is not compared with Jev probabilities.",
         "costBasis": _cost_basis(runs),
         "analysis": summarize(runs, metadata),
+        "referenceAnalysis": summarize_references(runs, references),
         "agreementWithJev": agreement(runs),
         "runs": runs,
     }
@@ -119,12 +121,30 @@ def format_report(report: dict[str, Any]) -> str:
         f"- `{name}`: {description}" for name, description in report.get("costBasis", {}).items()
     )
     comparison = _comparison_summary(report["analysis"])
+    reference_rows = [
+        f"| {name} | {values['cases']} | {_percent(values['meanReferenceScore'])} | "
+        f"{_percent(values['dimensionAgreement'])} | "
+        f"{_percent(values['weakDimensionDetection'])} | "
+        f"{_percent(values['acceptableDimensionAgreement'])} | "
+        f"{_percent(values['meanPriorityF1'])} | "
+        f"{_percent(values['cleanPriorityFreeRate'])} |"
+        for name, values in report.get("referenceAnalysis", {}).items()
+    ]
     return (
         f"# {report['name']}\n\n"
         "Only prepared state content is shared exactly; request framing differs by evaluator. "
         "Agreement with Jev is similarity, not correctness.\n\n"
         "## Comparison Summary\n\n" + comparison + "\n\n"
-        "## Quality\n\n"
+        "## Frozen Reference Agreement\n\n"
+        "This is direct agreement with output-independent annotations. Uncertain dimensions are excluded.\n\n"
+        "| Evaluator | Cases | Reference score | Dimension agreement | Weak detection | Acceptable agreement | Priority F1 | Clean priority-free |\n"
+        "|---|---:|---:|---:|---:|---:|---:|---:|\n"
+        + (
+            "\n".join(reference_rows)
+            if reference_rows
+            else "| n/a | 0 | n/a | n/a | n/a | n/a | n/a | n/a |"
+        )
+        + "\n\n## Sparse Signals\n\n"
         "Expected-dimension hits are sparse evidence signals, not file-level recall. Clean priority-free "
         "rate is not false-positive precision without manual adjudication.\n\n"
         "| Evaluator | Success | Expected priority hit | Clean priority-free |\n"
@@ -170,6 +190,15 @@ def _hash_json(value: object) -> str:
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode()
     ).hexdigest()
+
+
+def _load_references(corpus: Corpus, case_ids: list[str] | set[str]) -> dict[str, dict[str, Any]]:
+    references: dict[str, dict[str, Any]] = {}
+    for case_id in case_ids:
+        path = corpus.root / "cases" / case_id / "reference.json"
+        if path.is_file():
+            references[case_id] = json.loads(path.read_text())
+    return references
 
 
 def _percent(value: float | None) -> str:

@@ -8,7 +8,7 @@ from .lm import create_lm
 from .normalize import normalize_decisions
 from .pricing import with_estimated_cost
 from .providers.direct import metric_batches
-from .rubric import build_questions
+from .rubric import MetricDefinition, build_questions
 from .schema import RawMetricBatch, RawMetricDecision, Usage
 
 
@@ -25,12 +25,27 @@ class QualityBatchSignature(dspy.Signature):
     )
 
 
+class RepairQualityBatchSignature(dspy.Signature):
+    """Repair a metric batch that violated its exact output contract. Preserve valid decisions and change only invalid keys or weakness values."""
+
+    questions_json: str = dspy.InputField(desc="Question definitions for this metric batch")
+    output_contract_json: str = dspy.InputField(
+        desc="Exact metric keys and allowed weakness values"
+    )
+    invalid_metrics_json: str = dspy.InputField(desc="Previous invalid metric decisions")
+    validation_error: str = dspy.InputField(desc="Exact contract violation to repair")
+    metrics: dict[str, RawMetricDecision] = dspy.OutputField(
+        desc="Repaired decisions satisfying every exact metric-specific constraint"
+    )
+
+
 class QualityProgram(dspy.Module):
     def __init__(self, model: str, batch_size: int = 5) -> None:
         super().__init__()
         self.model = model
         self.batch_size = batch_size
         self.evaluate_batch = dspy.Predict(QualityBatchSignature)
+        self.repair_batch = dspy.Predict(RepairQualityBatchSignature)
 
     def forward(self, state_json: str) -> dspy.Prediction:
         decisions: dict[str, RawMetricDecision] = {}
@@ -48,14 +63,33 @@ class QualityProgram(dspy.Module):
                 }
                 for metric in batch
             }
+            questions_json = json.dumps(batch_questions, separators=(",", ":"))
+            contract_json = json.dumps(contract, separators=(",", ":"))
             prediction = self.evaluate_batch(
                 state_json=state_json,
-                questions_json=json.dumps(batch_questions, separators=(",", ":")),
-                output_contract_json=json.dumps(contract, separators=(",", ":")),
+                questions_json=questions_json,
+                output_contract_json=contract_json,
             )
-            parsed = RawMetricBatch(metrics=prediction.metrics)
-            if set(parsed.metrics) != keys:
-                raise ValueError("DSPy evaluator returned unexpected metric keys")
+            candidate = RawMetricBatch(metrics=prediction.metrics)
+            parsed = candidate if _batch_error(candidate, batch) is None else None
+            for _attempt in range(2):
+                error = _batch_error(candidate, batch)
+                if error is None:
+                    parsed = candidate
+                    break
+                repaired = self.repair_batch(
+                    questions_json=questions_json,
+                    output_contract_json=contract_json,
+                    invalid_metrics_json=candidate.model_dump_json(),
+                    validation_error=error,
+                )
+                candidate = RawMetricBatch(metrics=repaired.metrics)
+            if parsed is None:
+                error = _batch_error(candidate, batch)
+                if error is None:
+                    parsed = candidate
+                else:
+                    raise ValueError(f"DSPy evaluator could not repair output contract: {error}")
             decisions.update(parsed.metrics)
         scorecard = normalize_decisions(
             self.model,
@@ -63,6 +97,22 @@ class QualityProgram(dspy.Module):
             Usage(input_tokens=0, output_tokens=0, total_tokens=0),
         )
         return dspy.Prediction(scorecard_json=scorecard.model_dump_json())
+
+
+def _valid_batch(parsed: RawMetricBatch, batch: tuple[MetricDefinition, ...]) -> bool:
+    return _batch_error(parsed, batch) is None
+
+
+def _batch_error(parsed: RawMetricBatch, batch: tuple[MetricDefinition, ...]) -> str | None:
+    definitions: dict[str, MetricDefinition] = {metric.key: metric for metric in batch}
+    if set(parsed.metrics) != set(definitions):
+        return f"metric keys must be exactly {sorted(definitions)}"
+    invalid = [
+        f"{key}.weakness={decision.weakness!r} must be one of {sorted(definitions[key].weaknesses)}"
+        for key, decision in parsed.metrics.items()
+        if decision.weakness not in definitions[key].weaknesses
+    ]
+    return "; ".join(invalid) if invalid else None
 
 
 class DspyEvaluator:

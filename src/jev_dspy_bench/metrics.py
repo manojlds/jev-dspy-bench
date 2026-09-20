@@ -47,6 +47,66 @@ def reference_score(reference: dict[str, Any], scorecard: Scorecard) -> float:
     return 0.7 * dimension_score + 0.3 * priority_score
 
 
+def summarize_references(
+    runs: list[dict[str, Any]], references: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for run in runs:
+        if run["status"] == "success" and run["caseId"] in references:
+            grouped[run["evaluator"]].append(run)
+    output: dict[str, Any] = {}
+    for evaluator, selected in grouped.items():
+        scores: list[float] = []
+        dimension_matches: list[bool] = []
+        weak_matches: list[bool] = []
+        acceptable_matches: list[bool] = []
+        applicability_matches: list[bool] = []
+        priority_f1: list[float] = []
+        clean_priority_free: list[bool] = []
+        for run in selected:
+            reference = references[run["caseId"]]
+            card = Scorecard.model_validate(run["scorecard"])
+            scores.append(reference_score(reference, card))
+            for metric in METRIC_KEYS:
+                expected = reference["dimensions"][metric]
+                actual = card.metrics[metric]
+                if expected == "uncertain":
+                    continue
+                if expected == "not_applicable":
+                    match = not actual.applicable
+                    applicability_matches.append(match)
+                elif expected == "weak":
+                    match = actual.applicable and actual.score < 8
+                    weak_matches.append(match)
+                else:
+                    match = actual.applicable and actual.score >= 8
+                    acceptable_matches.append(match)
+                dimension_matches.append(match)
+            expected_priorities = set(reference["priorities"])
+            actual_priorities = {item.metric for item in card.priorities}
+            if not expected_priorities:
+                clean_priority_free.append(not actual_priorities)
+                priority_f1.append(1.0 if not actual_priorities else 0.0)
+            else:
+                true_positives = len(expected_priorities & actual_priorities)
+                recall = true_positives / len(expected_priorities)
+                precision = true_positives / len(actual_priorities) if actual_priorities else 0.0
+                priority_f1.append(
+                    2 * precision * recall / (precision + recall) if precision + recall else 0.0
+                )
+        output[evaluator] = {
+            "cases": len(selected),
+            "meanReferenceScore": statistics.mean(scores),
+            "dimensionAgreement": _rate(sum(dimension_matches), len(dimension_matches)),
+            "weakDimensionDetection": _rate(sum(weak_matches), len(weak_matches)),
+            "acceptableDimensionAgreement": _rate(sum(acceptable_matches), len(acceptable_matches)),
+            "notApplicableAgreement": _rate(sum(applicability_matches), len(applicability_matches)),
+            "meanPriorityF1": statistics.mean(priority_f1),
+            "cleanPriorityFreeRate": _rate(sum(clean_priority_free), len(clean_priority_free)),
+        }
+    return output
+
+
 def summarize(runs: list[dict[str, Any]], cases: dict[str, CaseMetadata]) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for run in runs:

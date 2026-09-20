@@ -1,4 +1,4 @@
-from jev_dspy_bench.metrics import reference_score
+from jev_dspy_bench.metrics import reference_score, summarize_references
 from jev_dspy_bench.normalize import normalize_decisions
 from jev_dspy_bench.rubric import METRICS, build_questions
 from jev_dspy_bench.schema import METRIC_KEYS, RawMetricDecision
@@ -35,3 +35,49 @@ def test_reference_score_rewards_dimension_and_priority_alignment() -> None:
     reference["dimensions"]["correctness"] = "acceptable"
     reference["priorities"] = []
     assert reference_score(reference, scorecard) < 1.0
+
+
+def test_reference_summary_separates_verdict_classes() -> None:
+    decisions: dict[str, RawMetricDecision] = {
+        metric.key: RawMetricDecision(
+            applicable=metric.key != "documentation",
+            score=3 if metric.key == "correctness" else 9,
+            weakness="regression_risk" if metric.key == "correctness" else "no_material_issue",
+        )
+        for metric in METRICS
+    }
+    scorecard = normalize_decisions("test", decisions)
+    reference = {
+        "dimensions": {
+            metric: (
+                "weak"
+                if metric == "correctness"
+                else "not_applicable"
+                if metric == "documentation"
+                else "acceptable"
+            )
+            for metric in METRIC_KEYS
+        },
+        "priorities": ["correctness"],
+    }
+    summary = summarize_references(
+        [
+            {
+                "caseId": "case-1",
+                "evaluator": "test",
+                "status": "success",
+                "scorecard": scorecard.model_dump(mode="json"),
+            }
+        ],
+        {"case-1": reference},
+    )["test"]
+    assert summary == {
+        "cases": 1,
+        "meanReferenceScore": 1.0,
+        "dimensionAgreement": 1.0,
+        "weakDimensionDetection": 1.0,
+        "acceptableDimensionAgreement": 1.0,
+        "notApplicableAgreement": 1.0,
+        "meanPriorityF1": 1.0,
+        "cleanPriorityFreeRate": None,
+    }

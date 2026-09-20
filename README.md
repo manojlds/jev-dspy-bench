@@ -200,6 +200,16 @@ The optimizer uses the frozen 19-dimension references and priority labels. With 
 six development cases, this snapshot supports early optimization experiments but not broad claims;
 further repositories and languages are still required.
 
+Run the uncompiled diagnostic baseline over all 20 labeled expansion cases with:
+
+```bash
+uv run jev-dspy evaluate --config configs/expansion-uncompiled-glm-5.3-flash.yaml
+```
+
+This is an in-sample train/development diagnostic and must not be reported as holdout quality.
+The published baseline results are in
+[`reports/jev-vs-dspy-uncompiled-expansion-v1.md`](reports/jev-vs-dspy-uncompiled-expansion-v1.md).
+
 ## Attribution
 
 The 19-dimension rubric is adapted from `jev-review` 0.1.1 under the MIT license, commit
