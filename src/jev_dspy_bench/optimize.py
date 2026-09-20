@@ -10,6 +10,7 @@ import dspy
 import yaml
 
 from .corpus import Corpus
+from .lm import create_lm
 from .metrics import expected_signal_score
 from .program import QualityProgram
 from .schema import CaseMetadata, Scorecard
@@ -33,7 +34,7 @@ def compile_program(
     if not trainset or not valset:
         raise ValueError("optimization requires non-empty train and dev partitions")
 
-    lm = dspy.LM(model, temperature=0, max_tokens=5_000, cache=False, num_retries=2)
+    lm = create_lm(model)
     dspy.configure(lm=lm, adapter=dspy.ChatAdapter(), track_usage=True)
     student = QualityProgram(model)
     optimizer = dspy.MIPROv2(

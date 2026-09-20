@@ -4,8 +4,7 @@ import json
 import re
 from typing import Any
 
-import dspy
-
+from ..lm import create_lm
 from ..normalize import normalize_decisions
 from ..rubric import METRICS, build_questions
 from ..schema import RawMetricDecision, ReviewState, Scorecard, Usage
@@ -62,7 +61,7 @@ class DirectEvaluator:
         self.id = f"direct:{model}"
         self.model = model
         self.batch_size = batch_size
-        self.lm = dspy.LM(model, temperature=0, max_tokens=5_000, cache=False, num_retries=2)
+        self.lm = create_lm(model)
 
     def evaluate(self, state: ReviewState) -> Scorecard:
         decisions: dict[str, RawMetricDecision] = {}

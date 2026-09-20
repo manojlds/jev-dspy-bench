@@ -3,6 +3,7 @@ from __future__ import annotations
 from decimal import ROUND_FLOOR, Decimal
 from typing import Any, Literal
 
+from .pricing import with_estimated_cost
 from .rubric import METRICS
 from .schema import (
     ApplicableMetric,
@@ -76,9 +77,8 @@ def normalize_decisions(
             summary=summary,
             issues=issues,
         )
-    return _scorecard(
-        model, metrics, usage or Usage(input_tokens=0, output_tokens=0, total_tokens=0)
-    )
+    resolved_usage = usage or Usage(input_tokens=0, output_tokens=0, total_tokens=0)
+    return _scorecard(model, metrics, with_estimated_cost(model, resolved_usage))
 
 
 def normalize_jev_response(response: dict[str, Any]) -> Scorecard:
@@ -131,15 +131,13 @@ def normalize_jev_response(response: dict[str, Any]) -> Scorecard:
     raw_usage = response.get("usage", {})
     input_tokens = int(raw_usage.get("input_tokens", 0))
     output_tokens = int(raw_usage.get("output_tokens", 0))
-    return _scorecard(
-        str(response.get("model", "")),
-        metrics,
-        Usage(
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            total_tokens=input_tokens + output_tokens,
-        ),
+    model = str(response.get("model", ""))
+    usage = Usage(
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=input_tokens + output_tokens,
     )
+    return _scorecard(model, metrics, with_estimated_cost(model, usage))
 
 
 def _scorecard(

@@ -1,0 +1,10 @@
+name: jev-vs-dspy-glm-5.3-flash
+split: pilot-v1
+partition: test
+repeat: 1
+live: true
+output: artifacts/runs
+evaluators:
+  - kind: jev
+  - kind: dspy
+    model: opencode-go/glm-5.3-flash

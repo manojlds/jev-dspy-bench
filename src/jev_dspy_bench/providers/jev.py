@@ -39,7 +39,11 @@ class JevEvaluator:
         self._owns_client = client is None
 
     def evaluate(self, state: ReviewState) -> Scorecard:
-        payload = {"state": state.model_dump(), "model": JEV_MODEL, "questions": build_questions()}
+        payload = {
+            "state": state.model_dump(),
+            "model": JEV_MODEL,
+            "questions": build_questions(),
+        }
         for attempt in range(self.max_retries + 1):
             try:
                 response = self.client.post(

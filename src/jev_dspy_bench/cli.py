@@ -9,8 +9,9 @@ import yaml
 from .config import load_config
 from .corpus import Corpus
 from .importer import import_drs_corpus
+from .metrics import agreement, summarize
 from .optimize import compile_program
-from .runner import format_report, run_experiment
+from .runner import enrich_report_costs, format_report, run_experiment
 
 app = typer.Typer(no_args_is_help=True, help="Benchmark Jev against DSPy-optimized LLM evaluators.")
 corpus_app = typer.Typer(no_args_is_help=True, help="Manage immutable benchmark corpus snapshots.")
@@ -87,6 +88,13 @@ def report(
     artifact: Path = typer.Argument(..., exists=True, dir_okay=False, resolve_path=True),
 ) -> None:
     data = json.loads(artifact.read_text())
+    enrich_report_costs(data)
+    corpus = Corpus(_root() / "corpus")
+    case_ids = {run["caseId"] for run in data.get("runs", [])}
+    metadata = {case_id: corpus.load_case(case_id).metadata for case_id in case_ids}
+    data["analysis"] = summarize(data.get("runs", []), metadata)
+    data["agreementWithJev"] = agreement(data.get("runs", []))
+    artifact.write_text(json.dumps(data, indent=2) + "\n")
     output = artifact.with_suffix(".md")
     output.write_text(format_report(data))
     typer.echo(output)

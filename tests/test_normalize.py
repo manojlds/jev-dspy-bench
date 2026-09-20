@@ -36,7 +36,7 @@ def test_jev_threshold_and_confidence_match_drs() -> None:
         }
     scorecard = normalize_jev_response(
         {
-            "model": "jev-test",
+            "model": "jev-1.13.0",
             "answers": answers,
             "usage": {"input_tokens": 10, "output_tokens": 5},
         }
@@ -46,3 +46,4 @@ def test_jev_threshold_and_confidence_match_drs() -> None:
     assert metric.score == 7.5
     assert metric.confidence == 0.5
     assert scorecard.usage.total_tokens == 15
+    assert scorecard.usage.cost == 10 * 0.042 / 1_000_000

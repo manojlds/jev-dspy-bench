@@ -4,7 +4,9 @@ import json
 
 import dspy
 
+from .lm import create_lm
 from .normalize import normalize_decisions
+from .pricing import with_estimated_cost
 from .providers.direct import metric_batches
 from .rubric import build_questions
 from .schema import RawMetricBatch, RawMetricDecision, Usage
@@ -18,7 +20,9 @@ class QualityBatchSignature(dspy.Signature):
     output_contract_json: str = dspy.InputField(
         desc="Exact metric keys and allowed weakness values"
     )
-    metrics_json: str = dspy.OutputField(desc='JSON object shaped as {"metrics": {...}}')
+    metrics: dict[str, RawMetricDecision] = dspy.OutputField(
+        desc="One typed applicable, score, and weakness decision for every required metric"
+    )
 
 
 class QualityProgram(dspy.Module):
@@ -49,7 +53,7 @@ class QualityProgram(dspy.Module):
                 questions_json=json.dumps(batch_questions, separators=(",", ":")),
                 output_contract_json=json.dumps(contract, separators=(",", ":")),
             )
-            parsed = RawMetricBatch.model_validate_json(prediction.metrics_json)
+            parsed = RawMetricBatch(metrics=prediction.metrics)
             if set(parsed.metrics) != keys:
                 raise ValueError("DSPy evaluator returned unexpected metric keys")
             decisions.update(parsed.metrics)
@@ -65,7 +69,7 @@ class DspyEvaluator:
     def __init__(self, model: str, *, program_path: str | None = None, batch_size: int = 5) -> None:
         self.id = f"dspy:{model}" if not program_path else f"dspy-optimized:{model}"
         self.model = model
-        self.lm = dspy.LM(model, temperature=0, max_tokens=5_000, cache=False, num_retries=2)
+        self.lm = create_lm(model)
         dspy.configure(lm=self.lm, adapter=dspy.ChatAdapter(), track_usage=True)
         self.program = QualityProgram(model, batch_size)
         if program_path:
@@ -84,9 +88,12 @@ class DspyEvaluator:
         for raw in aggregate.values():
             input_tokens += int(raw.get("prompt_tokens", raw.get("input_tokens", 0)) or 0)
             output_tokens += int(raw.get("completion_tokens", raw.get("output_tokens", 0)) or 0)
-        scorecard.usage = Usage(
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            total_tokens=input_tokens + output_tokens,
+        scorecard.usage = with_estimated_cost(
+            self.model,
+            Usage(
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                total_tokens=input_tokens + output_tokens,
+            ),
         )
         return scorecard

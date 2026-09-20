@@ -43,6 +43,15 @@ def summarize(runs: list[dict[str, Any]], cases: dict[str, CaseMetadata]) -> dic
             "medianLatencyMs": _median([run["latencyMs"] for run in successful]),
             "medianInputTokens": _median([card.usage.input_tokens for _, card in cards]),
             "medianOutputTokens": _median([card.usage.output_tokens for _, card in cards]),
+            "totalTokens": sum(card.usage.total_tokens for _, card in cards),
+            "medianCostUsd": _median(
+                [card.usage.cost for _, card in cards if card.usage.cost is not None]
+            ),
+            "totalCostUsd": (
+                sum(card.usage.cost for _, card in cards if card.usage.cost is not None)
+                if cards and all(card.usage.cost is not None for _, card in cards)
+                else None
+            ),
             "stability": _stability(cards),
         }
     return result

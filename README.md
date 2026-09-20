@@ -80,6 +80,22 @@ uv run jev-dspy evaluate --config configs/pilot.yaml
 Live execution is deliberately opt-in. It requires `JEV_API_KEY` and the selected LLM provider
 credential. JSON and Markdown reports are written under `artifacts/runs/` and ignored by Git.
 
+For an unoptimized DSPy comparison through OpenCode Go:
+
+```bash
+uv run jev-dspy evaluate --config configs/jev-vs-dspy-glm-5.3-flash.yaml
+```
+
+The Jev arm uses TypeSafe directly. The DSPy arm maps `opencode-go/<model>` to OpenCode Go's
+OpenAI-compatible endpoint and supplies the required session-routing header. Set `OPENCODE_API_KEY`
+and optionally `OPENCODE_BASE_URL`; `OPENAI_API_KEY` and `OPENAI_BASE_URL` are accepted as compatible
+fallbacks.
+
+Reports separate quality signals from efficiency. They include latency, input/output tokens, total
+tokens, median cost, and total cost. Jev cost uses TypeSafe's published direct rate. OpenCode Go is
+subscription-billed, so its dollar figure is explicitly labeled as a token-equivalent reference
+estimate rather than a marginal invoice charge.
+
 ## Optimize A DSPy Program
 
 ```bash
