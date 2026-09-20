@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/205
+proposedRevision: c019b56711029e85a5dc87174a1790a6c94fc2b5
+confirmingRevision: f585a8fb5f5a8a45bd572b42abe38d2f2243cc05
+rationale: The reverse-fix patch removes the authoritative filename reconstruction
+  and exact patchless-file regression coverage added by PR 206.
+referenceAnnotator: opencode-agent

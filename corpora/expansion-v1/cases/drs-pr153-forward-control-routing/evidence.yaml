@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/153
+proposedRevision: 8a4b2fd6a866bc14bdcabafa9ae628a439affcfe
+confirmingRevision: null
+rationale: The narrow invariant has explicit invalid-route regression coverage, green
+  CI, and a zero-finding final review.
+referenceAnnotator: opencode-agent

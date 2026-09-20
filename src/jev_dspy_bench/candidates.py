@@ -10,6 +10,8 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .schema import METRIC_KEYS, Comparison, MetricKey
+
 
 class Candidate(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -54,6 +56,32 @@ class CandidateManifest(BaseModel):
         ids = [candidate.id for candidate in self.candidates]
         if len(ids) != len(set(ids)):
             raise ValueError("candidate ids must be unique")
+        return self
+
+
+class CandidateReference(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal[1]
+    candidate_id: str
+    annotator: str
+    disposition: Literal["clean", "material_issue", "indeterminate"]
+    reviewability: Literal["sufficient", "insufficient"]
+    confidence: int = Field(ge=1, le=5)
+    rationale: str
+    dimensions: dict[MetricKey, Literal["weak", "acceptable", "not_applicable", "uncertain"]]
+    priorities: list[MetricKey] = Field(max_length=5)
+
+    @model_validator(mode="after")
+    def validate_reference(self) -> CandidateReference:
+        if set(self.dimensions) != set(METRIC_KEYS):
+            raise ValueError("reference must classify every rubric dimension")
+        if len(set(self.priorities)) != len(self.priorities):
+            raise ValueError("reference priorities must be unique")
+        if any(self.dimensions[metric] != "weak" for metric in self.priorities):
+            raise ValueError("reference priorities must identify weak dimensions")
+        if self.disposition == "clean" and self.priorities:
+            raise ValueError("clean references cannot have priorities")
         return self
 
 
@@ -177,6 +205,121 @@ def validate_staged_candidates(manifest_path: Path, destination: Path) -> dict[s
     if leaking:
         raise ValueError(f"candidate groups cross train/dev partitions: {leaking}")
     return counts
+
+
+def promote_candidates(
+    base_corpus: Path,
+    manifest_path: Path,
+    staged: Path,
+    references: Path,
+    destination: Path,
+    *,
+    force: bool = False,
+) -> dict[str, object]:
+    manifest = load_candidate_manifest(manifest_path)
+    validate_staged_candidates(manifest_path, staged)
+    if destination.exists():
+        if not force:
+            raise FileExistsError(f"refusing to overwrite {destination}")
+        shutil.rmtree(destination)
+    shutil.copytree(base_corpus, destination)
+    (destination / "corpus.lock.json").unlink(missing_ok=True)
+
+    train: list[str] = []
+    dev: list[str] = []
+    for candidate in manifest.candidates:
+        reference_path = references / f"{candidate.id}.json"
+        if not reference_path.is_file():
+            raise ValueError(f"candidate {candidate.id} has no reference")
+        reference = CandidateReference.model_validate_json(reference_path.read_text())
+        if reference.candidate_id != candidate.id:
+            raise ValueError(f"reference id mismatch for {candidate.id}")
+        expected_clean = candidate.outcome == "clean"
+        if expected_clean != (reference.disposition == "clean"):
+            raise ValueError(f"reference outcome mismatch for {candidate.id}")
+
+        target = destination / "cases" / candidate.id
+        target.mkdir(parents=True)
+        shutil.copyfile(staged / candidate.id / "change.patch", target / "change.patch")
+        shutil.copyfile(reference_path, target / "reference.json")
+        expected = []
+        if candidate.outcome == "defect":
+            category = "SECURITY" if candidate.category == "security" else "QUALITY"
+            expected = [
+                {
+                    "id": f"DRS-PR{candidate.pullRequest}-001",
+                    "description": candidate.description,
+                    "severity": candidate.severity,
+                    "category": category,
+                    "file": candidate.paths[0],
+                    "line": None,
+                }
+            ]
+        case = {
+            "id": candidate.id,
+            "description": candidate.description,
+            "dimensions": [candidate.category],
+            "comparison": Comparison(group=candidate.group, variant=candidate.outcome).model_dump(),
+            "jev": {"expectedWeakDimensions": reference.priorities}
+            if reference.priorities
+            else None,
+            "expected": expected,
+        }
+        (target / "case.yaml").write_text(yaml.safe_dump(case, sort_keys=False))
+        evidence = {
+            "provenance": "historical" if candidate.outcome == "clean" else "derived-historical",
+            "source": candidate.source,
+            "proposedRevision": candidate.toRevision,
+            "confirmingRevision": candidate.confirmingRevision,
+            "rationale": candidate.evidence,
+            "referenceAnnotator": reference.annotator,
+        }
+        (target / "evidence.yaml").write_text(yaml.safe_dump(evidence, sort_keys=False))
+        (train if candidate.target == "train" else dev).append(candidate.id)
+
+    suite = {
+        "name": "expansion-v1",
+        "description": "Evidence-backed DRS training and development cases.",
+        "focus": "quality-evaluator-optimization",
+        "cases": train + dev,
+    }
+    (destination / "manifests" / "expansion-v1.yaml").write_text(
+        yaml.safe_dump(suite, sort_keys=False)
+    )
+    base_split = yaml.safe_load((base_corpus / "splits" / "pilot-v1.yaml").read_text())
+    split = {
+        "name": "expansion-v1",
+        "policy": "Historical groups are isolated; the original pilot test remains frozen.",
+        "train": train,
+        "dev": dev,
+        "test": base_split["test"],
+    }
+    (destination / "splits" / "expansion-v1.yaml").write_text(
+        yaml.safe_dump(split, sort_keys=False)
+    )
+
+    files = {
+        str(path.relative_to(destination)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(destination.rglob("*"))
+        if path.is_file() and path.name != "corpus.lock.json"
+    }
+    canonical = json.dumps(files, sort_keys=True, separators=(",", ":"))
+    lock: dict[str, object] = {
+        "schemaVersion": 2,
+        "source": manifest.sourceRepository,
+        "sourceRevision": json.loads((staged / "candidates.lock.json").read_text())[
+            "sourceRevision"
+        ],
+        "sourceDirty": json.loads((staged / "candidates.lock.json").read_text())["sourceDirty"],
+        "suites": ["expansion-v1"],
+        "baseCorpusSha256": json.loads((base_corpus / "corpus.lock.json").read_text())[
+            "contentSha256"
+        ],
+        "files": files,
+        "contentSha256": hashlib.sha256(canonical.encode()).hexdigest(),
+    }
+    (destination / "corpus.lock.json").write_text(json.dumps(lock, indent=2) + "\n")
+    return lock
 
 
 def _git(root: Path, *args: str) -> str:

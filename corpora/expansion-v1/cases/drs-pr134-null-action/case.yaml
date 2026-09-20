@@ -1,0 +1,22 @@
+id: drs-pr134-null-action
+description: A null YAML action reaches a string-only edit-distance helper and throws
+  an unhelpful TypeError.
+dimensions:
+- correctness
+comparison:
+  group: drs-action-validation
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - testQuality
+  - abstractionQuality
+expected:
+- id: DRS-PR134-001
+  description: A null YAML action reaches a string-only edit-distance helper and throws
+    an unhelpful TypeError.
+  severity: MEDIUM
+  category: QUALITY
+  file: src/lib/config.ts
+  line: null

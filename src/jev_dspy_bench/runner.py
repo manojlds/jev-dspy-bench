@@ -23,8 +23,9 @@ from .schema import Usage
 def run_experiment(root: Path, config: ExperimentConfig) -> Path:
     if not config.live:
         raise ValueError("live provider execution requires live: true")
-    corpus = Corpus(root / "corpus")
-    split = yaml.safe_load((root / "corpus" / "splits" / f"{config.split}.yaml").read_text())
+    corpus_root = root / config.corpus
+    corpus = Corpus(corpus_root)
+    split = yaml.safe_load((corpus_root / "splits" / f"{config.split}.yaml").read_text())
     case_ids: list[str] = split[config.partition]
     cases = {case_id: corpus.load_case(case_id) for case_id in case_ids}
     evaluators = [_build_evaluator(root, item) for item in config.evaluators]

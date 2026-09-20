@@ -1,0 +1,103 @@
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index d61b57c..05eed82 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -3,7 +3,7 @@ import { tmpdir } from 'os';
+ import { join } from 'path';
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+ import { loadConfig, SUPPORTED_WORKFLOW_ACTIONS, type DRSConfig } from '../lib/config.js';
+-import { runWorkflow, listWorkflows, showWorkflow } from './workflow.js';
++import { runWorkflow, listWorkflows, showWorkflow, validateWorkflows } from './workflow.js';
+ 
+ const mocks = vi.hoisted(() => {
+   const githubAdapter = {
+@@ -3736,6 +3736,30 @@ describe('workflow runner', () => {
+     expect(result.nodes.c).toMatchObject({ status: 'success' });
+   });
+ 
++  it('rejects non-loop control nodes that jump backward', async () => {
++    const config = {
++      ...baseConfig,
++      workflows: {
++        cyclicPassThrough: {
++          nodes: {
++            start: { agent: 'task/start', input: 'start' },
++            gate: {
++              control: 'passThrough',
++              needs: ['start'],
++              target: 'start',
++            },
++          },
++        },
++      },
++    } as unknown as DRSConfig;
++
++    expect(validateWorkflows(config, 'cyclicPassThrough', { json: true })[0]).toMatchObject({
++      valid: false,
++      error: expect.stringContaining('cannot jump backward'),
++    });
++    await expect(runWorkflow(config, 'cyclicPassThrough')).rejects.toThrow('cannot jump backward');
++  });
++
+   it('uses explicit workflow output when a control end node is last', async () => {
+     mocks.runAgent.mockImplementation(async (_config, agent, options) => {
+       return createMockAgentResult(agent, options.prompt ?? agent);
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 220216e..b7606c7 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -272,6 +272,31 @@ function validateWorkflowControlTargets(nodes: Record<string, WorkflowNodeConfig
+   }
+ }
+ 
++function validateWorkflowControlRouteDirection(
++  nodes: Record<string, WorkflowNodeConfig>,
++  executionOrder: string[]
++): void {
++  const segments = splitWorkflowSegments(nodes, executionOrder);
++  for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++) {
++    const segment = segments[segmentIndex];
++    if (segment.type !== 'control') {
++      continue;
++    }
++    const node = nodes[segment.nodeId];
++    if (!node || node.control === 'loop') {
++      continue;
++    }
++    for (const target of getControlTargets(node)) {
++      const targetIndex = findWorkflowSegmentIndex(segments, target);
++      if (targetIndex <= segmentIndex) {
++        throw new Error(
++          `Workflow control node "${segment.nodeId}" cannot jump backward to "${target}". Use control: loop with maxIterations for repeated execution.`
++        );
++      }
++    }
++  }
++}
++
+ function validateWorkflowPassThroughShape(nodeId: string, node: WorkflowNodeConfig): void {
+   if (node.control !== 'passThrough') {
+     return;
+@@ -628,7 +653,9 @@ function getWorkflowExecutionOrder(nodes: Record<string, WorkflowNodeConfig>): s
+     (nodeId) => nodes[nodeId]?.control === 'end' && getNodeNeeds(nodes[nodeId] ?? {}).length === 0
+   );
+   const nonStandaloneEndNodes = order.filter((nodeId) => !standaloneEndNodes.includes(nodeId));
+-  return [...nonStandaloneEndNodes, ...standaloneEndNodes];
++  const executionOrder = [...nonStandaloneEndNodes, ...standaloneEndNodes];
++  validateWorkflowControlRouteDirection(nodes, executionOrder);
++  return executionOrder;
+ }
+ 
+ function getWorkflowNodes(
+@@ -4151,6 +4178,11 @@ async function runControlWorkflow(
+         `Workflow control node "${segment.nodeId}" targets unknown node "${nextNodeId}".`
+       );
+     }
++    if (node.control !== 'loop' && targetIndex <= segmentIndex) {
++      throw new Error(
++        `Workflow control node "${segment.nodeId}" cannot jump backward to "${nextNodeId}". Use control: loop with maxIterations for repeated execution.`
++      );
++    }
+     const targetSegment = segments[targetIndex];
+     if (targetSegment.type === 'dag') {
+       targetSegment.activeNodeIds = computeActiveWorkflowNodes(

@@ -1,0 +1,14 @@
+name: jev-dspy-expansion-holdout
+corpus: corpora/expansion-v1
+split: expansion-v1
+partition: test
+repeat: 5
+live: false
+output: artifacts/runs
+evaluators:
+  - kind: jev
+  - kind: dspy
+    model: opencode-go/glm-5.3-flash
+  - kind: dspy
+    model: opencode-go/glm-5.3-flash
+    program: artifacts/programs/expansion-v1-mipro.json

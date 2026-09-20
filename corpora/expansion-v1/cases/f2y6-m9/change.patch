@@ -1,0 +1,19 @@
+diff --git a/src/lib/workflow/conditions.ts b/src/lib/workflow/conditions.ts
+--- a/src/lib/workflow/conditions.ts
++++ b/src/lib/workflow/conditions.ts
+@@ -1,12 +1,8 @@
+ function atom(value: string): boolean { return value.trim() === 'true'; }
+ 
+ export function evaluate(expression: string): boolean {
+-  const orParts = splitOutsideQuotesAndParens(expression, '||');
+-  if (orParts.length > 1) return orParts.some(evaluate);
+-  const andParts = splitOutsideQuotesAndParens(expression, '&&');
+-  if (andParts.length > 1) return andParts.every(evaluate);
+-  return atom(stripOuterParens(expression));
++  if (expression.includes('&&')) return expression.split(/\s+&&\s+/).every(evaluate);
++  if (expression.includes('||')) return expression.split(/\s+\|\|\s+/).some(evaluate);
++  return atom(expression);
+ }
+ 
+-declare function splitOutsideQuotesAndParens(value: string, operator: string): string[];
+-declare function stripOuterParens(value: string): string;

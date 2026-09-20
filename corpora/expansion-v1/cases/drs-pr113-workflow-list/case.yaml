@@ -1,0 +1,10 @@
+id: drs-pr113-workflow-list
+description: Workflow discovery records packaged versus project sources and exposes
+  human and JSON listing output.
+dimensions:
+- cli
+comparison:
+  group: drs-workflow-list
+  variant: clean
+jev: null
+expected: []

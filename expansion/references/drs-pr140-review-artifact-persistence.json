@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr140-review-artifact-persistence",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 4,
+  "rationale": "The review action gains an explicit artifact output option, creates and saves the review artifact through the existing createReviewArtifactPayload, resolveArtifactScope, and saveWorkflowArtifact boundaries, and publishes the resulting envelope through result.outputs. recordNodeArtifact records those named outputs alongside the ordinary review output. The packaged workflows consistently replace their separate create-review-artifact and save-artifact nodes with artifact: persistedReviewArtifact on the review node and update dependencies to wait on review, preserving downstream artifact references while removing duplicate orchestration.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "acceptable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "acceptable"
+  },
+  "priorities": []
+}

@@ -26,6 +26,7 @@ class ExperimentConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str
+    corpus: str = "corpus"
     split: str
     partition: Literal["train", "dev", "test"] = "test"
     repeat: int = Field(default=1, ge=1)

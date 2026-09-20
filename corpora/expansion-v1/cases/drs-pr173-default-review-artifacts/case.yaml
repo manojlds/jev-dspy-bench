@@ -1,0 +1,10 @@
+id: drs-pr173-default-review-artifacts
+description: Canonical review artifacts persist by default while named workflow-artifact
+  output remains opt-in.
+dimensions:
+- compatibility
+comparison:
+  group: drs-default-review-artifacts
+  variant: clean
+jev: null
+expected: []

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr134-null-action",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "validateWorkflowDefinition casts untrusted parsed YAML directly to WorkflowConfig, after which validateWorkflowActions treats node.action as a string without runtime type validation. For action: null, the supported-action lookup fails and findClosestSupportedAction passes null to levenshteinDistance, which immediately reads a.length and throws a TypeError instead of the intended actionable configuration error. The added tests cover string typos, removed aliases, unknown strings, and valid strings, but omit null and other non-string YAML values.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "weak",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "not_applicable",
+    "observability": "not_applicable"
+  },
+  "priorities": ["correctness", "reliability", "testQuality", "abstractionQuality"]
+}

@@ -6,7 +6,7 @@ from pathlib import Path
 import typer
 import yaml
 
-from .candidates import stage_candidates, validate_staged_candidates
+from .candidates import promote_candidates, stage_candidates, validate_staged_candidates
 from .config import load_config
 from .corpus import Corpus
 from .importer import import_drs_corpus
@@ -36,8 +36,10 @@ def corpus_import(
 
 
 @corpus_app.command("validate")
-def corpus_validate() -> None:
-    corpus = Corpus(_root() / "corpus")
+def corpus_validate(
+    corpus_path: Path = typer.Option(Path("corpus"), "--corpus"),
+) -> None:
+    corpus = Corpus(_root() / corpus_path)
     corpus.validate_lock()
     lock = corpus.lock()
     suites = lock.get("suites")
@@ -46,7 +48,7 @@ def corpus_validate() -> None:
     count = 0
     for suite_name in suites:
         count += len(corpus.iter_suite(suite_name))
-    split_root = _root() / "corpus" / "splits"
+    split_root = _root() / corpus_path / "splits"
     for split_path in split_root.glob("*.yaml"):
         split = yaml.safe_load(split_path.read_text())
         partitions = [set(split.get(name, [])) for name in ("train", "dev", "test")]
@@ -89,6 +91,26 @@ def corpus_validate_candidates(
     )
 
 
+@corpus_app.command("promote-candidates")
+def corpus_promote_candidates(
+    manifest: Path = typer.Option(..., exists=True, dir_okay=False, resolve_path=True),
+    candidates: Path = typer.Option(Path("expansion/candidates")),
+    references: Path = typer.Option(Path("expansion/references")),
+    base_corpus: Path = typer.Option(Path("corpus")),
+    output: Path = typer.Option(Path("corpora/expansion-v1")),
+    force: bool = typer.Option(False),
+) -> None:
+    lock = promote_candidates(
+        _root() / base_corpus,
+        manifest,
+        _root() / candidates,
+        _root() / references,
+        _root() / output,
+        force=force,
+    )
+    typer.echo(f"Promoted candidate corpus: {lock['contentSha256']}")
+
+
 @app.command()
 def evaluate(
     config: Path = typer.Option(..., exists=True, dir_okay=False, resolve_path=True),
@@ -102,6 +124,7 @@ def optimize(
     split: str = typer.Option("pilot-v1"),
     model: str = typer.Option(..., envvar="DSPY_MODEL"),
     output: Path = typer.Option(Path("artifacts/programs/pilot-mipro.json")),
+    corpus: Path = typer.Option(Path("corpus")),
     seed: int = typer.Option(42),
     auto: str = typer.Option("light", help="MIPROv2 budget: light, medium, or heavy."),
 ) -> None:
@@ -112,6 +135,7 @@ def optimize(
         split_name=split,
         model=model,
         output=output,
+        corpus_path=corpus,
         seed=seed,
         auto=auto,
     )

@@ -1,0 +1,8 @@
+name: jev-calibration-v1
+cases:
+  - inverted-condition
+  - corrected-condition
+  - incomplete-api-migration
+  - complete-api-docs-migration
+  - q7m4-x2
+  - x5j1-r7

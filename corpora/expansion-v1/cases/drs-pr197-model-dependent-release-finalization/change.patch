@@ -1,0 +1,26 @@
+diff --git a/.github/workflows/release-changelog.yml b/.github/workflows/release-changelog.yml
+index 19425c9..046ca8a 100644
+--- a/.github/workflows/release-changelog.yml
++++ b/.github/workflows/release-changelog.yml
+@@ -154,10 +154,20 @@ jobs:
+ 
+       - name: Finalize changelog
+         env:
++          DRS_DEFAULT_MODEL: opencode-go/kimi-k2.7-code
++          DRS_RUNTIME_OPERATION_TIMEOUT_MS: '300000'
++          DRS_RUNTIME_STREAM_TIMEOUT_MS: '900000'
++          DRS_RUNTIME_STREAM_POLL_INTERVAL_MS: '2000'
++          FROM_REF: ${{ steps.release.outputs.from }}
+           VERSION: ${{ steps.release.outputs.version }}
+           RELEASE_DATE: ${{ steps.release.outputs.date }}
+         run: |
+-          node .github/scripts/release-metadata.mjs finalize-changelog "$VERSION" "$RELEASE_DATE"
++          node dist/cli/index.js workflow run release-changelog-finalize \
++            --input from="$FROM_REF" \
++            --input to=HEAD \
++            --input version="$VERSION" \
++            --input date="$RELEASE_DATE"
++          node .github/scripts/release-metadata.mjs check-changelog "$VERSION" "$RELEASE_DATE"
+ 
+       - name: Refresh repository wiki
+         env:

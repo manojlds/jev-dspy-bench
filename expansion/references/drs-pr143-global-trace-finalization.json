@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr143-global-trace-finalization",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The patch introduces independently tracked sessions in `activeSessions`, but `finalizeCurrentTrace()` iterates every map entry, unsubscribes every session, marks every trace complete, appends all of them, and clears the entire map. Finalizing one invocation therefore terminates unrelated concurrent sessions; subsequent events for those sessions are ignored because their subscriptions were removed, and the method returns only the last finalized trace.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "weak",
+    "modularity": "acceptable",
+    "coupling": "weak",
+    "changeability": "acceptable",
+    "abstractionQuality": "weak",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "weak",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "not_applicable",
+    "observability": "weak"
+  },
+  "priorities": [
+    "correctness",
+    "reliability",
+    "coupling",
+    "abstractionQuality",
+    "testQuality"
+  ]
+}

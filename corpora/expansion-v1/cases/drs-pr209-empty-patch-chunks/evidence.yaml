@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/209
+proposedRevision: 1ac10730190b3efee1c749fb6140c08434542800
+confirmingRevision: 7143fd3202b4dadb622b42c9a4f1186dc181b055
+rationale: The immediate accepted fix rejects only undefined patches and adds mixed-empty
+  and all-empty regression tests.
+referenceAnnotator: opencode-agent

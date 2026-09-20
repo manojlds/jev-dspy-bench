@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/140
+proposedRevision: 73c54b0cf570fade8834c4178d936c9d4d077f05
+confirmingRevision: null
+rationale: Workflow and configuration tests cover the cohesive persistence shortcut;
+  CI passed and the final review reported no findings.
+referenceAnnotator: opencode-agent

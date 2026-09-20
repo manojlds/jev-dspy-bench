@@ -41,7 +41,7 @@ uv run jev-dspy corpus validate-candidates \
 
 ## Promotion Gate
 
-A staged candidate can enter `corpus/` only after:
+A staged candidate can enter a versioned corpus only after:
 
 1. Its patch is independently checked against the claimed outcome and evidence.
 2. An output-independent 19-dimension reference is completed.
@@ -51,3 +51,13 @@ A staged candidate can enter `corpus/` only after:
 
 Expected findings and evidence remain adjudication-only data and are never included in evaluator
 state.
+
+The 20 output-independent references are stored in `references/`. Promotion creates the separate
+`corpora/expansion-v1` snapshot and a new lock without mutating the original `corpus/`:
+
+```bash
+uv run jev-dspy corpus promote-candidates \
+  --manifest expansion/drs-candidates-v1.yaml \
+  --output corpora/expansion-v1 \
+  --force
+```

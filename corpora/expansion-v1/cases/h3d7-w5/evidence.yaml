@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/159
+proposedRevision: 177c57fcea0b88bb6410c8854f1ec3f582b96b7e
+confirmingRevision: 6404f3a93a262e673809bf4bbef528f4d55c8e2f
+rationale: An accepted DRS fix restored the normal unknown-workflow failure and required input resolution against the configured workflow.

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr125-checkpoint-truncation",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "saveWorkflowCheckpoint now recursively rewrites every string longer than 10,000 characters to a truncated value before persisting nodes and artifacts. Checkpoints are subsequently restored as workflow state, so a successful resume can receive altered outputs rather than the exact pre-failure state. The cast back to Record<string, WorkflowNodeResult> hides this semantic corruption, and the added tests cover cleanup behavior but not preservation or resumption of long values.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "weak",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "weak",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "weak",
+    "performance": "acceptable",
+    "scalability": "not_applicable",
+    "compatibility": "weak",
+    "observability": "weak"
+  },
+  "priorities": ["correctness", "reliability", "testQuality", "compatibility", "abstractionQuality"]
+}

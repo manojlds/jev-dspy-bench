@@ -1,0 +1,495 @@
+diff --git a/.pi/workflows/github-pr-fix-review-issues-stacked.yaml b/.pi/workflows/github-pr-fix-review-issues-stacked.yaml
+index e80c61d..8d013c1 100644
+--- a/.pi/workflows/github-pr-fix-review-issues-stacked.yaml
++++ b/.pi/workflows/github-pr-fix-review-issues-stacked.yaml
+@@ -37,27 +37,9 @@ nodes:
+     if: '{{artifacts.stackGuard.allowed}} == true'
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+ 
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+-
+   threshold:
+     action: review-threshold
+     needs:
+@@ -82,8 +64,7 @@ nodes:
+     agent: task/review-issue-fixer
+     needs:
+       - branch
+-      - review-artifact
+-      - save-review-artifact
++      - review
+     input: |
+       Fix actionable issues from this DRS review artifact for GitHub PR #{{inputs.pr}}.
+ 
+@@ -159,7 +140,7 @@ nodes:
+     action: post-fix-status
+     needs:
+       - create
+-      - save-review-artifact
++      - review
+     with:
+       platform: github
+       owner: '{{inputs.owner}}'
+diff --git a/.pi/workflows/github-pr-review-post.yaml b/.pi/workflows/github-pr-review-post.yaml
+index 923b5e2..280fd9b 100644
+--- a/.pi/workflows/github-pr-review-post.yaml
++++ b/.pi/workflows/github-pr-review-post.yaml
+@@ -30,31 +30,13 @@ nodes:
+       - describe
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+ 
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+-
+   post-comments:
+     action: post-review-comments
+     needs:
+-      - save-review-artifact
++      - review
+     with:
+       source: change
+       review: review
+diff --git a/.pi/workflows/github-pr-review.yaml b/.pi/workflows/github-pr-review.yaml
+index 5ff0a34..5312c20 100644
+--- a/.pi/workflows/github-pr-review.yaml
++++ b/.pi/workflows/github-pr-review.yaml
+@@ -88,33 +88,14 @@ nodes:
+       - change
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+ 
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+-
+   visual:
+     agent: visual/pr-explainer
+     needs:
+       - change
+       - review
+-      - save-review-artifact
+     if: inputs.visual == true
+     input: |
+       Generate a visual PR explainer HTML artifact.
+@@ -146,7 +127,7 @@ nodes:
+     action: stack-guard
+     needs:
+       - change
+-      - save-review-artifact
++      - review
+     if: inputs.fix == true
+     with:
+       source: change
+@@ -179,7 +160,7 @@ nodes:
+     agent: task/review-issue-fixer
+     needs:
+       - fix-branch
+-      - review-artifact
++      - review
+     input: |
+       Fix actionable issues from this DRS review artifact for GitHub PR #{{inputs.pr}}.
+ 
+@@ -237,7 +218,6 @@ nodes:
+     action: verify-fix
+     needs:
+       - re-review
+-      - save-review-artifact
+       - fix-change
+     with:
+       artifact: persistedReviewArtifact
+@@ -374,7 +354,7 @@ nodes:
+     action: post-fix-status
+     needs:
+       - create-fix-pr
+-      - save-review-artifact
++      - review
+     with:
+       platform: github
+       owner: '{{inputs.owner}}'
+diff --git a/.pi/workflows/gitlab-mr-fix-review-issues-stacked.yaml b/.pi/workflows/gitlab-mr-fix-review-issues-stacked.yaml
+index a36c257..3e69bfc 100644
+--- a/.pi/workflows/gitlab-mr-fix-review-issues-stacked.yaml
++++ b/.pi/workflows/gitlab-mr-fix-review-issues-stacked.yaml
+@@ -35,27 +35,9 @@ nodes:
+     if: '{{artifacts.stackGuard.allowed}} == true'
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+ 
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+-
+   threshold:
+     action: review-threshold
+     needs:
+@@ -80,8 +62,7 @@ nodes:
+     agent: task/review-issue-fixer
+     needs:
+       - branch
+-      - review-artifact
+-      - save-review-artifact
++      - review
+     input: |
+       Fix actionable issues from this DRS review artifact for GitLab MR !{{inputs.mr}}.
+ 
+@@ -156,7 +137,7 @@ nodes:
+     action: post-fix-status
+     needs:
+       - create
+-      - save-review-artifact
++      - review
+     with:
+       platform: gitlab
+       project: '{{inputs.project}}'
+diff --git a/.pi/workflows/gitlab-mr-review.yaml b/.pi/workflows/gitlab-mr-review.yaml
+index 965959f..6fc2f19 100644
+--- a/.pi/workflows/gitlab-mr-review.yaml
++++ b/.pi/workflows/gitlab-mr-review.yaml
+@@ -82,33 +82,14 @@ nodes:
+       - change
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+ 
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+-
+   visual:
+     agent: visual/pr-explainer
+     needs:
+       - change
+       - review
+-      - save-review-artifact
+     if: inputs.visual == true
+     input: |
+       Generate a visual MR explainer HTML artifact.
+@@ -150,7 +131,7 @@ nodes:
+     action: stack-guard
+     needs:
+       - change
+-      - save-review-artifact
++      - review
+     if: inputs.fix == true
+     with:
+       source: change
+@@ -183,7 +164,7 @@ nodes:
+     agent: task/review-issue-fixer
+     needs:
+       - fix-branch
+-      - review-artifact
++      - review
+     input: |
+       Fix actionable issues from this DRS review artifact for GitLab MR !{{inputs.mr}}.
+ 
+@@ -241,7 +222,6 @@ nodes:
+     action: verify-fix
+     needs:
+       - re-review
+-      - save-review-artifact
+       - fix-change
+     with:
+       artifact: persistedReviewArtifact
+@@ -375,7 +355,7 @@ nodes:
+     action: post-fix-status
+     needs:
+       - create-fix-mr
+-      - save-review-artifact
++      - review
+     with:
+       platform: gitlab
+       project: '{{inputs.project}}'
+diff --git a/.pi/workflows/local-review.yaml b/.pi/workflows/local-review.yaml
+index 06eafa9..f56af32 100644
+--- a/.pi/workflows/local-review.yaml
++++ b/.pi/workflows/local-review.yaml
+@@ -20,23 +20,5 @@ nodes:
+       - change
+     with:
+       source: change
++      artifact: persistedReviewArtifact
+     output: review
+-
+-  review-artifact:
+-    action: create-review-artifact
+-    needs:
+-      - review
+-    with:
+-      source: change
+-      review: review
+-    output: reviewArtifact
+-
+-  save-review-artifact:
+-    action: save-artifact
+-    needs:
+-      - review-artifact
+-    with:
+-      kind: review
+-      source: change
+-      artifact: reviewArtifact
+-    output: persistedReviewArtifact
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index 90467d9..0dfd89d 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -3869,21 +3869,9 @@ describe('workflow runner', () => {
+             review: {
+               action: 'review',
+               needs: ['change'],
+-              with: { source: 'change' },
++              with: { source: 'change', artifact: 'persistedReviewArtifact' },
+               output: 'review',
+             },
+-            'review-artifact': {
+-              action: 'create-review-artifact',
+-              needs: ['review'],
+-              with: { source: 'change', review: 'review' },
+-              output: 'reviewArtifact',
+-            },
+-            'save-review-artifact': {
+-              action: 'save-artifact',
+-              needs: ['review-artifact'],
+-              with: { kind: 'review', source: 'change', artifact: 'reviewArtifact' },
+-              output: 'persistedReviewArtifact',
+-            },
+             'fix-change': {
+               action: 'change-source',
+               with: { type: 'local', staged: true },
+@@ -3914,7 +3902,7 @@ describe('workflow runner', () => {
+             },
+             verify: {
+               action: 'verify-fix',
+-              needs: ['re-review', 'save-review-artifact', 'fix-change'],
++              needs: ['re-review', 'review', 'fix-change'],
+               with: {
+                 artifact: 'persistedReviewArtifact',
+                 review: 'reReview',
+@@ -3990,21 +3978,9 @@ describe('workflow runner', () => {
+             review: {
+               action: 'review',
+               needs: ['change'],
+-              with: { source: 'change' },
++              with: { source: 'change', artifact: 'persistedReviewArtifact' },
+               output: 'review',
+             },
+-            'review-artifact': {
+-              action: 'create-review-artifact',
+-              needs: ['review'],
+-              with: { source: 'change', review: 'review' },
+-              output: 'reviewArtifact',
+-            },
+-            'save-review-artifact': {
+-              action: 'save-artifact',
+-              needs: ['review-artifact'],
+-              with: { kind: 'review', source: 'change', artifact: 'reviewArtifact' },
+-              output: 'persistedReviewArtifact',
+-            },
+             'fix-change': {
+               action: 'change-source',
+               with: { type: 'local', staged: true },
+@@ -4012,7 +3988,7 @@ describe('workflow runner', () => {
+             },
+             'post-status': {
+               action: 'post-fix-status',
+-              needs: ['save-review-artifact'],
++              needs: ['review'],
+               with: {
+                 platform: 'github',
+                 owner: 'octocat',
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 18b735e..7c07892 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -102,6 +102,7 @@ export interface WorkflowNodeResult {
+   response?: string;
+   responses?: AgentRunResult[];
+   output?: unknown;
++  outputs?: Record<string, unknown>;
+   writes?: string;
+ }
+ 
+@@ -512,7 +513,7 @@ const ACTION_OPTION_FIELDS: Partial<
+     'source',
+     'fixChange',
+   ]),
+-  review: new Set(['source', 'reviewArtifact', 'severity']),
++  review: new Set(['source', 'reviewArtifact', 'severity', 'artifact']),
+   'review-context': new Set(['source', 'file', 'baseBranch']),
+   describe: new Set(['source', 'post', 'postDescription']),
+   'code-quality-report': new Set(['review', 'path']),
+@@ -3662,12 +3663,28 @@ async function runReviewWorkflowNode(
+     await writeWorkflowFile(workingDir, writes, JSON.stringify(reviewResult, null, 2));
+   }
+ 
++  const artifactOutput = getStringActionOption(node, 'artifact', context)?.trim();
++  const outputs: Record<string, unknown> = {};
++  let artifactResponse = '';
++  if (artifactOutput) {
++    const reviewArtifact = createReviewArtifactPayload(reviewResult, source);
++    const scope = await resolveArtifactScope(nodeId, node, workingDir, context, executionContext);
++    const saved = await saveWorkflowArtifact(workingDir, {
++      kind: 'review',
++      scope,
++      payload: reviewArtifact,
++    });
++    outputs[artifactOutput] = { ...saved.artifact, path: saved.path, latestPath: saved.latestPath };
++    artifactResponse = `\nSaved review artifact ${saved.artifact.id}.`;
++  }
++
+   return {
+     id: nodeId,
+     type: 'action',
+     action: node.action,
+-    response: JSON.stringify(reviewResult.summary, null, 2),
++    response: `${JSON.stringify(reviewResult.summary, null, 2)}${artifactResponse}`,
+     output: reviewResult,
++    outputs,
+     writes,
+   };
+ }
+@@ -3683,6 +3700,11 @@ function recordNodeArtifact(
+   if (node.output) {
+     artifacts[node.output] = artifactValue;
+   }
++  if (result.outputs) {
++    for (const [name, value] of Object.entries(result.outputs)) {
++      artifacts[name] = value;
++    }
++  }
+ }
+ 
+ type WorkflowSegment =
+diff --git a/src/lib/config.test.ts b/src/lib/config.test.ts
+index f050ab4..11506a1 100644
+--- a/src/lib/config.test.ts
++++ b/src/lib/config.test.ts
+@@ -108,6 +108,9 @@ describe('Config', () => {
+           },
+           review: {
+             action: 'review',
++            with: {
++              artifact: 'persistedReviewArtifact',
++            },
+           },
+         },
+       });
+@@ -128,7 +131,7 @@ describe('Config', () => {
+       });
+       expect(config.workflows?.['github-pr-review']?.nodes.visual).toMatchObject({
+         agent: 'visual/pr-explainer',
+-        needs: ['change', 'review', 'save-review-artifact'],
++        needs: ['change', 'review'],
+         if: 'inputs.visual == true',
+         writes: '{{inputs.visualOutputPath}}',
+       });
+@@ -150,15 +153,20 @@ describe('Config', () => {
+       });
+       expect(config.workflows?.['github-pr-review']?.nodes.describe?.needs).toEqual(['change']);
+       expect(config.workflows?.['github-pr-review']?.nodes.review?.needs).toEqual(['change']);
++      expect(config.workflows?.['github-pr-review']?.nodes.review?.with).toMatchObject({
++        artifact: 'persistedReviewArtifact',
++      });
+       expect(config.workflows?.['github-pr-review']?.nodes['post-comments']?.needs).toEqual([
+         'review',
+       ]);
+       expect(config.workflows?.['gitlab-mr-review']?.nodes.describe?.needs).toEqual(['change']);
+       expect(config.workflows?.['gitlab-mr-review']?.nodes.review?.needs).toEqual(['change']);
++      expect(config.workflows?.['gitlab-mr-review']?.nodes.review?.with).toMatchObject({
++        artifact: 'persistedReviewArtifact',
++      });
+       expect(config.workflows?.['gitlab-mr-review']?.nodes.visual?.needs).toEqual([
+         'change',
+         'review',
+-        'save-review-artifact',
+       ]);
+       expect(config.workflows?.['gitlab-mr-review']?.nodes.visual?.if).toBe(
+         'inputs.visual == true'

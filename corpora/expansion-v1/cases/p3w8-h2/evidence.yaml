@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/132
+proposedRevision: 7f26b69
+confirmingRevision: 7f26b69
+rationale: The explicit control kind and packaged workflow migration were reviewed cleanly and validated together by configuration tests.

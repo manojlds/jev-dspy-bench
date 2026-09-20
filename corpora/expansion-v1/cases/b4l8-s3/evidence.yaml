@@ -1,0 +1,5 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/138
+proposedRevision: 01f74f2
+confirmingRevision: f2996580ec351e5b0c0c523c0d1f2d4e596bf112
+rationale: The fix added a loop-specific dependency exclusion and a regression test proving upstream nodes execute only once.

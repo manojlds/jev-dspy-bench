@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/119
+proposedRevision: 431c8b6e06215b7e3f1923a329d6c7a207da6729
+confirmingRevision: 3716311768b5d3e65f2dd7d763d71c07871522f2
+rationale: The immediate fix changes the default capability to false and updates the
+  test to require explicit enablement; the remaining final review finding was unrelated.
+referenceAnnotator: opencode-agent

@@ -1,0 +1,19 @@
+name: pilot-v1
+policy: Calibration fixtures are used for compilation; historical cases are test-only.
+train:
+  - inverted-condition
+  - corrected-condition
+dev:
+  - incomplete-api-migration
+  - complete-api-docs-migration
+test:
+  - q7m4-x2
+  - n8v2-k6
+  - h3d7-w5
+  - t6a1-j8
+  - b4l8-s3
+  - f2y6-m9
+  - x5j1-r7
+  - u2k7-d5
+  - l8q3-v9
+  - p3w8-h2

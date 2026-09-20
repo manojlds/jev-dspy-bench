@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/113
+proposedRevision: 63a61c20c03fe333bdda19f113476e56068d89dd
+confirmingRevision: null
+rationale: Direct workflow-discovery and source-classification tests passed on all
+  supported Node versions and the final review reported no findings.
+referenceAnnotator: opencode-agent

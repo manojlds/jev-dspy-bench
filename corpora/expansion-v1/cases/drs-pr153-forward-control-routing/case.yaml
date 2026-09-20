@@ -1,0 +1,10 @@
+id: drs-pr153-forward-control-routing
+description: Non-loop control nodes reject backward routes during validation and runtime
+  execution.
+dimensions:
+- reliability
+comparison:
+  group: drs-forward-control-routing
+  variant: clean
+jev: null
+expected: []

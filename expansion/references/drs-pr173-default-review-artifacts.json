@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr173-default-review-artifacts",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The patch moves canonical review-artifact creation and persistence outside the optional named-output branch, while retaining that branch solely for publishing the saved artifact reference into workflow outputs. The test confirms the ordinary review output remains available and the canonical latest artifact is written without an artifact option. This matches the stated default-persistence behavior without making named output implicit.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "acceptable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "acceptable"
+  },
+  "priorities": []
+}

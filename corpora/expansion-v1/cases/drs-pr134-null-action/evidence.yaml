@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/134
+proposedRevision: 20a67537bd02c83aefb289ae13b0d3e5c22d75bd
+confirmingRevision: 7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454
+rationale: The accepted review fix validates that action is a string and adds a regression
+  test for null.
+referenceAnnotator: opencode-agent

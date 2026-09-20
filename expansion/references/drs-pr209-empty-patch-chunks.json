@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr209-empty-patch-chunks",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The completeness check uses !file.patch?.trim(), conflating an absent patch with a valid empty or whitespace-only patch. Such files are rejected before chunk construction even though FileWithDiff permits an explicitly present empty patch. The tests cover undefined patches, ordinary patches, and oversized patches, but do not cover mixed or all-empty patch inputs.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "weak",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "acceptable",
+    "scalability": "acceptable",
+    "compatibility": "weak",
+    "observability": "not_applicable"
+  },
+  "priorities": [
+    "correctness",
+    "reliability",
+    "testQuality",
+    "compatibility",
+    "abstractionQuality"
+  ]
+}

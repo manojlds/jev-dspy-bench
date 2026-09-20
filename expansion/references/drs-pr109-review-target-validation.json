@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr109-review-target-validation",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 4,
+  "rationale": "Platform-backed workflow sources are identified from their context, required project and pull-request metadata is checked, and enforceRepoBranchMatch is invoked before executeReview using the source-specific working directory and both configured skip flags. The focused GitHub and GitLab assertions verify the project, pull request, working directory, and skip-option propagation.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "not_applicable"
+  },
+  "priorities": []
+}

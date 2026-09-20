@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/125
+proposedRevision: c5360f55c57d08991efcae5958fb9ed50f403da5
+confirmingRevision: 37bb16aadca2e22bf62a1dac91df0c4e886c23dc
+rationale: The confirming commit removes string truncation because it corrupted resumed
+  state and replaces it with a whole-file size guard.
+referenceAnnotator: opencode-agent

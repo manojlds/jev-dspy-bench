@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr150-case-insensitive-severity",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The severity selector is trimmed and normalized to uppercase before being passed to `updateReviewArtifactFindings`, matching the uppercase severities used by persisted findings. The focused test supplies lowercase `high`, verifies only the uppercase `HIGH` finding is updated, and leaves the `MEDIUM` finding unchanged; the existing workflow test now also verifies the persisted mutation.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "not_applicable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "not_applicable"
+  },
+  "priorities": []
+}

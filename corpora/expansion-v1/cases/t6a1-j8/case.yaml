@@ -1,0 +1,14 @@
+id: t6a1-j8
+description: A workflow artifact identifier is allowed to come from templated input.
+dimensions:
+  - security-boundary
+  - path-handling
+jev:
+  expectedWeakDimensions: [security]
+expected:
+  - id: HIST-ARTIFACT-001
+    description: Joining an unvalidated artifact ID permits traversal outside the artifact directory.
+    severity: HIGH
+    category: SECURITY
+    file: src/lib/workflow-artifacts.ts
+    line: 5

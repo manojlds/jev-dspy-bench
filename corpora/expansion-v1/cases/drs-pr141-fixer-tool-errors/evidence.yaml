@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/141
+proposedRevision: 460f13ebbb95842b28eb61a4125fe2cc9a5c0d52
+confirmingRevision: 1d9a80e870b680b53a175c31057e2af3bedb3a02
+rationale: The accepted review fix switches to git status for untracked files and
+  wraps artifact loading in the tool's structured error result.
+referenceAnnotator: opencode-agent

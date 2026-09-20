@@ -1,0 +1,5 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/136
+proposedRevision: 3c9591d
+confirmingRevision: b9f2e5d82231c97cdcc23d6122c612b292617c33
+rationale: The confirming security fix added canonical artifact-ID validation and dedicated traversal regression tests.

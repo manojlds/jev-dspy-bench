@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/156
+proposedRevision: 293a229b9844477461c9862128cfc5132e804cc6
+confirmingRevision: 293a229b9844477461c9862128cfc5132e804cc6
+rationale: The reviewed refactor preserved skip and control decisions in the orchestrator and retained extensive planning coverage without a corrective follow-up.

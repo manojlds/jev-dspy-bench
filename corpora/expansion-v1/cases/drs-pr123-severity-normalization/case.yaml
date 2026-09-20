@@ -1,0 +1,23 @@
+id: drs-pr123-severity-normalization
+description: Lowercase workflow severity input is compared directly with uppercase
+  persisted findings.
+dimensions:
+- correctness
+comparison:
+  group: drs-severity-normalization
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - testQuality
+  - reliability
+  - compatibility
+  - consistency
+expected:
+- id: DRS-PR123-001
+  description: Lowercase workflow severity input is compared directly with uppercase
+    persisted findings.
+  severity: MEDIUM
+  category: QUALITY
+  file: src/cli/workflow.ts
+  line: null

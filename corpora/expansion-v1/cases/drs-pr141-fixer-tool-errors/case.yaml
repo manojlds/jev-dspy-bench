@@ -1,0 +1,22 @@
+id: drs-pr141-fixer-tool-errors
+description: Fixer tools miss untracked source changes and throw instead of returning
+  structured artifact errors.
+dimensions:
+- correctness
+comparison:
+  group: drs-fixer-tool-errors
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - compatibility
+  - testQuality
+expected:
+- id: DRS-PR141-001
+  description: Fixer tools miss untracked source changes and throw instead of returning
+    structured artifact errors.
+  severity: MEDIUM
+  category: QUALITY
+  file: src/pi/sdk.ts
+  line: null

@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/109
+proposedRevision: 23f1cd1f42577086c1e2db1b59c21d05f4570f21
+confirmingRevision: null
+rationale: The focused implementation has targeted GitHub and GitLab tests, green
+  CI, a zero-finding final review, and no corrective follow-up.
+referenceAnnotator: opencode-agent

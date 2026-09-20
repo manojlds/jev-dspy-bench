@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/142
+proposedRevision: b78fe17d34715695871caa8673189dedf5e125f1
+confirmingRevision: 4f4523bc6d291b7cca435ac8ebd2339251fe027e
+rationale: PR 143 identifies the runtime TypeError and replaces the placeholder with
+  serialized trace data.
+referenceAnnotator: opencode-agent

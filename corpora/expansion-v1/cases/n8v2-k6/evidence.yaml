@@ -1,0 +1,5 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/152
+proposedRevision: c96ba7915fcebd7e46a6e8d1eb6bf04ff7956414
+confirmingRevision: a75116be237abec60b7df4199878c2e52e805d0c
+rationale: The accepted review fix restored explicit non-internal guards to prevent duplicate or empty change-request commits.

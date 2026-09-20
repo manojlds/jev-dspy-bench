@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/197
+proposedRevision: 0b6e35a4fddf83ad2dc66727c791100fb082b069
+confirmingRevision: bfe98957c50c1d31e46b36c852609c3890d422d3
+rationale: Repeated provider timeout and HTTP 400 failures led PR 200 to replace model-driven
+  finalization with deterministic changelog parsing and regression tests.
+referenceAnnotator: opencode-agent

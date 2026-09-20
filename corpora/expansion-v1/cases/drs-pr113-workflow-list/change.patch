@@ -1,0 +1,293 @@
+diff --git a/src/cli/index.ts b/src/cli/index.ts
+index 4689984..7296b94 100644
+--- a/src/cli/index.ts
++++ b/src/cli/index.ts
+@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
+ import { fileURLToPath } from 'url';
+ import { dirname, join } from 'path';
+ import { runAgent } from './run-agent.js';
+-import { runWorkflow } from './workflow.js';
++import { runWorkflow, listWorkflows } from './workflow.js';
+ import { loadConfig } from '../lib/config.js';
+ import { configureLogger, type LogFormat } from '../lib/logger.js';
+ import { config as loadDotenv } from 'dotenv';
+@@ -160,6 +160,24 @@ workflowCommand
+     }
+   });
+ 
++workflowCommand
++  .command('list')
++  .description('List available workflows (packaged and project-defined)')
++  .option('--json', 'Output as JSON')
++  .action((options) => {
++    try {
++      const config = loadConfig(process.cwd());
++      listWorkflows(config, {
++        json: options.json || false,
++        workingDir: process.cwd(),
++      });
++      process.exit(0);
++    } catch (error) {
++      console.error(chalk.red('Error:'), error instanceof Error ? error.message : String(error));
++      process.exit(1);
++    }
++  });
++
+ program.addCommand(workflowCommand);
+ 
+ program
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index 20c0bec..e6861f4 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -1,10 +1,10 @@
+-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
++import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
+ import { tmpdir } from 'os';
+ import { join } from 'path';
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+-import type { DRSConfig } from '../lib/config.js';
++import { loadConfig, type DRSConfig } from '../lib/config.js';
+ import { exitProcess } from '../lib/exit.js';
+-import { runWorkflow } from './workflow.js';
++import { runWorkflow, listWorkflows } from './workflow.js';
+ 
+ const mocks = vi.hoisted(() => {
+   const githubAdapter = {
+@@ -1598,4 +1598,32 @@ describe('workflow runner', () => {
+     );
+     expect(mocks.runAgent).not.toHaveBeenCalled();
+   });
++
++  it('lists workflows with packaged source by default', () => {
++    const config = loadConfig(process.cwd());
++
++    const entries = listWorkflows(config, { workingDir: process.cwd() });
++
++    expect(entries.some((entry) => entry.source === 'packaged' && !entry.overridden)).toBe(true);
++  });
++
++  it('lists project workflows that override packaged ones', () => {
++    const projectRoot = createTempDir('drs-workflow-list-');
++    mkdirSync(join(projectRoot, '.drs', 'workflows'), { recursive: true });
++    writeFileSync(
++      join(projectRoot, '.drs', 'workflows', 'local-review.yaml'),
++      'description: Project override\nnodes:\n  step:\n    action: write\n    input: hi\n    writes: out.txt\n',
++      'utf-8'
++    );
++
++    const config = loadConfig(projectRoot);
++    const entries = listWorkflows(config, { workingDir: projectRoot });
++    const localReview = entries.find((entry) => entry.name === 'local-review');
++
++    expect(localReview).toMatchObject({
++      source: 'project',
++      overridden: true,
++      description: 'Project override',
++    });
++  });
+ });
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 9981247..06205b0 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -10,8 +10,10 @@ import type {
+ } from '../lib/config.js';
+ import {
+   getDescriberModelOverride,
++  loadWorkflowSourceInfo,
+   normalizeAgentConfig,
+   resolveAgentRunConfig,
++  type WorkflowSource,
+ } from '../lib/config.js';
+ import { resolveWithinWorkingDir } from '../lib/path-utils.js';
+ import { parseDiff, getChangedFiles, getFilesWithDiffs } from '../lib/diff-parser.js';
+@@ -1853,3 +1855,66 @@ export async function runWorkflow(
+ 
+   return result;
+ }
++
++export interface WorkflowListEntry {
++  name: string;
++  source: WorkflowSource;
++  overridden: boolean;
++  description?: string;
++}
++
++export interface WorkflowListOptions {
++  json?: boolean;
++  workingDir?: string;
++}
++
++/**
++ * List available workflows and their source origin.
++ *
++ * Packaged workflows are always returned. Project-defined workflows
++ * appear as 'project' and mark any packaged workflow they replace
++ * as overridden.
++ */
++export function listWorkflows(
++  config: DRSConfig,
++  options: WorkflowListOptions = {}
++): WorkflowListEntry[] {
++  const workingDir = options.workingDir ?? process.cwd();
++  const sourceInfo = loadWorkflowSourceInfo(workingDir);
++  const workflows = config.workflows ?? {};
++  const entries = Object.entries(workflows)
++    .map(([name, workflow]) => {
++      const info = sourceInfo[name] ?? {
++        source: 'packaged' as WorkflowSource,
++        overridesPackaged: false,
++      };
++      return {
++        name,
++        source: info.source,
++        overridden: info.overridesPackaged,
++        description: workflow.description,
++      };
++    })
++    .sort((a, b) => a.name.localeCompare(b.name));
++
++  if (options.json) {
++    console.log(JSON.stringify(entries, null, 2));
++  } else {
++    const sourceLabel = (source: WorkflowSource, overridden: boolean) => {
++      const label = source === 'packaged' ? chalk.gray('packaged') : chalk.cyan('project');
++      return overridden ? `${label} ${chalk.yellow('(overrides packaged)')}` : label;
++    };
++
++    console.log(chalk.bold('\n📋 Available Workflows:\n'));
++    for (const entry of entries) {
++      console.log(`  ${chalk.white(entry.name)}`);
++      console.log(`    Source: ${sourceLabel(entry.source, entry.overridden)}`);
++      if (entry.description) {
++        console.log(`    ${chalk.gray(entry.description)}`);
++      }
++    }
++    console.log('');
++  }
++
++  return entries;
++}
+diff --git a/src/lib/config.ts b/src/lib/config.ts
+index 4f28e74..1e3b699 100644
+--- a/src/lib/config.ts
++++ b/src/lib/config.ts
+@@ -66,6 +66,8 @@ export interface WorkflowConfig {
+   nodes: Record<string, WorkflowNodeConfig>;
+ }
+ 
++export type WorkflowSource = 'packaged' | 'project';
++
+ export interface AgentDefaultsConfig {
+   model?: string;
+   skills?: string[];
+@@ -379,9 +381,12 @@ function loadWorkflowFile(filePath: string): Record<string, WorkflowConfig> {
+   };
+ }
+ 
+-function loadWorkflowFilesFromDirectory(directoryPath: string): Record<string, WorkflowConfig> {
++function loadWorkflowFilesFromDirectory(
++  directoryPath: string,
++  source: WorkflowSource
++): { workflows: Record<string, WorkflowConfig>; sources: Record<string, WorkflowSource> } {
+   if (!existsSync(directoryPath)) {
+-    return {};
++    return { workflows: {}, sources: {} };
+   }
+ 
+   if (!statSync(directoryPath).isDirectory()) {
+@@ -389,18 +394,72 @@ function loadWorkflowFilesFromDirectory(directoryPath: string): Record<string, W
+   }
+ 
+   const workflows: Record<string, WorkflowConfig> = {};
++  const sources: Record<string, WorkflowSource> = {};
+   for (const fileName of readdirSync(directoryPath).filter(isWorkflowFileName).sort()) {
+-    Object.assign(workflows, loadWorkflowFile(join(directoryPath, fileName)));
++    const fileWorkflows = loadWorkflowFile(join(directoryPath, fileName));
++    for (const workflowName of Object.keys(fileWorkflows)) {
++      sources[workflowName] = source;
++    }
++    Object.assign(workflows, fileWorkflows);
+   }
+-  return workflows;
++  return { workflows, sources };
+ }
+ 
+-function loadBuiltInWorkflowFiles(): Record<string, WorkflowConfig> {
+-  const workflows: Record<string, WorkflowConfig> = {};
++function loadBuiltInWorkflowFiles(): {
++  workflows: Record<string, WorkflowConfig>;
++  sources: Record<string, WorkflowSource>;
++} {
++  const result: {
++    workflows: Record<string, WorkflowConfig>;
++    sources: Record<string, WorkflowSource>;
++  } = {
++    workflows: {},
++    sources: {},
++  };
+   for (const directory of getBuiltInWorkflowPaths()) {
+-    Object.assign(workflows, loadWorkflowFilesFromDirectory(directory));
++    const loaded = loadWorkflowFilesFromDirectory(directory, 'packaged');
++    Object.assign(result.workflows, loaded.workflows);
++    Object.assign(result.sources, loaded.sources);
+   }
+-  return workflows;
++  return result;
++}
++
++/**
++ * Load map of workflow names to their source origin (packaged or project).
++ */
++export function loadWorkflowSources(projectPath?: string): Record<string, WorkflowSource> {
++  const basePath = projectPath ?? process.cwd();
++  const builtIn = loadBuiltInWorkflowFiles();
++  const project = loadWorkflowFilesFromDirectory(resolve(basePath, '.drs/workflows'), 'project');
++
++  // Project workflows take precedence, so they override packaged sources.
++  return { ...builtIn.sources, ...project.sources };
++}
++
++export interface WorkflowSourceInfo {
++  source: WorkflowSource;
++  overridesPackaged: boolean;
++}
++
++/**
++ * Load map of workflow names to their source origin, including whether
++ * a project workflow is overriding an existing packaged workflow.
++ */
++export function loadWorkflowSourceInfo(projectPath?: string): Record<string, WorkflowSourceInfo> {
++  const basePath = projectPath ?? process.cwd();
++  const builtIn = loadBuiltInWorkflowFiles();
++  const project = loadWorkflowFilesFromDirectory(resolve(basePath, '.drs/workflows'), 'project');
++  const info: Record<string, WorkflowSourceInfo> = {};
++
++  for (const name of Object.keys(builtIn.sources)) {
++    info[name] = { source: 'packaged', overridesPackaged: false };
++  }
++
++  for (const name of Object.keys(project.sources)) {
++    info[name] = { source: 'project', overridesPackaged: name in builtIn.sources };
++  }
++
++  return info;
+ }
+ 
+ /**
+@@ -415,10 +474,12 @@ function loadBuiltInWorkflowFiles(): Record<string, WorkflowConfig> {
+  */
+ export function loadConfig(projectPath?: string, overrides?: Partial<DRSConfig>): DRSConfig {
+   const basePath = projectPath ?? process.cwd();
+-  let config = mergeConfig({ ...DEFAULT_CONFIG }, { workflows: loadBuiltInWorkflowFiles() });
++  const builtIn = loadBuiltInWorkflowFiles();
++  let config = mergeConfig({ ...DEFAULT_CONFIG }, { workflows: builtIn.workflows });
+ 
+   const projectWorkflowPath = resolve(basePath, '.drs/workflows');
+-  config = mergeConfig(config, { workflows: loadWorkflowFilesFromDirectory(projectWorkflowPath) });
++  const project = loadWorkflowFilesFromDirectory(projectWorkflowPath, 'project');
++  config = mergeConfig(config, { workflows: project.workflows });
+ 
+   // Try loading from .drs/drs.config.yaml
+   const drsConfigPath = resolve(basePath, '.drs/drs.config.yaml');

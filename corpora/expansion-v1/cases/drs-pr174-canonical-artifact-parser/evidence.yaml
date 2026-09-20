@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/174
+proposedRevision: e32e609701bf566b27f2ea3971e12095b2b10872
+confirmingRevision: null
+rationale: The focused parser change has extensive precedence tests, green CI, a zero-finding
+  final review, and no corrective follow-up.
+referenceAnnotator: opencode-agent

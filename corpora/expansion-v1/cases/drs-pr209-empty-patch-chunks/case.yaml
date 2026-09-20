@@ -1,0 +1,23 @@
+id: drs-pr209-empty-patch-chunks
+description: Empty but valid patches are treated as missing and cause chunk evaluation
+  to fail.
+dimensions:
+- reliability
+comparison:
+  group: drs-jev-chunking
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - testQuality
+  - compatibility
+  - abstractionQuality
+expected:
+- id: DRS-PR209-001
+  description: Empty but valid patches are treated as missing and cause chunk evaluation
+    to fail.
+  severity: MEDIUM
+  category: QUALITY
+  file: src/lib/jev/chunks.ts
+  line: null

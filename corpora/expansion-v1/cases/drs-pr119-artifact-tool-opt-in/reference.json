@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr119-artifact-tool-opt-in",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "In src/pi/sdk.ts, isToolEnabled('write_artifact_output', true, agentTools) makes the workspace-writing artifact tool enabled by default when an agent does not explicitly request it. The accompanying test changes its assertion to require the tool's presence, confirming that the broadened capability is intentional in this patch rather than incidental. This violates least-privilege behavior and exposes an unnecessary write capability.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "acceptable",
+    "security": "weak",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "not_applicable",
+    "observability": "not_applicable"
+  },
+  "priorities": ["security", "correctness", "testQuality"]
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr197-model-dependent-release-finalization",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The patch replaces deterministic release-metadata finalization with a DRS workflow invocation configured with a specific model and provider-facing runtime and stream timeouts of five and fifteen minutes. This makes release preparation depend on an external model operation that can time out or reject requests before the subsequent changelog check runs. The candidate evidence records repeated timeout and HTTP 400 failures and a confirming replacement with deterministic parsing, establishing a material release-blocking reliability defect.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "weak",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "weak",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "uncertain",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "weak",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "acceptable"
+  },
+  "priorities": [
+    "reliability",
+    "correctness",
+    "coupling",
+    "testQuality",
+    "performance"
+  ]
+}

@@ -1,0 +1,14 @@
+name: jev-historical-pilot-v1
+description: Historical DRS defects and clean controls for Jev and LLM review comparison.
+focus: drs-review-system
+cases:
+  - q7m4-x2
+  - n8v2-k6
+  - h3d7-w5
+  - t6a1-j8
+  - b4l8-s3
+  - f2y6-m9
+  - x5j1-r7
+  - u2k7-d5
+  - l8q3-v9
+  - p3w8-h2

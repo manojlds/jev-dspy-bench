@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr141-fixer-tool-errors",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The patch changes getChangedFiles from `git status --porcelain --no-renames` to `git diff --name-only HEAD`; the latter omits untracked files, so newly created source files are excluded from fixer change detection. It also removes the try/catch around path resolution, file reading, JSON parsing, and artifact processing, causing those failures to reject the tool call instead of returning the established `{ ok: false, error }` result.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "weak",
+    "observability": "acceptable"
+  },
+  "priorities": [
+    "correctness",
+    "reliability",
+    "compatibility",
+    "testQuality"
+  ]
+}

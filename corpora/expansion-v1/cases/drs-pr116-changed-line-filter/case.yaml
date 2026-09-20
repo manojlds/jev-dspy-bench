@@ -1,0 +1,10 @@
+id: drs-pr116-changed-line-filter
+description: Findings outside changed lines are removed and summary counts are recomputed
+  from retained issues.
+dimensions:
+- correctness
+comparison:
+  group: drs-changed-line-filter
+  variant: clean
+jev: null
+expected: []

@@ -1,0 +1,22 @@
+id: drs-pr142-trace-placeholder
+description: The generated trace viewer leaves TRACE_DATA as a literal placeholder
+  and cannot render node details.
+dimensions:
+- correctness
+comparison:
+  group: drs-trace-lifecycle
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - observability
+  - testQuality
+expected:
+- id: DRS-PR142-001
+  description: The generated trace viewer leaves TRACE_DATA as a literal placeholder
+    and cannot render node details.
+  severity: HIGH
+  category: QUALITY
+  file: src/lib/trace-html.ts
+  line: null

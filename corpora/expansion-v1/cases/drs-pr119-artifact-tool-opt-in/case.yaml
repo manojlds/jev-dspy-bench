@@ -1,0 +1,21 @@
+id: drs-pr119-artifact-tool-opt-in
+description: The workspace-writing visual artifact tool is enabled for agents that
+  did not request it.
+dimensions:
+- security
+comparison:
+  group: drs-artifact-tool-capability
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - security
+  - correctness
+  - testQuality
+expected:
+- id: DRS-PR119-001
+  description: The workspace-writing visual artifact tool is enabled for agents that
+    did not request it.
+  severity: MEDIUM
+  category: SECURITY
+  file: src/pi/sdk.ts
+  line: null

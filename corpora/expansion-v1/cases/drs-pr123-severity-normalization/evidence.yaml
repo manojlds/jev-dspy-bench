@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/123
+proposedRevision: 4937f82c29c575b28cab7ec2fe83ff91996c746b
+confirmingRevision: 827fb59eda9065e2c9db1b09862a657f33b70e1d
+rationale: The reverse-fix patch removes the uppercase normalization and focused regression
+  test that proved lowercase selectors previously updated zero findings.
+referenceAnnotator: opencode-agent

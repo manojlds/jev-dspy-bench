@@ -1,0 +1,4 @@
+id: corrected-condition
+description: An inverted condition is corrected.
+comparison: { group: authorization-condition, variant: fixed }
+expected: []

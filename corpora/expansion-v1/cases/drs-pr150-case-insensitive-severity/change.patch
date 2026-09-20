@@ -1,0 +1,144 @@
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index 4172ba8..b04a0bd 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -1536,6 +1536,101 @@ describe('workflow runner', () => {
+     });
+   });
+ 
++  it('matches review artifact findings by severity case-insensitively', async () => {
++    const projectRoot = createTempDir('drs-workflow-artifact-mutate-case-');
++    mocks.executeReview.mockResolvedValue({
++      issues: [
++        {
++          severity: 'HIGH',
++          category: 'QUALITY',
++          title: 'High issue',
++          file: 'src/app.ts',
++          line: 1,
++          problem: 'High problem',
++          solution: 'High solution',
++          agent: 'unified',
++        },
++        {
++          severity: 'MEDIUM',
++          category: 'QUALITY',
++          title: 'Medium issue',
++          file: 'src/app.ts',
++          line: 2,
++          problem: 'Medium problem',
++          solution: 'Medium solution',
++          agent: 'unified',
++        },
++      ],
++      summary: {
++        filesReviewed: 1,
++        issuesFound: 2,
++        bySeverity: { CRITICAL: 0, HIGH: 1, MEDIUM: 1, LOW: 0 },
++        byCategory: { SECURITY: 0, QUALITY: 2, STYLE: 0, PERFORMANCE: 0, DOCUMENTATION: 0 },
++      },
++      filesReviewed: 1,
++    });
++    const config = {
++      ...baseConfig,
++      workflows: {
++        artifactMutateCase: {
++          nodes: {
++            change: {
++              action: 'change-source',
++              with: { type: 'github-pr', owner: 'octocat', repo: 'hello-world', pr: 7 },
++              output: 'change',
++            },
++            review: {
++              action: 'review',
++              needs: ['change'],
++              with: { source: 'change' },
++              output: 'review',
++            },
++            reviewArtifact: {
++              action: 'create-review-artifact',
++              needs: ['review'],
++              with: { source: 'change', review: 'review' },
++              output: 'reviewArtifact',
++            },
++            save: {
++              action: 'save-artifact',
++              needs: ['reviewArtifact'],
++              with: { kind: 'review', source: 'change', artifact: 'reviewArtifact' },
++              output: 'saved',
++            },
++            markHigh: {
++              action: 'review-artifact-update-findings',
++              needs: ['save'],
++              with: {
++                artifact: 'saved',
++                severity: 'high',
++                state: 'attempted',
++                disposition: 'partial',
++              },
++              output: 'marked',
++            },
++          },
++        },
++      },
++    } as unknown as DRSConfig;
++
++    const result = await runWorkflow(config, 'artifactMutateCase', { workingDir: projectRoot });
++
++    const marked = result.artifacts.marked as {
++      payload: {
++        findings: Array<{
++          id: string;
++          state: string;
++          disposition: string;
++          issue: { severity: string };
++        }>;
++      };
++    };
++    expect(marked.payload.findings).toMatchObject([
++      { id: 'F001', state: 'attempted', disposition: 'partial', issue: { severity: 'HIGH' } },
++      { id: 'F002', state: 'open', disposition: 'confirmed', issue: { severity: 'MEDIUM' } },
++    ]);
++  });
++
+   it('reconciles fix verification findings and persists updated artifact state', async () => {
+     const projectRoot = createTempDir('drs-workflow-verify-fix-');
+     const resolvedIssue = {
+@@ -2772,11 +2867,20 @@ describe('workflow runner', () => {
+     );
+     expect(createCommentCalls.length).toBeGreaterThanOrEqual(2);
+ 
+-    // mark-fix-attempted ran and persisted an updated envelope (the
+-    // action's severity matching is case-sensitive and the workflow passes
+-    // the lowercased `{{inputs.fixSeverity}}`, so this assertion only
+-    // verifies that the action ran, not that the findings mutated).
++    // mark-fix-attempted set state=attempted / disposition=partial on the
++    // severity-matching findings; verify by inspecting the persisted artifact.
+     expect(result.nodes['mark-fix-attempted']).toMatchObject({ status: 'success' });
++    expect(result.artifacts.persistedReviewArtifact).toMatchObject({
++      payload: {
++        findings: [
++          expect.objectContaining({
++            id: 'F001',
++            state: 'attempted',
++            disposition: 'partial',
++          }),
++        ],
++      },
++    });
+   });
+ 
+   it('shows GitHub PR review context with embedded diff content', async () => {
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 49cbceb..3720e56 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -2237,7 +2237,7 @@ async function runReviewArtifactUpdateFindingsWorkflowNode(
+   const { artifact: updated, updatedIds } = updateReviewArtifactFindings(artifact, {
+     ids: parseListActionOption(node, 'ids', context),
+     fingerprints: parseListActionOption(node, 'fingerprints', context),
+-    severity: getStringActionOption(node, 'severity', context)?.trim(),
++    severity: getStringActionOption(node, 'severity', context)?.trim().toUpperCase(),
+     state,
+     disposition,
+   });

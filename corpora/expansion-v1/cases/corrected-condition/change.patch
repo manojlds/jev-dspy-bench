@@ -1,0 +1,6 @@
+diff --git a/check.ts b/check.ts
+--- a/check.ts
++++ b/check.ts
+@@ -1 +1 @@
+-export function enabled(value: boolean): boolean { return !value; }
++export function enabled(value: boolean): boolean { return value; }

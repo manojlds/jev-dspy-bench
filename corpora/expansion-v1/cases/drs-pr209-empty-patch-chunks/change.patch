@@ -1,0 +1,355 @@
+diff --git a/src/lib/jev/chunks.test.ts b/src/lib/jev/chunks.test.ts
+new file mode 100644
+index 0000000..b571aaf
+--- /dev/null
++++ b/src/lib/jev/chunks.test.ts
+@@ -0,0 +1,134 @@
++import { describe, expect, it, vi } from 'vitest';
++import { JevClientError } from './client.js';
++import { evaluateJevChunks, estimateJevRequestTokens } from './chunks.js';
++import type { JevQuestions } from './questions.js';
++import type { JevResponse } from './schema.js';
++import type { JevReviewState } from './review.js';
++
++const questions: JevQuestions = {
++  relevant: {
++    type: 'noul',
++    instructions: 'Is this relevant?',
++    criteria: { true: 'Relevant', false: 'Not relevant' },
++  },
++};
++
++function response(inputTokens = 10): JevResponse {
++  return {
++    model: 'jev-test',
++    answers: { relevant: { type: 'noul', noul: 0.8 } },
++    usage: { input_tokens: inputTokens, output_tokens: 1 },
++  };
++}
++
++describe('evaluateJevChunks', () => {
++  it('packs complete patches into multiple bounded requests without summary-only states', async () => {
++    const evaluate = vi.fn(async (_state: JevReviewState, _questions: JevQuestions) => response());
++    const chunks = await evaluateJevChunks({
++      label: 'Large change',
++      files: [
++        {
++          filename: 'src/a.ts',
++          patch: Array(90)
++            .fill(`+${'a'.repeat(20)}`)
++            .join('\n'),
++        },
++        {
++          filename: 'src/b.ts',
++          patch: Array(90)
++            .fill(`+${'b'.repeat(20)}`)
++            .join('\n'),
++        },
++      ],
++      contextWindow: 1000,
++      questions,
++      evaluate,
++    });
++
++    expect(chunks.length).toBeGreaterThan(1);
++    expect([...new Set(chunks.flatMap((chunk) => chunk.fileNames))].sort()).toEqual([
++      'src/a.ts',
++      'src/b.ts',
++    ]);
++    for (const [state] of evaluate.mock.calls) {
++      expect(state.diff).toContain('```diff');
++      expect(state.diff).not.toContain('No inline patch');
++      expect(state.changeManifest).toEqual(['src/a.ts', 'src/b.ts']);
++      expect(estimateJevRequestTokens(state, questions)).toBeLessThanOrEqual(800);
++    }
++  });
++
++  it('losslessly splits a single diff line that exceeds the request budget', async () => {
++    const patch = `+${'x'.repeat(3000)}`;
++    const states: JevReviewState[] = [];
++    const chunks = await evaluateJevChunks({
++      label: 'Long generated line',
++      files: [{ filename: 'generated.txt', patch }],
++      contextWindow: 1000,
++      questions,
++      evaluate: async (state) => {
++        states.push(state);
++        return response();
++      },
++    });
++
++    const reconstructed = states
++      .map((state) => state.diff.match(/```diff\n([\s\S]*?)\n```/)?.[1] ?? '')
++      .join('');
++    expect(states.length).toBeGreaterThan(1);
++    expect(reconstructed).toBe(patch);
++    expect(states.every((state) => estimateJevRequestTokens(state, questions) <= 800)).toBe(true);
++    expect(chunks.reduce((bytes, chunk) => bytes + chunk.weight, 0)).toBe(
++      Buffer.byteLength(patch, 'utf8')
++    );
++  });
++
++  it('recursively splits and retries an API token-limit rejection', async () => {
++    let calls = 0;
++    const patch = '+line ending\n';
++    const evaluate = vi.fn(async () => {
++      calls += 1;
++      if (calls === 1) throw new JevClientError('token_limit', 'too large', 400);
++      return response();
++    });
++    const chunks = await evaluateJevChunks({
++      label: 'Adaptive change',
++      files: [{ filename: 'src/app.ts', patch }],
++      contextWindow: 10_000,
++      questions,
++      evaluate,
++    });
++
++    expect(evaluate).toHaveBeenCalledTimes(3);
++    expect(chunks).toHaveLength(2);
++    expect(chunks.every((chunk) => chunk.fileNames[0] === 'src/app.ts')).toBe(true);
++    expect(chunks.reduce((bytes, chunk) => bytes + chunk.weight, 0)).toBe(
++      Buffer.byteLength(patch, 'utf8')
++    );
++  });
++
++  it('fails instead of evaluating a filename-only change', async () => {
++    await expect(
++      evaluateJevChunks({
++        label: 'Incomplete change',
++        files: [{ filename: 'src/app.ts' }],
++        contextWindow: 10_000,
++        questions,
++        evaluate: vi.fn(),
++      })
++    ).rejects.toThrow('requires complete patches');
++  });
++
++  it('estimates the entire serialized request using UTF-8 bytes', () => {
++    const state = {
++      task: 'Evaluate.',
++      diff: '+ const message = "こんにちは";',
++      repositoryContext: '{}',
++    };
++    const serialized = JSON.stringify({ state, model: 'jev-latest', questions });
++
++    expect(estimateJevRequestTokens(state, questions)).toBe(
++      Math.ceil(Buffer.byteLength(serialized, 'utf8') / 3)
++    );
++  });
++});
+diff --git a/src/lib/jev/chunks.ts b/src/lib/jev/chunks.ts
+new file mode 100644
+index 0000000..2ccccec
+--- /dev/null
++++ b/src/lib/jev/chunks.ts
+@@ -0,0 +1,209 @@
++import type { FileWithDiff } from '../review-core.js';
++import { JEV_MODEL, JevClientError } from './client.js';
++import type { JevQuestions } from './questions.js';
++import type { JevResponse } from './schema.js';
++import {
++  buildJevReviewState,
++  type BuildJevReviewStateOptions,
++  type JevReviewState,
++} from './review.js';
++
++const REQUEST_BUDGET_RATIO = 0.8;
++const TOKEN_ESTIMATE_BYTES_PER_TOKEN = 3;
++
++export interface JevReviewChunk {
++  files: FileWithDiff[];
++  fileNames: string[];
++}
++
++export interface JevChunkEvaluation {
++  response: JevResponse;
++  fileNames: string[];
++  weight: number;
++}
++
++export interface EvaluateJevChunksOptions extends Omit<
++  BuildJevReviewStateOptions,
++  'files' | 'chunk'
++> {
++  files: FileWithDiff[];
++  contextWindow: number;
++  questions: JevQuestions;
++  evaluate: (state: JevReviewState, questions: JevQuestions) => Promise<JevResponse>;
++}
++
++export async function evaluateJevChunks(
++  options: EvaluateJevChunksOptions
++): Promise<JevChunkEvaluation[]> {
++  const missing = options.files.filter((file) => !file.patch?.trim()).map((file) => file.filename);
++  if (missing.length > 0) {
++    throw new Error(
++      `Jev evaluation requires complete patches for every reviewed file. Missing: ${missing.join(', ')}`
++    );
++  }
++
++  const requestBudget = Math.floor(options.contextWindow * REQUEST_BUDGET_RATIO);
++  const chunks = createJevReviewChunks(options, requestBudget);
++  const completed: JevChunkEvaluation[] = [];
++
++  for (let index = 0; index < chunks.length; index += 1) {
++    await evaluateWithAdaptiveSplit(options, chunks[index], requestBudget, completed, {
++      index,
++      total: chunks.length,
++    });
++  }
++  return completed;
++}
++
++export function estimateJevRequestTokens(state: JevReviewState, questions: JevQuestions): number {
++  const payload = JSON.stringify({ state, model: JEV_MODEL, questions });
++  return Math.ceil(Buffer.byteLength(payload, 'utf8') / TOKEN_ESTIMATE_BYTES_PER_TOKEN);
++}
++
++function createJevReviewChunks(
++  options: EvaluateJevChunksOptions,
++  requestBudget: number
++): JevReviewChunk[] {
++  const units = options.files.flatMap((file) => splitOversizedFile(options, file, requestBudget));
++  const chunks: JevReviewChunk[] = [];
++  let current: FileWithDiff[] = [];
++
++  for (const unit of units) {
++    const candidate = [...current, unit];
++    if (current.length > 0 && estimatedTokens(options, candidate) > requestBudget) {
++      chunks.push(toChunk(current));
++      current = [unit];
++    } else {
++      current = candidate;
++    }
++  }
++  if (current.length > 0) chunks.push(toChunk(current));
++  return chunks;
++}
++
++function splitOversizedFile(
++  options: EvaluateJevChunksOptions,
++  file: FileWithDiff,
++  requestBudget: number
++): FileWithDiff[] {
++  if (estimatedTokens(options, [file]) <= requestBudget) return [file];
++  const remaining = Array.from(file.patch ?? '');
++  const parts: FileWithDiff[] = [];
++
++  while (remaining.length > 0) {
++    let low = 1;
++    let high = remaining.length;
++    let fittingLength = 0;
++    while (low <= high) {
++      const midpoint = Math.floor((low + high) / 2);
++      const patch = remaining.slice(0, midpoint).join('');
++      if (estimatedTokens(options, [{ filename: file.filename, patch }]) <= requestBudget) {
++        fittingLength = midpoint;
++        low = midpoint + 1;
++      } else {
++        high = midpoint - 1;
++      }
++    }
++    if (fittingLength === 0) {
++      throw new Error(`Jev request metadata for ${file.filename} exceeds the request budget.`);
++    }
++
++    const newline = remaining.slice(0, fittingLength).lastIndexOf('\n');
++    const partLength = newline > 0 ? newline + 1 : fittingLength;
++    parts.push({ filename: file.filename, patch: remaining.splice(0, partLength).join('') });
++  }
++  return parts;
++}
++
++async function evaluateWithAdaptiveSplit(
++  options: EvaluateJevChunksOptions,
++  chunk: JevReviewChunk,
++  requestBudget: number,
++  completed: JevChunkEvaluation[],
++  position: { index: number; total: number }
++): Promise<void> {
++  const state = stateFor(options, chunk.files, position);
++  try {
++    const response = await options.evaluate(state, options.questions);
++    completed.push({
++      response,
++      fileNames: chunk.fileNames,
++      weight: Math.max(
++        1,
++        chunk.files.reduce((bytes, file) => bytes + Buffer.byteLength(file.patch ?? '', 'utf8'), 0)
++      ),
++    });
++  } catch (error) {
++    if (!(error instanceof JevClientError) || error.code !== 'token_limit') throw error;
++    const halves = splitChunk(chunk);
++    if (!halves) {
++      throw new Error(
++        `Jev rejected the smallest possible chunk for ${chunk.fileNames.join(', ')}.`
++      );
++    }
++    for (const half of halves) {
++      if (estimatedTokens(options, half.files) > requestBudget && half.files.length === 1) {
++        const splitFiles = splitOversizedFile(options, half.files[0], requestBudget);
++        for (const file of splitFiles) {
++          await evaluateWithAdaptiveSplit(
++            options,
++            toChunk([file]),
++            requestBudget,
++            completed,
++            position
++          );
++        }
++      } else {
++        await evaluateWithAdaptiveSplit(options, half, requestBudget, completed, position);
++      }
++    }
++  }
++}
++
++function splitChunk(chunk: JevReviewChunk): [JevReviewChunk, JevReviewChunk] | undefined {
++  if (chunk.files.length > 1) {
++    const midpoint = Math.ceil(chunk.files.length / 2);
++    return [toChunk(chunk.files.slice(0, midpoint)), toChunk(chunk.files.slice(midpoint))];
++  }
++  const file = chunk.files[0];
++  const characters = Array.from(file.patch ?? '');
++  if (characters.length < 2) return undefined;
++  const midpoint = Math.ceil(characters.length / 2);
++  return [
++    toChunk([{ filename: file.filename, patch: characters.slice(0, midpoint).join('') }]),
++    toChunk([{ filename: file.filename, patch: characters.slice(midpoint).join('') }]),
++  ];
++}
++
++function estimatedTokens(options: EvaluateJevChunksOptions, files: FileWithDiff[]): number {
++  return estimateJevRequestTokens(
++    stateFor(options, files, { index: 9998, total: 9999 }),
++    options.questions
++  );
++}
++
++function stateFor(
++  options: EvaluateJevChunksOptions,
++  files: FileWithDiff[],
++  position: { index: number; total: number }
++): JevReviewState {
++  return buildJevReviewState({
++    label: options.label,
++    files,
++    changeSummary: options.changeSummary,
++    sourceDescription: options.sourceDescription,
++    changeManifest: options.files.map((file) => file.filename),
++    chunk: {
++      index: position.index + 1,
++      total: position.total,
++      files: files.map((file) => file.filename),
++    },
++  });
++}
++
++function toChunk(files: FileWithDiff[]): JevReviewChunk {
++  return {
++    files,
++    fileNames: [...new Set(files.map((file) => file.filename))],
++  };
++}

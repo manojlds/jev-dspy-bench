@@ -1,0 +1,23 @@
+id: drs-pr143-global-trace-finalization
+description: Global trace finalization loops over and unsubscribes every active trace
+  session instead of one session.
+dimensions:
+- concurrency
+comparison:
+  group: drs-trace-lifecycle
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - coupling
+  - abstractionQuality
+  - testQuality
+expected:
+- id: DRS-PR143-001
+  description: Global trace finalization loops over and unsubscribes every active
+    trace session instead of one session.
+  severity: HIGH
+  category: QUALITY
+  file: src/lib/trace-collector.ts
+  line: null

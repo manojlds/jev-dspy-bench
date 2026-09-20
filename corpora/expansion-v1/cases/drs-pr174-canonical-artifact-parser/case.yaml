@@ -1,0 +1,10 @@
+id: drs-pr174-canonical-artifact-parser
+description: Review parsing prefers the latest canonical artifact while preserving
+  explicit pointer and inline JSON precedence.
+dimensions:
+- compatibility
+comparison:
+  group: drs-canonical-artifact-parser
+  variant: clean
+jev: null
+expected: []

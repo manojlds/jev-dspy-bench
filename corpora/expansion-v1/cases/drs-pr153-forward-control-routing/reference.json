@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr153-forward-control-routing",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The patch consistently rejects non-loop routes whose target segment is at or before the current segment in both pre-execution validation and the runtime routing guard, while exempting explicit loop controls. The regression test verifies both validation and execution rejection for a backward pass-through route. No material defect is evident.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "not_applicable"
+  },
+  "priorities": []
+}

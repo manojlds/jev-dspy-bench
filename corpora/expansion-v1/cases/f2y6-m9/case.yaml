@@ -1,0 +1,14 @@
+id: f2y6-m9
+description: Workflow condition evaluation is simplified for boolean operators.
+dimensions:
+  - parser-semantics
+  - workflow-semantics
+jev:
+  expectedWeakDimensions: [correctness, reliability]
+expected:
+  - id: HIST-CONDITION-001
+    description: Naive splitting ignores operator precedence, parentheses, and quoted operators.
+    severity: HIGH
+    category: QUALITY
+    file: src/lib/workflow/conditions.ts
+    line: 4

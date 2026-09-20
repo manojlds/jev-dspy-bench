@@ -1,0 +1,9 @@
+id: drs-pr150-case-insensitive-severity
+description: Severity selectors are normalized before matching persisted review findings.
+dimensions:
+- correctness
+comparison:
+  group: drs-severity-normalization
+  variant: clean
+jev: null
+expected: []

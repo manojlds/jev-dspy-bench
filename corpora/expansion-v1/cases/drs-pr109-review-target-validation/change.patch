@@ -1,0 +1,128 @@
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index d60bd2e..ac8c537 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -60,6 +60,7 @@ const mocks = vi.hoisted(() => {
+     },
+     connectToRuntime: vi.fn(),
+     runDescribeIfEnabled: vi.fn(),
++    enforceRepoBranchMatch: vi.fn(async () => undefined),
+     executeReview: vi.fn(async (_config: unknown, source: { files: string[] }) => ({
+       issues: [] as unknown[],
+       summary: {
+@@ -130,6 +131,10 @@ vi.mock('../lib/description-executor.js', () => ({
+   runDescribeIfEnabled: mocks.runDescribeIfEnabled,
+ }));
+ 
++vi.mock('../lib/repository-validator.js', () => ({
++  enforceRepoBranchMatch: mocks.enforceRepoBranchMatch,
++}));
++
+ const baseConfig = {
+   pi: {},
+   agents: { default: { model: 'provider/default-model', skills: [] } },
+@@ -202,6 +207,7 @@ describe('workflow runner', () => {
+       title: 'Generated description',
+       summary: ['Describe the change'],
+     });
++    mocks.enforceRepoBranchMatch.mockResolvedValue(undefined);
+     mocks.createGitHubClient.mockReturnValue({ platform: 'github' });
+     mocks.GitHubPlatformAdapter.mockReturnValue(mocks.githubAdapter);
+     mocks.githubAdapter.getPullRequest.mockResolvedValue({
+@@ -1049,6 +1055,15 @@ describe('workflow runner', () => {
+     expect(mocks.GitHubPlatformAdapter).toHaveBeenCalled();
+     expect(mocks.githubAdapter.getPullRequest).toHaveBeenCalledWith('octocat/hello-world', 7);
+     expect(mocks.githubAdapter.getChangedFiles).toHaveBeenCalledWith('octocat/hello-world', 7);
++    expect(mocks.enforceRepoBranchMatch).toHaveBeenCalledWith(
++      process.cwd(),
++      'octocat/hello-world',
++      expect.objectContaining({ number: 7 }),
++      {
++        skipRepoCheck: undefined,
++        skipBranchCheck: undefined,
++      }
++    );
+     expect(mocks.executeReview).toHaveBeenCalledWith(
+       config,
+       expect.objectContaining({
+@@ -1272,6 +1287,11 @@ describe('workflow runner', () => {
+   it('loads a GitLab MR change source and reviews it', async () => {
+     const config = {
+       ...baseConfig,
++      review: {
++        ...baseConfig.review,
++        skipRepoCheck: true,
++        skipBranchCheck: true,
++      },
+       workflows: {
+         gitlabReview: {
+           inputs: {
+@@ -1308,6 +1328,15 @@ describe('workflow runner', () => {
+     expect(mocks.GitLabPlatformAdapter).toHaveBeenCalled();
+     expect(mocks.gitlabAdapter.getPullRequest).toHaveBeenCalledWith('group/repo', 8);
+     expect(mocks.gitlabAdapter.getChangedFiles).toHaveBeenCalledWith('group/repo', 8);
++    expect(mocks.enforceRepoBranchMatch).toHaveBeenCalledWith(
++      process.cwd(),
++      'group/repo',
++      expect.objectContaining({ number: 8 }),
++      {
++        skipRepoCheck: true,
++        skipBranchCheck: true,
++      }
++    );
+     expect(mocks.executeReview).toHaveBeenCalledWith(
+       config,
+       expect.objectContaining({
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 4a05d68..dfc1f63 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -38,6 +38,7 @@ import { runDescribeIfEnabled } from '../lib/description-executor.js';
+ import type { Description } from '../lib/description-formatter.js';
+ import type { FileWithDiff } from '../lib/review-core.js';
+ import { resolveCursorFixLinkOptions } from '../lib/cursor-fix-link.js';
++import { enforceRepoBranchMatch } from '../lib/repository-validator.js';
+ import { createGitHubClient } from '../github/client.js';
+ import { GitHubPlatformAdapter } from '../github/platform-adapter.js';
+ import { createGitLabClient } from '../gitlab/client.js';
+@@ -1498,6 +1499,32 @@ function isReviewSource(value: unknown): value is ReviewSource {
+   );
+ }
+ 
++async function enforceWorkflowReviewTarget(
++  config: DRSConfig,
++  source: ReviewSource,
++  workingDir: string
++): Promise<void> {
++  const platform =
++    typeof source.context.platform === 'string' ? source.context.platform : undefined;
++  if (!isWorkflowPlatform(platform)) {
++    return;
++  }
++
++  const projectId =
++    typeof source.context.projectId === 'string' ? source.context.projectId : undefined;
++  const pullRequest = isPullRequest(source.context.pullRequest)
++    ? source.context.pullRequest
++    : undefined;
++  if (!projectId || !pullRequest) {
++    throw new Error('Workflow platform review source is missing project or PR/MR metadata.');
++  }
++
++  await enforceRepoBranchMatch(workingDir, projectId, pullRequest, {
++    skipRepoCheck: config.review.skipRepoCheck,
++    skipBranchCheck: config.review.skipBranchCheck,
++  });
++}
++
+ async function runReviewWorkflowNode(
+   config: DRSConfig,
+   nodeId: string,
+@@ -1529,6 +1556,7 @@ async function runReviewWorkflowNode(
+     }
+ 
+     try {
++      await enforceWorkflowReviewTarget(config, source, source.workingDir ?? workingDir);
+       return await executeReview(config, {
+         ...source,
+         workingDir: source.workingDir ?? workingDir,

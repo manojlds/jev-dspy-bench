@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr123-severity-normalization",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "src/cli/workflow.ts removes toUpperCase() from the severity selector before updateReviewArtifactFindings receives it. Persisted findings in the deleted regression test use uppercase severities while the workflow supplies lowercase 'high'. The patch also deletes the test proving case-insensitive matching and weakens another assertion, with its new comment explicitly acknowledging that matching is case-sensitive and findings therefore do not mutate.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "weak",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "weak",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "weak",
+    "observability": "not_applicable"
+  },
+  "priorities": ["correctness", "testQuality", "reliability", "compatibility", "consistency"]
+}

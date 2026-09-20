@@ -1,0 +1,35 @@
+name: expansion-v1
+policy: Historical groups are isolated; the original pilot test remains frozen.
+train:
+- drs-pr119-artifact-tool-opt-in
+- drs-pr123-severity-normalization
+- drs-pr125-checkpoint-truncation
+- drs-pr141-fixer-tool-errors
+- drs-pr134-null-action
+- drs-pr142-trace-placeholder
+- drs-pr143-global-trace-finalization
+- drs-pr109-review-target-validation
+- drs-pr113-workflow-list
+- drs-pr140-review-artifact-persistence
+- drs-pr116-changed-line-filter
+- drs-pr146-condition-key-migration
+- drs-pr150-case-insensitive-severity
+- drs-pr153-forward-control-routing
+dev:
+- drs-pr205-patchless-review-files
+- drs-pr197-model-dependent-release-finalization
+- drs-pr209-empty-patch-chunks
+- drs-pr166-structured-execution-logs
+- drs-pr174-canonical-artifact-parser
+- drs-pr173-default-review-artifacts
+test:
+- q7m4-x2
+- n8v2-k6
+- h3d7-w5
+- t6a1-j8
+- b4l8-s3
+- f2y6-m9
+- x5j1-r7
+- u2k7-d5
+- l8q3-v9
+- p3w8-h2

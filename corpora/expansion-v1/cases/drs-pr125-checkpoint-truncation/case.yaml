@@ -1,0 +1,23 @@
+id: drs-pr125-checkpoint-truncation
+description: Checkpoint serialization truncates long strings and corrupts state needed
+  for exact resume.
+dimensions:
+- reliability
+comparison:
+  group: drs-checkpoint-integrity
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - reliability
+  - testQuality
+  - compatibility
+  - abstractionQuality
+expected:
+- id: DRS-PR125-001
+  description: Checkpoint serialization truncates long strings and corrupts state
+    needed for exact resume.
+  severity: HIGH
+  category: QUALITY
+  file: src/cli/workflow.ts
+  line: null

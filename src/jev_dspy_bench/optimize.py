@@ -24,11 +24,13 @@ def compile_program(
     split_name: str,
     model: str,
     output: Path,
+    corpus_path: Path = Path("corpus"),
     seed: int = 42,
     auto: OptimizationBudget = "light",
 ) -> Path:
-    corpus = Corpus(root / "corpus")
-    split = yaml.safe_load((root / "corpus" / "splits" / f"{split_name}.yaml").read_text())
+    corpus_root = corpus_path if corpus_path.is_absolute() else root / corpus_path
+    corpus = Corpus(corpus_root)
+    split = yaml.safe_load((corpus_root / "splits" / f"{split_name}.yaml").read_text())
     trainset = [_example(corpus, case_id) for case_id in split["train"]]
     valset = [_example(corpus, case_id) for case_id in split["dev"]]
     if not trainset or not valset:
@@ -57,13 +59,14 @@ def compile_program(
         "auto": auto,
         "seed": seed,
         "split": split_name,
+        "corpus": str(corpus_path),
         "trainCases": split["train"],
         "devCases": split["dev"],
         "testCasesSeen": False,
         "corpusContentSha256": corpus.lock()["contentSha256"],
         "programSha256": hashlib.sha256(output.read_bytes()).hexdigest(),
-        "metric": "0.8 expected-priority recall + 0.2 priority precision; clean cases penalize each priority",
-        "warning": "The pilot corpus is suitable for harness validation, not statistical claims.",
+        "metric": "0.7 reference dimension agreement + 0.3 reference priority F1; falls back to sparse expected signals when no full reference exists",
+        "warning": "Optimization quality remains limited by corpus size and source diversity.",
     }
     output.with_suffix(output.suffix + ".manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n"

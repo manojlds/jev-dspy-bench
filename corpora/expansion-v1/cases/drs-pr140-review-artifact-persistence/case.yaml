@@ -1,0 +1,10 @@
+id: drs-pr140-review-artifact-persistence
+description: Review nodes persist artifacts directly and packaged workflows remove
+  duplicated create/save nodes.
+dimensions:
+- maintainability
+comparison:
+  group: drs-review-artifact-persistence
+  variant: clean
+jev: null
+expected: []

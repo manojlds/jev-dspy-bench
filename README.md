@@ -179,6 +179,27 @@ uv run jev-dspy corpus validate-candidates \
 
 See `expansion/README.md` for the independent review and promotion gate.
 
+The annotated batch is promoted separately to `corpora/expansion-v1`; the original `corpus/` and
+its pilot hashes remain unchanged. Validate it with:
+
+```bash
+uv run jev-dspy corpus validate --corpus corpora/expansion-v1
+```
+
+Optimization can explicitly select the expanded corpus:
+
+```bash
+uv run jev-dspy optimize \
+  --corpus corpora/expansion-v1 \
+  --split expansion-v1 \
+  --model opencode-go/glm-5.3-flash \
+  --output artifacts/programs/expansion-v1-mipro.json
+```
+
+The optimizer uses the frozen 19-dimension references and priority labels. With only 14 train and
+six development cases, this snapshot supports early optimization experiments but not broad claims;
+further repositories and languages are still required.
+
 ## Attribution
 
 The 19-dimension rubric is adapted from `jev-review` 0.1.1 under the MIT license, commit

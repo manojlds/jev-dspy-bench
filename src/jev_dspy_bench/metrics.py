@@ -17,6 +17,36 @@ def expected_signal_score(metadata: CaseMetadata, scorecard: Scorecard) -> float
     return 0.8 * recall + 0.2 * precision
 
 
+def reference_score(reference: dict[str, Any], scorecard: Scorecard) -> float:
+    dimensions = reference["dimensions"]
+    scored: list[float] = []
+    for metric in METRIC_KEYS:
+        expected = dimensions[metric]
+        actual = scorecard.metrics[metric]
+        if expected == "uncertain":
+            continue
+        if expected == "not_applicable":
+            scored.append(1.0 if not actual.applicable else 0.0)
+        elif expected == "weak":
+            scored.append(1.0 if actual.applicable and actual.score < 8 else 0.0)
+        else:
+            scored.append(1.0 if actual.applicable and actual.score >= 8 else 0.0)
+
+    expected_priorities = set(reference["priorities"])
+    actual_priorities = {priority.metric for priority in scorecard.priorities}
+    if not expected_priorities:
+        priority_score = max(0.0, 1 - len(actual_priorities) / 5)
+    else:
+        true_positives = len(expected_priorities & actual_priorities)
+        recall = true_positives / len(expected_priorities)
+        precision = true_positives / len(actual_priorities) if actual_priorities else 0.0
+        priority_score = (
+            2 * precision * recall / (precision + recall) if precision + recall else 0.0
+        )
+    dimension_score = sum(scored) / len(scored) if scored else 0.0
+    return 0.7 * dimension_score + 0.3 * priority_score
+
+
 def summarize(runs: list[dict[str, Any]], cases: dict[str, CaseMetadata]) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for run in runs:

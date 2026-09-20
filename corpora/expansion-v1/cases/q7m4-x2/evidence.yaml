@@ -1,0 +1,5 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/162
+proposedRevision: 61af248b3911319d85b8145787560b1ccf92e022
+confirmingRevision: b29a62e9a0311978464a2bce17d103fa9bcb80ac
+rationale: An accepted DRS fix made the activity return hydrated context because activity input mutation does not propagate through Temporal serialization.

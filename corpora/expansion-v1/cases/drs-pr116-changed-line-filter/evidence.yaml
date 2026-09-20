@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/116
+proposedRevision: 3d8efebc5b661ea17689fb27b8b9ff2671327de4
+confirmingRevision: null
+rationale: The two-file change includes regression coverage for unchanged-line and
+  line-less findings and received a zero-finding final review.
+referenceAnnotator: opencode-agent

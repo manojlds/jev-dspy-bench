@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr174-canonical-artifact-parser",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The canonical artifact lookup is inserted only after the existing explicit-input parsing paths and before the legacy default file fallback, preserving explicit pointer and inline-output precedence while preferring canonical storage for implicit lookup. Conversion uses the existing artifact-store adapter and records a repository-relative source path. The test directly verifies canonical-over-legacy precedence and converted finding metadata.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "acceptable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "acceptable"
+  },
+  "priorities": []
+}

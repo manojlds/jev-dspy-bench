@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr116-changed-line-filter",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "When a line validator is supplied, the implementation retains only issues with a defined line accepted by that validator, then recomputes the summary from the retained issues before display and posting. The regression test includes a valid changed-line issue, an invalid unchanged-line issue, and a line-less issue, and verifies both the filtered issue list and corrected severity totals.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "acceptable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "acceptable"
+  },
+  "priorities": []
+}

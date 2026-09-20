@@ -1,0 +1,23 @@
+id: drs-pr197-model-dependent-release-finalization
+description: Release changelog finalization depends on a live model call and can block
+  deterministic release preparation.
+dimensions:
+- reliability
+comparison:
+  group: drs-release-finalization
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - reliability
+  - correctness
+  - coupling
+  - testQuality
+  - performance
+expected:
+- id: DRS-PR197-001
+  description: Release changelog finalization depends on a live model call and can
+    block deterministic release preparation.
+  severity: HIGH
+  category: QUALITY
+  file: .github/workflows/release-changelog.yml
+  line: null

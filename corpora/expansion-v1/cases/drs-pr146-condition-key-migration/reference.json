@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr146-condition-key-migration",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 4,
+  "rationale": "The patch consistently removes the `condition` alias from the configuration type, validation field sets, execution logic, workflow detail output, and loop error text. All three packaged loop workflows are migrated to `if`, and affected tests and log assertions are updated to the same contract. No stale runtime fallback to `condition` is visible in the supplied change.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "not_applicable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "not_applicable"
+  },
+  "priorities": []
+}

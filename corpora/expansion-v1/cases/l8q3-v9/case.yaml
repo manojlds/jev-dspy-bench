@@ -1,0 +1,6 @@
+id: l8q3-v9
+description: Trace persistence is added as an explicit optional executor output.
+dimensions:
+  - clean-feature
+  - artifact-lifecycle
+expected: []

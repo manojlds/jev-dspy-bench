@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/146
+proposedRevision: 5284ea63be1cf5f9a4e728b553ad6a1d89130445
+confirmingRevision: null
+rationale: Production code, tests, and packaged workflows migrate together; CI and
+  two final reviews reported no issues.
+referenceAnnotator: opencode-agent

@@ -1,0 +1,10 @@
+id: drs-pr166-structured-execution-logs
+description: Temporal activity lifecycle logs include structured identity, attempt,
+  duration, and failure context.
+dimensions:
+- observability
+comparison:
+  group: drs-structured-execution-logs
+  variant: clean
+jev: null
+expected: []

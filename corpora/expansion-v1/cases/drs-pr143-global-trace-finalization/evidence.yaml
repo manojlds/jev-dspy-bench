@@ -1,0 +1,7 @@
+provenance: derived-historical
+source: https://github.com/manojlds/drs/pull/143
+proposedRevision: 4f4523bc6d291b7cca435ac8ebd2339251fe027e
+confirmingRevision: 5eb537eafe35db9fe3cf031f0eaffa11435ee765
+rationale: The next accepted fix replaces global finalization with finalizeSession(sessionId),
+  removing only the requested session from the active set.
+referenceAnnotator: opencode-agent

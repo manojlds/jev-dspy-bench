@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr205-patchless-review-files",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "When filesWithDiffs is non-empty, the new branch constructs filesForInstructions solely by filtering that partial array. A changed file present in the authoritative filteredFiles list but lacking an inline patch, such as a binary or provider-collapsed file, is therefore omitted entirely. The patch also removes the regression test that specifically required assets/logo.png to remain represented.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "weak",
+    "observability": "not_applicable"
+  },
+  "priorities": [
+    "correctness",
+    "compatibility",
+    "testQuality",
+    "reliability"
+  ]
+}

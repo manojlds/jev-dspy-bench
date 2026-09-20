@@ -1,0 +1,10 @@
+id: drs-pr109-review-target-validation
+description: GitHub and GitLab workflow review sources validate repository and branch
+  inputs while honoring skip options.
+dimensions:
+- validation
+comparison:
+  group: drs-review-target-validation
+  variant: clean
+jev: null
+expected: []

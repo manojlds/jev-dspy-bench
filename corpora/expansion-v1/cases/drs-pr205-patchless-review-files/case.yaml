@@ -1,0 +1,22 @@
+id: drs-pr205-patchless-review-files
+description: Review input is built only from files with inline patches and omits authoritative
+  patchless changed files.
+dimensions:
+- correctness
+comparison:
+  group: drs-review-context-completeness
+  variant: defect
+jev:
+  expectedWeakDimensions:
+  - correctness
+  - compatibility
+  - testQuality
+  - reliability
+expected:
+- id: DRS-PR205-001
+  description: Review input is built only from files with inline patches and omits
+    authoritative patchless changed files.
+  severity: HIGH
+  category: QUALITY
+  file: src/lib/review-orchestrator.ts
+  line: null

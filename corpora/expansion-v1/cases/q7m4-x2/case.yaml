@@ -1,0 +1,15 @@
+id: q7m4-x2
+description: A distributed workflow boundary changes how hydrated context is propagated.
+dimensions:
+  - cross-file-context
+  - distributed-boundary
+  - prompt-reasoning
+jev:
+  expectedWeakDimensions: [correctness, reliability]
+expected:
+  - id: HIST-TEMPORAL-001
+    description: Mutating an activity input cannot update workflow-owned context across serialization.
+    severity: HIGH
+    category: QUALITY
+    file: src/temporal/activities.ts
+    line: 7

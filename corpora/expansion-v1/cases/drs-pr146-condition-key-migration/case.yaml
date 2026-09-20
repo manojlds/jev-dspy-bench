@@ -1,0 +1,10 @@
+id: drs-pr146-condition-key-migration
+description: The workflow DSL removes the condition synonym and migrates code, tests,
+  and packaged workflows to if.
+dimensions:
+- compatibility
+comparison:
+  group: drs-condition-key-migration
+  variant: clean
+jev: null
+expected: []

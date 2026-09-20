@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr113-workflow-list",
+  "annotator": "opencode-agent",
+  "disposition": "clean",
+  "reviewability": "sufficient",
+  "confidence": 4,
+  "rationale": "Workflow loading now records source metadata while preserving the existing packaged-then-project merge precedence. loadWorkflowSourceInfo separately records whether a project workflow shadows a packaged name, and listWorkflows produces sorted entries with consistent human and JSON representations. Tests exercise both ordinary packaged discovery and a project override.",
+  "dimensions": {
+    "correctness": "acceptable",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "acceptable",
+    "reliability": "acceptable",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "acceptable",
+    "observability": "not_applicable"
+  },
+  "priorities": []
+}

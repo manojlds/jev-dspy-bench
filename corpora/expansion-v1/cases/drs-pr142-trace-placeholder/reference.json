@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "candidate_id": "drs-pr142-trace-placeholder",
+  "annotator": "opencode-agent",
+  "disposition": "material_issue",
+  "reviewability": "sufficient",
+  "confidence": 5,
+  "rationale": "The generated script assigns `TRACE_DATA` using `JSON.stringify('@@TRACE_DATA@@')`, producing the literal string placeholder rather than the supplied WorkflowTrace. Functions such as `findNodeData` immediately iterate `TRACE_DATA.agentTraces`; that property is undefined on the string, so selecting a node cannot render details and raises a runtime error.",
+  "dimensions": {
+    "correctness": "weak",
+    "cognitiveComplexity": "acceptable",
+    "readability": "acceptable",
+    "modularity": "acceptable",
+    "coupling": "acceptable",
+    "changeability": "acceptable",
+    "abstractionQuality": "acceptable",
+    "projectStructure": "acceptable",
+    "duplication": "acceptable",
+    "maintainability": "acceptable",
+    "testQuality": "weak",
+    "reliability": "weak",
+    "security": "acceptable",
+    "consistency": "acceptable",
+    "documentation": "acceptable",
+    "performance": "not_applicable",
+    "scalability": "not_applicable",
+    "compatibility": "not_applicable",
+    "observability": "weak"
+  },
+  "priorities": [
+    "correctness",
+    "reliability",
+    "observability",
+    "testQuality"
+  ]
+}

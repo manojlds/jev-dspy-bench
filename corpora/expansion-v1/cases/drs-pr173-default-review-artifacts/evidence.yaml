@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/173
+proposedRevision: a6d6efaf6f6800eefef882921ce7ba4ce991b078
+confirmingRevision: null
+rationale: The focused two-file change includes behavior tests, green CI, a zero-finding
+  review, and no corrective follow-up.
+referenceAnnotator: opencode-agent

@@ -1,0 +1,7 @@
+provenance: historical
+source: https://github.com/manojlds/drs/pull/150
+proposedRevision: 827fb59eda9065e2c9db1b09862a657f33b70e1d
+confirmingRevision: null
+rationale: A focused regression test exercises lowercase input against uppercase stored
+  severities; CI and final review were clean.
+referenceAnnotator: opencode-agent
