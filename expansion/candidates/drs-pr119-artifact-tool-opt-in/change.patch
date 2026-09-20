@@ -1,0 +1,26 @@
+diff --git a/src/pi/sdk.test.ts b/src/pi/sdk.test.ts
+index 8f320ce..074236b 100644
+--- a/src/pi/sdk.test.ts
++++ b/src/pi/sdk.test.ts
+@@ -499,7 +499,7 @@ describe('pi/sdk', () => {
+ 
+       expect(gitDiff).toBeDefined();
+       expect((createArgs as { tools?: string[] }).tools).toContain('write_json_output');
+-      expect((createArgs as { tools?: string[] }).tools).not.toContain('write_artifact_output');
++      expect((createArgs as { tools?: string[] }).tools).toContain('write_artifact_output');
+       expect((createArgs as { tools?: string[] }).tools).toContain('git_diff');
+       expect((createArgs as { tools?: string[] }).tools).not.toContain('bash');
+ 
+diff --git a/src/pi/sdk.ts b/src/pi/sdk.ts
+index ab362ff..f7d63cc 100644
+--- a/src/pi/sdk.ts
++++ b/src/pi/sdk.ts
+@@ -854,7 +854,7 @@ class PiSessionRuntime {
+       });
+     }
+ 
+-    if (this.isToolEnabled('write_artifact_output', false, agentTools)) {
++    if (this.isToolEnabled('write_artifact_output', true, agentTools)) {
+       customTools.push({
+         name: 'write_artifact_output',
+         label: 'write_artifact_output',

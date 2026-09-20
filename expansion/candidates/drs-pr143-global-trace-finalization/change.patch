@@ -1,0 +1,315 @@
+diff --git a/src/lib/trace-collector.ts b/src/lib/trace-collector.ts
+index 1e5aa7e..2d804ca 100644
+--- a/src/lib/trace-collector.ts
++++ b/src/lib/trace-collector.ts
+@@ -92,12 +92,16 @@ interface ActiveTurn {
+   activeToolCalls: Map<string, ActiveToolCall>;
+ }
+ 
++interface ActiveSession {
++  trace: AgentTrace;
++  currentTurn: ActiveTurn | null;
++  currentTurnIndex: number;
++  unsubscribe: (() => void) | null;
++}
++
+ export class TraceCollector {
+   private traces: AgentTrace[] = [];
+-  private currentTrace: AgentTrace | null = null;
+-  private currentTurn: ActiveTurn | null = null;
+-  private currentTurnIndex = -1;
+-  private unsubscribe: (() => void) | null = null;
++  private activeSessions = new Map<string, ActiveSession>();
+   private promptText = '';
+   private nodeId = '';
+   private agentId = '';
+@@ -119,7 +123,7 @@ export class TraceCollector {
+     },
+     sessionId: string
+   ): void {
+-    this.currentTrace = {
++    const trace: AgentTrace = {
+       id: randomUUID(),
+       nodeId: this.nodeId,
+       agentId: this.agentId,
+@@ -135,35 +139,42 @@ export class TraceCollector {
+       workflowIteration: this.workflowIteration,
+     };
+ 
+-    this.currentTurn = null;
+-    this.currentTurnIndex = -1;
++    const active: ActiveSession = {
++      trace,
++      currentTurn: null,
++      currentTurnIndex: -1,
++      unsubscribe: null,
++    };
+ 
+-    this.unsubscribe = session.subscribe((event: PiEvent) => {
+-      this.handleEvent(event);
++    active.unsubscribe = session.subscribe((event: PiEvent) => {
++      this.handleEvent(sessionId, event);
+     });
++
++    this.activeSessions.set(sessionId, active);
+   }
+ 
+-  private handleEvent(event: PiEvent): void {
+-    if (!this.currentTrace) return;
++  private handleEvent(sessionId: string, event: PiEvent): void {
++    const active = this.activeSessions.get(sessionId);
++    if (!active) return;
+ 
+     switch (event.type) {
+       case 'turn_start':
+-        this.startTurn(event);
++        this.startTurn(sessionId, active, event);
+         break;
+       case 'turn_end':
+-        this.endTurn(event);
++        this.endTurn(sessionId, active, event);
+         break;
+       case 'tool_execution_start':
+-        this.startToolCall(event);
++        this.startToolCall(active, event);
+         break;
+       case 'tool_execution_end':
+-        this.endToolCall(event);
++        this.endToolCall(active, event);
+         break;
+       case 'message_end':
+-        this.captureMessage(event);
++        this.captureMessage(active, event);
+         break;
+       case 'agent_end':
+-        this.completeTrace(event);
++        this.completeTrace(active, event);
+         break;
+       case 'compaction_start':
+       case 'compaction_end':
+@@ -173,10 +184,10 @@ export class TraceCollector {
+     }
+   }
+ 
+-  private startTurn(event: PiEvent): void {
+-    const turnIndex = (event.turnIndex as number) ?? ++this.currentTurnIndex;
+-    this.currentTurnIndex = turnIndex;
+-    this.currentTurn = {
++  private startTurn(sessionId: string, active: ActiveSession, event: PiEvent): void {
++    const turnIndex = (event.turnIndex as number) ?? ++active.currentTurnIndex;
++    active.currentTurnIndex = turnIndex;
++    active.currentTurn = {
+       turnIndex,
+       startedAt: new Date().toISOString(),
+       toolCalls: [],
+@@ -184,8 +195,8 @@ export class TraceCollector {
+     };
+   }
+ 
+-  private endTurn(event: PiEvent): void {
+-    if (!this.currentTrace || !this.currentTurn) return;
++  private endTurn(sessionId: string, active: ActiveSession, event: PiEvent): void {
++    if (!active.currentTurn) return;
+ 
+     const message = event.message as
+       | {
+@@ -202,7 +213,7 @@ export class TraceCollector {
+ 
+     const completedAt = new Date().toISOString();
+     const durationMs =
+-      new Date(completedAt).getTime() - new Date(this.currentTurn.startedAt).getTime();
++      new Date(completedAt).getTime() - new Date(active.currentTurn.startedAt).getTime();
+ 
+     let assistantContent = '';
+     let thinkingContent = '';
+@@ -218,8 +229,8 @@ export class TraceCollector {
+     }
+ 
+     const turn: TraceTurn = {
+-      turnIndex: this.currentTurn.turnIndex,
+-      startedAt: this.currentTurn.startedAt,
++      turnIndex: active.currentTurn.turnIndex,
++      startedAt: active.currentTurn.startedAt,
+       completedAt,
+       durationMs,
+       model: message?.model,
+@@ -230,22 +241,22 @@ export class TraceCollector {
+       usage: message?.usage,
+       assistantContent: assistantContent || undefined,
+       thinkingContent: thinkingContent || undefined,
+-      toolCalls: [...this.currentTurn.toolCalls],
++      toolCalls: [...active.currentTurn.toolCalls],
+     };
+ 
+-    this.currentTrace.turns.push(turn);
+-    this.currentTrace.toolCallCount += turn.toolCalls.length;
+-    this.currentTurn = null;
++    active.trace.turns.push(turn);
++    active.trace.toolCallCount += turn.toolCalls.length;
++    active.currentTurn = null;
+   }
+ 
+-  private startToolCall(event: PiEvent): void {
+-    if (!this.currentTurn) return;
++  private startToolCall(active: ActiveSession, event: PiEvent): void {
++    if (!active.currentTurn) return;
+     const toolCallId = event.toolCallId as string;
+     const toolName = event.toolName as string;
+     const args = event.args;
+     const startedAt = new Date().toISOString();
+ 
+-    this.currentTurn.activeToolCalls.set(toolCallId, {
++    active.currentTurn.activeToolCalls.set(toolCallId, {
+       toolCallId,
+       toolName,
+       args,
+@@ -253,36 +264,38 @@ export class TraceCollector {
+     });
+   }
+ 
+-  private endToolCall(event: PiEvent): void {
+-    if (!this.currentTurn) return;
++  private endToolCall(active: ActiveSession, event: PiEvent): void {
++    if (!active.currentTurn) return;
+     const toolCallId = event.toolCallId as string;
+-    const active = this.currentTurn.activeToolCalls.get(toolCallId);
+-    if (!active) return;
++    const activeTool = active.currentTurn.activeToolCalls.get(toolCallId);
++    if (!activeTool) return;
+ 
+     const completedAt = new Date().toISOString();
+-    const durationMs = new Date(completedAt).getTime() - new Date(active.startedAt).getTime();
++    const durationMs = new Date(completedAt).getTime() - new Date(activeTool.startedAt).getTime();
+ 
+     const toolCall: TraceToolCall = {
+-      toolCallId: active.toolCallId,
+-      toolName: active.toolName,
+-      args: active.args,
++      toolCallId: activeTool.toolCallId,
++      toolName: activeTool.toolName,
++      args: activeTool.args,
+       result: event.result,
+       isError: event.isError === true,
+-      startedAt: active.startedAt,
++      startedAt: activeTool.startedAt,
+       completedAt,
+       durationMs,
+     };
+ 
+-    this.currentTurn.toolCalls.push(toolCall);
+-    this.currentTurn.activeToolCalls.delete(toolCallId);
++    active.currentTurn.toolCalls.push(toolCall);
++    active.currentTurn.activeToolCalls.delete(toolCallId);
+ 
+     if (
+-      active.toolName === 'skill' ||
+-      (active.toolName === 'read' && typeof active.args === 'object' && active.args !== null)
++      activeTool.toolName === 'skill' ||
++      (activeTool.toolName === 'read' &&
++        typeof activeTool.args === 'object' &&
++        activeTool.args !== null)
+     ) {
+-      const skillName = this.extractSkillName(active.args, event.result);
+-      if (skillName && this.currentTrace && !this.currentTrace.skillsLoaded.includes(skillName)) {
+-        this.currentTrace.skillsLoaded.push(skillName);
++      const skillName = this.extractSkillName(activeTool.args, event.result);
++      if (skillName && !active.trace.skillsLoaded.includes(skillName)) {
++        active.trace.skillsLoaded.push(skillName);
+       }
+     }
+   }
+@@ -300,21 +313,18 @@ export class TraceCollector {
+     return undefined;
+   }
+ 
+-  private captureMessage(event: PiEvent): void {
+-    if (!this.currentTrace) return;
++  private captureMessage(active: ActiveSession, event: PiEvent): void {
+     const message = event.message as { usage?: TraceUsage } | undefined;
+-    if (message?.usage && !this.currentTrace.totalUsage) {
+-      this.currentTrace.totalUsage = message.usage;
++    if (message?.usage && !active.trace.totalUsage) {
++      active.trace.totalUsage = message.usage;
+     }
+   }
+ 
+-  private completeTrace(event: PiEvent): void {
+-    if (!this.currentTrace) return;
+-
++  private completeTrace(active: ActiveSession, event: PiEvent): void {
+     const completedAt = new Date().toISOString();
+-    this.currentTrace.completedAt = completedAt;
+-    this.currentTrace.durationMs =
+-      new Date(completedAt).getTime() - new Date(this.currentTrace.startedAt).getTime();
++    active.trace.completedAt = completedAt;
++    active.trace.durationMs =
++      new Date(completedAt).getTime() - new Date(active.trace.startedAt).getTime();
+ 
+     if (event.messages && Array.isArray(event.messages)) {
+       const lastAssistant = [...event.messages]
+@@ -323,32 +333,33 @@ export class TraceCollector {
+       if (lastAssistant) {
+         const usage = (lastAssistant as { usage?: TraceUsage }).usage;
+         if (usage) {
+-          this.currentTrace.totalUsage = usage;
++          active.trace.totalUsage = usage;
+         }
+       }
+     }
+ 
+-    this.currentTrace.errorMessage = event.willRetry ? 'Agent ended with retry pending' : undefined;
++    active.trace.errorMessage = event.willRetry ? 'Agent ended with retry pending' : undefined;
+   }
+ 
+   finalizeCurrentTrace(): AgentTrace | undefined {
+-    if (this.unsubscribe) {
+-      this.unsubscribe();
+-      this.unsubscribe = null;
+-    }
+-
+-    if (this.currentTrace) {
+-      if (!this.currentTrace.completedAt) {
++    const entries = Array.from(this.activeSessions.values());
++    for (const active of entries) {
++      if (active.unsubscribe) {
++        active.unsubscribe();
++        active.unsubscribe = null;
++      }
++      if (!active.trace.completedAt) {
+         const now = new Date().toISOString();
+-        this.currentTrace.completedAt = now;
+-        this.currentTrace.durationMs =
+-          new Date(now).getTime() - new Date(this.currentTrace.startedAt).getTime();
++        active.trace.completedAt = now;
++        active.trace.durationMs =
++          new Date(now).getTime() - new Date(active.trace.startedAt).getTime();
+       }
+-      this.traces.push(this.currentTrace);
+-      const trace = this.currentTrace;
+-      this.currentTrace = null;
+-      this.currentTurn = null;
+-      return trace;
++      this.traces.push(active.trace);
++    }
++    this.activeSessions.clear();
++
++    if (entries.length > 0) {
++      return entries[entries.length - 1].trace;
+     }
+     return undefined;
+   }
+@@ -374,8 +385,11 @@ export class TraceCollector {
+ 
+   clear(): void {
+     this.traces = [];
+-    this.currentTrace = null;
+-    this.currentTurn = null;
+-    this.unsubscribe = null;
++    for (const active of this.activeSessions.values()) {
++      if (active.unsubscribe) {
++        active.unsubscribe();
++      }
++    }
++    this.activeSessions.clear();
+   }
+ }

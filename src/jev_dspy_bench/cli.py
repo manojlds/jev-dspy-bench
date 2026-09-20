@@ -6,6 +6,7 @@ from pathlib import Path
 import typer
 import yaml
 
+from .candidates import stage_candidates, validate_staged_candidates
 from .config import load_config
 from .corpus import Corpus
 from .importer import import_drs_corpus
@@ -54,6 +55,38 @@ def corpus_validate() -> None:
         for case_id in set().union(*partitions):
             corpus.load_case(case_id)
     typer.echo(f"Validated {len(suites)} suites and {count} suite case entries.")
+
+
+@corpus_app.command("stage-candidates")
+def corpus_stage_candidates(
+    repository: Path = typer.Option(..., exists=True, file_okay=False, resolve_path=True),
+    manifest: Path = typer.Option(..., exists=True, dir_okay=False, resolve_path=True),
+    output: Path = typer.Option(Path("expansion/candidates")),
+    force: bool = typer.Option(False),
+    fetch_missing: bool = typer.Option(
+        False, help="Fetch exact GitHub-retained commits missing from local history."
+    ),
+) -> None:
+    lock = stage_candidates(
+        repository,
+        manifest,
+        _root() / output,
+        force=force,
+        fetch_missing=fetch_missing,
+    )
+    typer.echo(f"Staged {len(lock['candidates'])} candidates at {_root() / output}")
+
+
+@corpus_app.command("validate-candidates")
+def corpus_validate_candidates(
+    manifest: Path = typer.Option(..., exists=True, dir_okay=False, resolve_path=True),
+    candidates: Path = typer.Option(Path("expansion/candidates")),
+) -> None:
+    counts = validate_staged_candidates(manifest, _root() / candidates)
+    typer.echo(
+        f"Validated {counts['train']} train and {counts['dev']} dev candidates "
+        f"({counts['defect']} defect, {counts['clean']} clean)."
+    )
 
 
 @app.command()

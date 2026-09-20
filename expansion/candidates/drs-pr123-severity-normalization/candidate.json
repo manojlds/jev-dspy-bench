@@ -1,0 +1,25 @@
+{
+  "category": "correctness",
+  "confirmingRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d",
+  "description": "Lowercase workflow severity input is compared directly with uppercase persisted findings.",
+  "evidence": "The reverse-fix patch removes the uppercase normalization and focused regression test that proved lowercase selectors previously updated zero findings.",
+  "fromRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d",
+  "group": "drs-severity-normalization",
+  "id": "drs-pr123-severity-normalization",
+  "outcome": "defect",
+  "patchBytes": 5163,
+  "patchSha256": "8ba546c99aa733701333adcddc920ca432ca0eb4f358e326eba039c35231ca9f",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 123,
+  "resolvedRevisions": {
+    "4937f82c29c575b28cab7ec2fe83ff91996c746b": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+    "827fb59eda9065e2c9db1b09862a657f33b70e1d": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+  },
+  "severity": "MEDIUM",
+  "source": "https://github.com/manojlds/drs/pull/123",
+  "target": "train",
+  "toRevision": "4937f82c29c575b28cab7ec2fe83ff91996c746b"
+}

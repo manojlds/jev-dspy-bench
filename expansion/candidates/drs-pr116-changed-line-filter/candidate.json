@@ -1,0 +1,25 @@
+{
+  "category": "correctness",
+  "confirmingRevision": null,
+  "description": "Findings outside changed lines are removed and summary counts are recomputed from retained issues.",
+  "evidence": "The two-file change includes regression coverage for unchanged-line and line-less findings and received a zero-finding final review.",
+  "fromRevision": "bb70ee3a4e3136ae931137c9449ec7f9dc325e23",
+  "group": "drs-changed-line-filter",
+  "id": "drs-pr116-changed-line-filter",
+  "outcome": "clean",
+  "patchBytes": 6413,
+  "patchSha256": "d55749950501ce720131b18eac488ce62a453e50b221e72dba9215e87e9ba73b",
+  "paths": [
+    "src/lib/unified-review-executor.ts",
+    "src/lib/unified-review-executor.test.ts"
+  ],
+  "pullRequest": 116,
+  "resolvedRevisions": {
+    "3d8efebc5b661ea17689fb27b8b9ff2671327de4": "3d8efebc5b661ea17689fb27b8b9ff2671327de4",
+    "bb70ee3a4e3136ae931137c9449ec7f9dc325e23": "bb70ee3a4e3136ae931137c9449ec7f9dc325e23"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/116",
+  "target": "train",
+  "toRevision": "3d8efebc5b661ea17689fb27b8b9ff2671327de4"
+}

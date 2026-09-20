@@ -1,0 +1,27 @@
+{
+  "category": "compatibility",
+  "confirmingRevision": null,
+  "description": "The workflow DSL removes the condition synonym and migrates code, tests, and packaged workflows to if.",
+  "evidence": "Production code, tests, and packaged workflows migrate together; CI and two final reviews reported no issues.",
+  "fromRevision": "14047bd2dfb19c978b8e571102c2f7829a784d7d",
+  "group": "drs-condition-key-migration",
+  "id": "drs-pr146-condition-key-migration",
+  "outcome": "clean",
+  "patchBytes": 7004,
+  "patchSha256": "98cc04f5eac23c0da83c2576b85f273af97e63bd108de1d7c728abf19facc022",
+  "paths": [
+    "src/lib/config.ts",
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts",
+    ".pi/workflows"
+  ],
+  "pullRequest": 146,
+  "resolvedRevisions": {
+    "14047bd2dfb19c978b8e571102c2f7829a784d7d": "14047bd2dfb19c978b8e571102c2f7829a784d7d",
+    "5284ea63be1cf5f9a4e728b553ad6a1d89130445": "5284ea63be1cf5f9a4e728b553ad6a1d89130445"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/146",
+  "target": "train",
+  "toRevision": "5284ea63be1cf5f9a4e728b553ad6a1d89130445"
+}

@@ -1,0 +1,25 @@
+{
+  "category": "compatibility",
+  "confirmingRevision": null,
+  "description": "Review parsing prefers the latest canonical artifact while preserving explicit pointer and inline JSON precedence.",
+  "evidence": "The focused parser change has extensive precedence tests, green CI, a zero-finding final review, and no corrective follow-up.",
+  "fromRevision": "a6d6efaf6f6800eefef882921ce7ba4ce991b078",
+  "group": "drs-canonical-artifact-parser",
+  "id": "drs-pr174-canonical-artifact-parser",
+  "outcome": "clean",
+  "patchBytes": 4734,
+  "patchSha256": "29d019f70b870f06ad3caa884eb8e5183266c229f27fb340a823494c7cdce532",
+  "paths": [
+    "src/lib/review-parser.ts",
+    "src/lib/review-parser.test.ts"
+  ],
+  "pullRequest": 174,
+  "resolvedRevisions": {
+    "a6d6efaf6f6800eefef882921ce7ba4ce991b078": "a6d6efaf6f6800eefef882921ce7ba4ce991b078",
+    "e32e609701bf566b27f2ea3971e12095b2b10872": "e32e609701bf566b27f2ea3971e12095b2b10872"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/174",
+  "target": "dev",
+  "toRevision": "e32e609701bf566b27f2ea3971e12095b2b10872"
+}

@@ -163,6 +163,22 @@ Before making comparative quality claims:
 5. Run repeated evaluations and inspect every disagreement.
 6. Report quality, stability, latency, token use, inference cost, and compilation cost separately.
 
+The first expansion batch is staged under `expansion/`: 14 balanced training candidates and six
+balanced development candidates, all derived from exact DRS revisions. These are not yet promoted
+labels. Reproduce and verify them with:
+
+```bash
+uv run jev-dspy corpus stage-candidates \
+  --repository ../drs \
+  --manifest expansion/drs-candidates-v1.yaml \
+  --fetch-missing \
+  --force
+uv run jev-dspy corpus validate-candidates \
+  --manifest expansion/drs-candidates-v1.yaml
+```
+
+See `expansion/README.md` for the independent review and promotion gate.
+
 ## Attribution
 
 The 19-dimension rubric is adapted from `jev-review` 0.1.1 under the MIT license, commit

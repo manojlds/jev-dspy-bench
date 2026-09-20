@@ -1,0 +1,26 @@
+{
+  "category": "correctness",
+  "confirmingRevision": "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454",
+  "description": "A null YAML action reaches a string-only edit-distance helper and throws an unhelpful TypeError.",
+  "evidence": "The accepted review fix validates that action is a string and adds a regression test for null.",
+  "fromRevision": "987deb8470a0b1d39fbc58269bf839f40b35e65d",
+  "group": "drs-action-validation",
+  "id": "drs-pr134-null-action",
+  "outcome": "defect",
+  "patchBytes": 9330,
+  "patchSha256": "fb6ab97dc0f982ac5611ace650e5353d4d26cdd82247b096b1eb275f4b8f1d6b",
+  "paths": [
+    "src/lib/config.ts",
+    "src/lib/config.test.ts"
+  ],
+  "pullRequest": 134,
+  "resolvedRevisions": {
+    "20a67537bd02c83aefb289ae13b0d3e5c22d75bd": "20a67537bd02c83aefb289ae13b0d3e5c22d75bd",
+    "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454": "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454",
+    "987deb8470a0b1d39fbc58269bf839f40b35e65d": "987deb8470a0b1d39fbc58269bf839f40b35e65d"
+  },
+  "severity": "MEDIUM",
+  "source": "https://github.com/manojlds/drs/pull/134",
+  "target": "train",
+  "toRevision": "20a67537bd02c83aefb289ae13b0d3e5c22d75bd"
+}

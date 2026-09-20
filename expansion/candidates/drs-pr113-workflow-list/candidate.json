@@ -1,0 +1,27 @@
+{
+  "category": "cli",
+  "confirmingRevision": null,
+  "description": "Workflow discovery records packaged versus project sources and exposes human and JSON listing output.",
+  "evidence": "Direct workflow-discovery and source-classification tests passed on all supported Node versions and the final review reported no findings.",
+  "fromRevision": "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383",
+  "group": "drs-workflow-list",
+  "id": "drs-pr113-workflow-list",
+  "outcome": "clean",
+  "patchBytes": 10459,
+  "patchSha256": "322846499711292ef785efbb04b54a55f210bf181a02853fd8681aa533d99614",
+  "paths": [
+    "src/lib/config.ts",
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts",
+    "src/cli/index.ts"
+  ],
+  "pullRequest": 113,
+  "resolvedRevisions": {
+    "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383": "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383",
+    "63a61c20c03fe333bdda19f113476e56068d89dd": "63a61c20c03fe333bdda19f113476e56068d89dd"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/113",
+  "target": "train",
+  "toRevision": "63a61c20c03fe333bdda19f113476e56068d89dd"
+}

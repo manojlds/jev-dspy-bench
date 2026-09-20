@@ -1,0 +1,25 @@
+{
+  "category": "correctness",
+  "confirmingRevision": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05",
+  "description": "Review input is built only from files with inline patches and omits authoritative patchless changed files.",
+  "evidence": "The reverse-fix patch removes the authoritative filename reconstruction and exact patchless-file regression coverage added by PR 206.",
+  "fromRevision": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05",
+  "group": "drs-review-context-completeness",
+  "id": "drs-pr205-patchless-review-files",
+  "outcome": "defect",
+  "patchBytes": 2910,
+  "patchSha256": "c0791350ed4ff6271ccd1247f4e6303eb9e5ee1863ffe6f85c8185e237818fb1",
+  "paths": [
+    "src/lib/review-orchestrator.ts",
+    "src/lib/review-orchestrator.test.ts"
+  ],
+  "pullRequest": 205,
+  "resolvedRevisions": {
+    "c019b56711029e85a5dc87174a1790a6c94fc2b5": "c019b56711029e85a5dc87174a1790a6c94fc2b5",
+    "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05"
+  },
+  "severity": "HIGH",
+  "source": "https://github.com/manojlds/drs/pull/205",
+  "target": "dev",
+  "toRevision": "c019b56711029e85a5dc87174a1790a6c94fc2b5"
+}

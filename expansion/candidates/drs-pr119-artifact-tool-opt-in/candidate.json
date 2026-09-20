@@ -1,0 +1,25 @@
+{
+  "category": "security",
+  "confirmingRevision": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+  "description": "The workspace-writing visual artifact tool is enabled for agents that did not request it.",
+  "evidence": "The immediate fix changes the default capability to false and updates the test to require explicit enablement; the remaining final review finding was unrelated.",
+  "fromRevision": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+  "group": "drs-artifact-tool-capability",
+  "id": "drs-pr119-artifact-tool-opt-in",
+  "outcome": "defect",
+  "patchBytes": 1100,
+  "patchSha256": "b9b206c86b0ce6ef05b694196e140cf00cb29b9572d52445dd73c51be3516093",
+  "paths": [
+    "src/pi/sdk.ts",
+    "src/pi/sdk.test.ts"
+  ],
+  "pullRequest": 119,
+  "resolvedRevisions": {
+    "3716311768b5d3e65f2dd7d763d71c07871522f2": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+    "431c8b6e06215b7e3f1923a329d6c7a207da6729": "431c8b6e06215b7e3f1923a329d6c7a207da6729"
+  },
+  "severity": "MEDIUM",
+  "source": "https://github.com/manojlds/drs/pull/119",
+  "target": "train",
+  "toRevision": "431c8b6e06215b7e3f1923a329d6c7a207da6729"
+}

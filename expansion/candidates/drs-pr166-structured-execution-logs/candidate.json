@@ -1,0 +1,25 @@
+{
+  "category": "observability",
+  "confirmingRevision": null,
+  "description": "Temporal activity lifecycle logs include structured identity, attempt, duration, and failure context.",
+  "evidence": "Focused activity-log coverage and the implementation exercise structured lifecycle output; CI and final review passed without a corrective logging follow-up.",
+  "fromRevision": "cdb54895b42083ec97c01f4f5520872ece6e0e42",
+  "group": "drs-structured-execution-logs",
+  "id": "drs-pr166-structured-execution-logs",
+  "outcome": "clean",
+  "patchBytes": 6319,
+  "patchSha256": "39fa9d6bab90a36ea530c877e8f544bafc644f9b5ec0ac64c5dfe32eab508393",
+  "paths": [
+    "src/temporal/activities.ts",
+    "src/temporal/activities.test.ts"
+  ],
+  "pullRequest": 166,
+  "resolvedRevisions": {
+    "cdb54895b42083ec97c01f4f5520872ece6e0e42": "cdb54895b42083ec97c01f4f5520872ece6e0e42",
+    "f051b6ed15182d2186375508d1a89411ad56e564": "f051b6ed15182d2186375508d1a89411ad56e564"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/166",
+  "target": "dev",
+  "toRevision": "f051b6ed15182d2186375508d1a89411ad56e564"
+}

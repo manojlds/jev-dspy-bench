@@ -1,0 +1,78 @@
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index 567ab12..f6221f2 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -1922,6 +1922,43 @@ describe('workflow runner', () => {
+     expect(verificationSource?.context?.verification?.artifact?.reviewId).toMatch(/^rev_/);
+   });
+ 
++  it('persists review artifacts by default without changing review output artifacts', async () => {
++    const projectRoot = createTempDir('drs-workflow-default-review-artifact-');
++    const config = {
++      ...baseConfig,
++      workflows: {
++        defaultReviewArtifact: {
++          nodes: {
++            change: { action: 'change-source', output: 'change' },
++            review: {
++              action: 'review',
++              needs: ['change'],
++              with: { source: 'change' },
++              output: 'review',
++            },
++          },
++        },
++      },
++    } as unknown as DRSConfig;
++    mocks.executeReview.mockResolvedValue(
++      createMockReviewResult([createMockReviewIssue('Default artifact')])
++    );
++
++    const result = await runWorkflow(config, 'defaultReviewArtifact', { workingDir: projectRoot });
++
++    expect(result.artifacts.review).toMatchObject({
++      issues: [expect.objectContaining({ title: 'Default artifact' })],
++    });
++    const latest = JSON.parse(
++      readFileSync(
++        join(projectRoot, '.drs/artifacts/local/local/branch-feature/review/latest.json'),
++        'utf-8'
++      )
++    ) as { kind?: string; payload?: { findings?: Array<{ issue?: { title?: string } }> } };
++    expect(latest.kind).toBe('review');
++    expect(latest.payload?.findings?.[0]?.issue?.title).toBe('Default artifact');
++  });
++
+   it('does not re-run upstream change-source or load-artifact when a fix loop iterates', async () => {
+     const projectRoot = createTempDir('drs-workflow-local-fix-loop-cache-');
+     const config = loadConfig(projectRoot);
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index dbfeb16..41b1aa4 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -3014,17 +3014,16 @@ async function runReviewWorkflowNode(
+ 
+   const artifactOutput = getStringActionOption(node, 'artifact', context)?.trim();
+   const outputs: Record<string, unknown> = {};
+-  let artifactResponse = '';
++  const persistedReviewArtifact = createReviewArtifactPayload(reviewResult, source);
++  const scope = await resolveArtifactScope(nodeId, node, workingDir, context, executionContext);
++  const saved = await saveWorkflowArtifact(workingDir, {
++    kind: 'review',
++    scope,
++    payload: persistedReviewArtifact,
++  });
++  const artifactResponse = `\nSaved review artifact ${saved.artifact.id}.`;
+   if (artifactOutput) {
+-    const reviewArtifact = createReviewArtifactPayload(reviewResult, source);
+-    const scope = await resolveArtifactScope(nodeId, node, workingDir, context, executionContext);
+-    const saved = await saveWorkflowArtifact(workingDir, {
+-      kind: 'review',
+-      scope,
+-      payload: reviewArtifact,
+-    });
+     outputs[artifactOutput] = { ...saved.artifact, path: saved.path, latestPath: saved.latestPath };
+-    artifactResponse = `\nSaved review artifact ${saved.artifact.id}.`;
+   }
+ 
+   return {

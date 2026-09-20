@@ -1,0 +1,271 @@
+diff --git a/src/lib/config.test.ts b/src/lib/config.test.ts
+index 93de3b4..97ec77f 100644
+--- a/src/lib/config.test.ts
++++ b/src/lib/config.test.ts
+@@ -500,4 +500,64 @@ describe('Config', () => {
+       rmSync(projectRoot, { recursive: true, force: true });
+     }
+   });
++
++  describe('load-time action validation', () => {
++    function writeWorkflowWithAction(
++      projectRoot: string,
++      workflowName: string,
++      action: string
++    ): void {
++      mkdirSync(join(projectRoot, '.drs', 'workflows'), { recursive: true });
++      const yaml = [
++        'description: Test workflow with bad action',
++        'nodes:',
++        '  step:',
++        '    action: ' + action,
++        '',
++      ].join('\n');
++      writeFileSync(join(projectRoot, '.drs', 'workflows', workflowName + '.yaml'), yaml);
++    }
++
++    it('throws did-you-mean for a near-miss typo of a supported action', () => {
++      const projectRoot = mkdtempSync(join(tmpdir(), 'drs-action-typo-'));
++      try {
++        writeWorkflowWithAction(projectRoot, 'typo-workflow', 'verify-fx');
++        expect(() => loadConfig(projectRoot)).toThrow(/verify-fix/);
++      } finally {
++        rmSync(projectRoot, { recursive: true, force: true });
++      }
++    });
++
++    it('throws the rename redirect for the dropped reconcile-review-findings alias', () => {
++      const projectRoot = mkdtempSync(join(tmpdir(), 'drs-action-rename-'));
++      try {
++        writeWorkflowWithAction(projectRoot, 'rename-workflow', 'reconcile-review-findings');
++        expect(() => loadConfig(projectRoot)).toThrow(/verify-fix/);
++        expect(() => loadConfig(projectRoot)).toThrow(/renamed to 'verify-fix'/);
++      } finally {
++        rmSync(projectRoot, { recursive: true, force: true });
++      }
++    });
++
++    it('lists every supported action for a wholly unknown action', () => {
++      const projectRoot = mkdtempSync(join(tmpdir(), 'drs-action-unknown-'));
++      try {
++        writeWorkflowWithAction(projectRoot, 'unknown-workflow', 'do-the-thing');
++        expect(() => loadConfig(projectRoot)).toThrow(/Supported actions:/);
++      } finally {
++        rmSync(projectRoot, { recursive: true, force: true });
++      }
++    });
++
++    it('accepts a valid action without throwing', () => {
++      const projectRoot = mkdtempSync(join(tmpdir(), 'drs-action-ok-'));
++      try {
++        writeWorkflowWithAction(projectRoot, 'ok-workflow', 'verify-fix');
++        const config = loadConfig(projectRoot);
++        expect(config.workflows?.['ok-workflow']?.nodes.step?.action).toBe('verify-fix');
++      } finally {
++        rmSync(projectRoot, { recursive: true, force: true });
++      }
++    });
++  });
+ });
+diff --git a/src/lib/config.ts b/src/lib/config.ts
+index 164acf3..971b326 100644
+--- a/src/lib/config.ts
++++ b/src/lib/config.ts
+@@ -4,6 +4,44 @@ import * as yaml from 'yaml';
+ import { requireAgentId } from './agent-id.js';
+ import { getBuiltInWorkflowPaths } from '../runtime/built-in-paths.js';
+ 
++// Canonical list of supported workflow actions. WorkflowNodeConfig['action']
++// derives its union from this tuple so the schema and the load-time validator
++// can never drift. Keep both this tuple and the validator in lockstep.
++export const SUPPORTED_WORKFLOW_ACTIONS = [
++  'write',
++  'git-diff',
++  'git-add',
++  'git-branch',
++  'git-commit',
++  'git-push',
++  'has-diff',
++  'stack-guard',
++  'review-threshold',
++  'save-artifact',
++  'load-artifact',
++  'artifact-exists',
++  'create-review-artifact',
++  'review-artifact-status',
++  'review-artifact-add-finding',
++  'review-artifact-update-findings',
++  'verify-fix',
++  'review-artifact-promote-finding',
++  'review-artifact-resolve-finding',
++  'create-change-request',
++  'create-pr',
++  'create-mr',
++  'change-source',
++  'review',
++  'review-context',
++  'describe',
++  'code-quality-report',
++  'post-comment',
++  'post-review-comments',
++  'post-fix-status',
++] as const;
++
++export type WorkflowAction = (typeof SUPPORTED_WORKFLOW_ACTIONS)[number];
++
+ /**
+  * Agent reference - supports both simple string and detailed object format.
+  * Agent names are fully qualified ids like "review/security" or "task/docs-updater".
+@@ -36,37 +74,7 @@ export interface WorkflowNodeConfig {
+   /** Built-in workflow control node. */
+   control?: 'condition' | 'loop' | 'switch' | 'end' | 'passThrough';
+   /** Built-in workflow action. */
+-  action?:
+-    | 'write'
+-    | 'git-diff'
+-    | 'git-add'
+-    | 'git-branch'
+-    | 'git-commit'
+-    | 'git-push'
+-    | 'has-diff'
+-    | 'stack-guard'
+-    | 'review-threshold'
+-    | 'save-artifact'
+-    | 'load-artifact'
+-    | 'artifact-exists'
+-    | 'create-review-artifact'
+-    | 'review-artifact-status'
+-    | 'review-artifact-add-finding'
+-    | 'review-artifact-update-findings'
+-    | 'verify-fix'
+-    | 'review-artifact-promote-finding'
+-    | 'review-artifact-resolve-finding'
+-    | 'create-change-request'
+-    | 'create-pr'
+-    | 'create-mr'
+-    | 'change-source'
+-    | 'review'
+-    | 'review-context'
+-    | 'describe'
+-    | 'code-quality-report'
+-    | 'post-comment'
+-    | 'post-review-comments'
+-    | 'post-fix-status';
++  action?: WorkflowAction;
+   /** Action-specific options. */
+   with?: Record<string, string | number | boolean | undefined>;
+   /** Node ids that must complete before this node starts. */
+@@ -393,6 +401,102 @@ function isWorkflowFileName(fileName: string): boolean {
+   return fileName.endsWith('.yaml') || fileName.endsWith('.yml');
+ }
+ 
++// Historical redirects for workflow actions that have been removed entirely.
++// Each entry maps a now-unsupported action to its successor so the load-time
++// validator can give a precise did-you-mean hint instead of a generic list.
++export const LOST_ACTION_RENAMES: Readonly<Record<string, string>> = {
++  'reconcile-review-findings': 'verify-fix',
++};
++
++const SUPPORTED_ACTION_SET: ReadonlySet<string> = new Set(SUPPORTED_WORKFLOW_ACTIONS);
++
++function levenshteinDistance(a: string, b: string): number {
++  if (a === b) return 0;
++  if (a.length === 0) return b.length;
++  if (b.length === 0) return a.length;
++  let previous = new Array<number>(b.length + 1);
++  let current = new Array<number>(b.length + 1);
++  for (let j = 0; j <= b.length; j++) previous[j] = j;
++  for (let i = 1; i <= a.length; i++) {
++    current[0] = i;
++    for (let j = 1; j <= b.length; j++) {
++      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
++      current[j] = Math.min(current[j - 1] + 1, previous[j] + 1, previous[j - 1] + cost);
++    }
++    const tmp = previous;
++    previous = current;
++    current = tmp;
++  }
++  return previous[b.length];
++}
++
++function findClosestSupportedAction(input: string): string | undefined {
++  let best: string | undefined;
++  let bestDistance = Infinity;
++  // Cap at two edits so we never suggest a long action for a shorter typo.
++  const threshold = 2;
++  for (const supported of SUPPORTED_WORKFLOW_ACTIONS) {
++    const distance = levenshteinDistance(input, supported);
++    if (distance < bestDistance && distance <= threshold) {
++      best = supported;
++      bestDistance = distance;
++    }
++  }
++  return best;
++}
++
++/**
++ * Validate every node's `action` value in a workflow against
++ * SUPPORTED_WORKFLOW_ACTIONS. Throws with a did-you-mean hint on failure:
++ *   - LOST_ACTION_RENAMES hits get a specific redirect message (e.g. for
++ *     the dropped `reconcile-review-findings` alias).
++ *   - Near-miss typos get the closest supported action via Levenshtein.
++ *   - Wholly unknown actions get a list of every supported action.
++ *
++ * Called from validateWorkflowDefinition so misconfigured YAML fails fast at
++ * config-load time instead of partway through wave execution.
++ */
++export function validateWorkflowActions(
++  workflowName: string,
++  nodes: Record<string, WorkflowNodeConfig>
++): void {
++  for (const [nodeId, node] of Object.entries(nodes)) {
++    const action = node.action;
++    if (action === undefined) continue;
++    if (SUPPORTED_ACTION_SET.has(action)) continue;
++
++    let hint: string;
++    const renamedTo = LOST_ACTION_RENAMES[action];
++    if (renamedTo) {
++      hint =
++        "Did you mean '" +
++        renamedTo +
++        "'? The action '" +
++        action +
++        "' has been renamed " +
++        "to '" +
++        renamedTo +
++        "'; see CHANGELOG.md.";
++    } else {
++      const closest = findClosestSupportedAction(action);
++      if (closest) {
++        hint = "Did you mean '" + closest + "'?";
++      } else {
++        hint = 'Supported actions: ' + SUPPORTED_WORKFLOW_ACTIONS.join(', ') + '.';
++      }
++    }
++    throw new Error(
++      'Workflow "' +
++        workflowName +
++        '" node "' +
++        nodeId +
++        '" has unsupported action "' +
++        action +
++        '". ' +
++        hint
++    );
++  }
++}
+ function validateWorkflowDefinition(
+   workflowName: string,
+   workflow: unknown,
+@@ -402,7 +506,9 @@ function validateWorkflowDefinition(
+     throw new Error(`Workflow "${workflowName}" in ${sourcePath} must define a nodes object.`);
+   }
+ 
+-  return workflow as unknown as WorkflowConfig;
++  const typed = workflow as unknown as WorkflowConfig;
++  validateWorkflowActions(workflowName, typed.nodes);
++  return typed;
+ }
+ 
+ function loadWorkflowFile(filePath: string): Record<string, WorkflowConfig> {

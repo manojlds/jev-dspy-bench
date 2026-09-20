@@ -1,0 +1,26 @@
+{
+  "category": "concurrency",
+  "confirmingRevision": "5eb537eafe35db9fe3cf031f0eaffa11435ee765",
+  "description": "Global trace finalization loops over and unsubscribes every active trace session instead of one session.",
+  "evidence": "The next accepted fix replaces global finalization with finalizeSession(sessionId), removing only the requested session from the active set.",
+  "fromRevision": "b78fe17d34715695871caa8673189dedf5e125f1",
+  "group": "drs-trace-lifecycle",
+  "id": "drs-pr143-global-trace-finalization",
+  "outcome": "defect",
+  "patchBytes": 10956,
+  "patchSha256": "0ee248944c0752c90604c728011e58b6b03a8db956c4dba595c47dd3b0d17cbf",
+  "paths": [
+    "src/lib/trace-collector.ts",
+    "src/pi/sdk.ts"
+  ],
+  "pullRequest": 143,
+  "resolvedRevisions": {
+    "4f4523bc6d291b7cca435ac8ebd2339251fe027e": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+    "5eb537eafe35db9fe3cf031f0eaffa11435ee765": "5eb537eafe35db9fe3cf031f0eaffa11435ee765",
+    "b78fe17d34715695871caa8673189dedf5e125f1": "b78fe17d34715695871caa8673189dedf5e125f1"
+  },
+  "severity": "HIGH",
+  "source": "https://github.com/manojlds/drs/pull/143",
+  "target": "train",
+  "toRevision": "4f4523bc6d291b7cca435ac8ebd2339251fe027e"
+}

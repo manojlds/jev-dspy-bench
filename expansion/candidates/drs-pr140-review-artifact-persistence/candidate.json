@@ -1,0 +1,27 @@
+{
+  "category": "maintainability",
+  "confirmingRevision": null,
+  "description": "Review nodes persist artifacts directly and packaged workflows remove duplicated create/save nodes.",
+  "evidence": "Workflow and configuration tests cover the cohesive persistence shortcut; CI passed and the final review reported no findings.",
+  "fromRevision": "40a008f68597f0d42126a481afd2725f12ed9565",
+  "group": "drs-review-artifact-persistence",
+  "id": "drs-pr140-review-artifact-persistence",
+  "outcome": "clean",
+  "patchBytes": 14682,
+  "patchSha256": "f2a1c401d9c7587b3908799784a19e2e17cf51c8c3b79e59b7d31e42d0af95d4",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts",
+    "src/lib/config.test.ts",
+    ".pi/workflows"
+  ],
+  "pullRequest": 140,
+  "resolvedRevisions": {
+    "40a008f68597f0d42126a481afd2725f12ed9565": "40a008f68597f0d42126a481afd2725f12ed9565",
+    "73c54b0cf570fade8834c4178d936c9d4d077f05": "73c54b0cf570fade8834c4178d936c9d4d077f05"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/140",
+  "target": "train",
+  "toRevision": "73c54b0cf570fade8834c4178d936c9d4d077f05"
+}

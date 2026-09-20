@@ -1,0 +1,362 @@
+diff --git a/src/lib/trace-html.ts b/src/lib/trace-html.ts
+new file mode 100644
+index 0000000..31d2795
+--- /dev/null
++++ b/src/lib/trace-html.ts
+@@ -0,0 +1,356 @@
++import type { WorkflowTrace, AgentTrace, TraceTurn, TraceToolCall } from './trace-collector.js';
++
++export function renderTraceHtml(trace: WorkflowTrace): string {
++  const traces = trace.agentTraces;
++  const totalCost = traces.reduce((sum, t) => sum + (t.totalUsage?.cost?.total ?? 0), 0);
++  const totalInputTokens = traces.reduce((sum, t) => sum + (t.totalUsage?.input ?? 0), 0);
++  const totalOutputTokens = traces.reduce((sum, t) => sum + (t.totalUsage?.output ?? 0), 0);
++  const totalCacheRead = traces.reduce((sum, t) => sum + (t.totalUsage?.cacheRead ?? 0), 0);
++  const totalToolCalls = traces.reduce((sum, t) => sum + t.toolCallCount, 0);
++  const totalDurationMs = traces.reduce((sum, t) => sum + (t.durationMs ?? 0), 0);
++  const totalTurns = traces.reduce((sum, t) => sum + t.turns.length, 0);
++
++  const invocationNodes = traces.map((t, i) => renderInvocationNode(t, i)).join('');
++
++  return `<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="UTF-8">
++<meta name="viewport" content="width=device-width, initial-scale=1.0">
++<title>DRS Trace — ${escapeHtml(trace.workflowName)}</title>
++<style>
++${TRACE_CSS}
++</style>
++</head>
++<body>
++<div id="app">
++  <header id="topbar">
++    <div class="header-left">
++      <h1>DRS Trace Explorer</h1>
++      <span class="workflow-name">${escapeHtml(trace.workflowName)}</span>
++    </div>
++    <div class="header-stats">
++      <span class="stat">Agents: <b>${traces.length}</b></span>
++      <span class="stat">Turns: <b>${totalTurns}</b></span>
++      <span class="stat">Tool Calls: <b>${totalToolCalls}</b></span>
++      <span class="stat">Input: <b>${formatTokens(totalInputTokens)}</b></span>
++      <span class="stat">Output: <b>${formatTokens(totalOutputTokens)}</b></span>
++      <span class="stat">Cache Read: <b>${formatTokens(totalCacheRead)}</b></span>
++      <span class="stat">Cost: <b>$${totalCost.toFixed(4)}</b></span>
++      <span class="stat">Duration: <b>${formatDuration(totalDurationMs)}</b></span>
++    </div>
++  </header>
++  <main>
++    <nav id="tree">
++      <div class="search-bar">
++        <input type="text" id="search" placeholder="Search..." oninput="filterTree(this.value)" />
++      </div>
++      <div id="tree-content">${invocationNodes}</div>
++    </nav>
++    <section id="detail">
++      <div class="detail-empty">Select a node to inspect</div>
++    </section>
++  </main>
++</div>
++<script>
++${TRACE_JS}
++</script>
++</body>
++</html>`;
++}
++
++function renderInvocationNode(trace: AgentTrace, _index: number): string {
++  const statusClass = trace.errorMessage ? 'error' : 'ok';
++  const label = trace.workflowIteration
++    ? `${trace.nodeId} (iter ${trace.workflowIteration})`
++    : trace.nodeId;
++  const cost = trace.totalUsage?.cost?.total ?? 0;
++  const inputTokens = trace.totalUsage?.input ?? 0;
++  const outputTokens = trace.totalUsage?.output ?? 0;
++
++  const turnNodes = trace.turns.map((turn) => renderTurnNode(trace.id, turn)).join('');
++
++  return `<div class="tree-node invocation" data-trace-id="${trace.id}" data-node-id="${escapeHtml(trace.nodeId)}" data-agent="${escapeHtml(trace.agentId)}" onclick="selectNode(event, 'invocation', '${trace.id}')">
++    <div class="node-header ${statusClass}">
++      <span class="node-icon">Agent</span>
++      <span class="node-label">${escapeHtml(label)}</span>
++      <span class="node-meta">${escapeHtml(trace.agentId)} · ${formatDuration(trace.durationMs ?? 0)} · ${formatTokens(inputTokens)}→${formatTokens(outputTokens)} · $${cost.toFixed(4)}</span>
++    </div>
++    <div class="tree-children">
++      ${turnNodes}
++    </div>
++  </div>`;
++}
++
++function renderTurnNode(traceId: string, turn: TraceTurn): string {
++  const nodeId = `${traceId}-turn-${turn.turnIndex}`;
++  const toolNodes = turn.toolCalls
++    .map((tc) => renderToolNode(traceId, turn.turnIndex, tc))
++    .join('');
++  const usage = turn.usage;
++  const usageBadge = usage
++    ? `${formatTokens(usage.input)}→${formatTokens(usage.output)} · $${(usage.cost?.total ?? 0).toFixed(4)}`
++    : '';
++
++  return `<div class="tree-node turn" data-node-id="${nodeId}" onclick="selectNode(event, 'turn', '${nodeId}')">
++    <div class="node-header">
++      <span class="node-icon">Turn ${turn.turnIndex}</span>
++      <span class="node-meta">${formatDuration(turn.durationMs ?? 0)}${usageBadge ? ' · ' + usageBadge : ''}${turn.stopReason ? ' · ' + escapeHtml(turn.stopReason) : ''}${turn.model ? ' · ' + escapeHtml(turn.model) : ''}</span>
++    </div>
++    <div class="tree-children">
++      ${toolNodes}
++    </div>
++  </div>`;
++}
++
++function renderToolNode(traceId: string, turnIndex: number, tc: TraceToolCall): string {
++  const nodeId = `${traceId}-turn-${turnIndex}-tool-${tc.toolCallId}`;
++  const statusClass = tc.isError ? 'error' : 'ok';
++
++  return `<div class="tree-node tool" data-node-id="${nodeId}" onclick="selectNode(event, 'tool', '${nodeId}')">
++    <div class="node-header ${statusClass}">
++      <span class="node-icon">${escapeHtml(tc.toolName)}</span>
++      <span class="node-meta">${formatDuration(tc.durationMs)}</span>
++    </div>
++  </div>`;
++}
++
++const TRACE_CSS = `
++* { margin: 0; padding: 0; box-sizing: border-box; }
++body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; background: #0f1117; color: #e0e0e0; }
++#app { display: flex; flex-direction: column; height: 100vh; }
++#topbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #161821; border-bottom: 1px solid #2a2d3a; flex-shrink: 0; }
++.header-left { display: flex; align-items: center; gap: 12px; }
++.header-left h1 { font-size: 15px; font-weight: 600; color: #7c8aff; }
++.workflow-name { color: #888; font-size: 12px; }
++.header-stats { display: flex; gap: 12px; flex-wrap: wrap; }
++.stat { font-size: 11px; color: #888; }
++.stat b { color: #e0e0e0; }
++main { display: flex; flex: 1; overflow: hidden; }
++#tree { width: 400px; min-width: 300px; max-width: 600px; border-right: 1px solid #2a2d3a; overflow-y: auto; background: #12131a; flex-shrink: 0; }
++#tree-content { padding: 4px; }
++.search-bar { padding: 8px; position: sticky; top: 0; background: #12131a; z-index: 1; }
++.search-bar input { width: 100%; padding: 6px 10px; background: #1a1c28; border: 1px solid #2a2d3a; border-radius: 6px; color: #e0e0e0; font-size: 12px; }
++.search-bar input:focus { outline: none; border-color: #7c8aff; }
++.tree-node { margin: 2px 0; }
++.node-header { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 4px; cursor: pointer; flex-wrap: wrap; }
++.node-header:hover { background: #1e2030; }
++.node-header.ok { border-left: 3px solid #22c55e; }
++.node-header.error { border-left: 3px solid #ef4444; }
++.node-icon { font-weight: 600; font-size: 11px; color: #7c8aff; min-width: 60px; }
++.node-label { font-weight: 500; color: #e0e0e0; }
++.node-meta { color: #666; font-size: 10px; margin-left: auto; }
++.tree-children { margin-left: 16px; border-left: 1px solid #2a2d3a; padding-left: 4px; }
++.tree-node.tool .node-icon { color: #c9a227; min-width: auto; }
++.tree-node.turn .node-icon { color: #22c55e; }
++.tree-node.invocation .node-icon { color: #7c8aff; }
++.tree-node.hidden { display: none; }
++#detail { flex: 1; overflow-y: auto; padding: 16px; background: #0f1117; }
++.detail-empty { color: #555; text-align: center; padding: 40px; }
++.detail-section { margin-bottom: 16px; }
++.detail-section h3 { font-size: 12px; color: #7c8aff; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
++.detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
++.badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
++.badge-duration { background: #1a2a3a; color: #66ccff; }
++.badge-tokens { background: #1a3a2a; color: #66ff99; }
++.badge-cost { background: #3a2a1a; color: #ffcc66; }
++.badge-model { background: #2a1a3a; color: #cc99ff; }
++.badge-error { background: #3a1a1a; color: #ff6666; }
++.badge-stop { background: #1a1a2a; color: #8888cc; }
++.detail-json { background: #161821; border: 1px solid #2a2d3a; border-radius: 6px; padding: 12px; font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; overflow-x: auto; max-height: 400px; overflow-y: auto; }
++.detail-text { background: #161821; border: 1px solid #2a2d3a; border-radius: 6px; padding: 12px; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
++.detail-prompt { background: #161821; border: 1px solid #2a2d3a; border-radius: 6px; padding: 12px; white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; font-size: 11px; line-height: 1.4; color: #aaa; }
++.tool-result-ok { color: #66ff99; }
++.tool-result-error { color: #ff6666; }
++`;
++
++const TRACE_JS = `
++const TRACE_DATA = ${JSON.stringify('@@TRACE_DATA@@')};
++
++function selectNode(event, type, nodeId) {
++  event.stopPropagation();
++  document.querySelectorAll('.node-header').forEach(el => el.classList.remove('selected'));
++  event.currentTarget.classList.add('selected');
++  renderDetail(type, nodeId);
++}
++
++function renderDetail(type, nodeId) {
++  const detail = document.getElementById('detail');
++  const data = findNodeData(type, nodeId);
++  if (!data) {
++    detail.innerHTML = '<div class="detail-empty">No data found for ' + escapeHtml(nodeId) + '</div>';
++    return;
++  }
++  detail.innerHTML = renderDetailHtml(type, data);
++}
++
++function findNodeData(type, nodeId) {
++  for (const trace of TRACE_DATA.agentTraces) {
++    if (type === 'invocation' && trace.id === nodeId) return { type, trace };
++    for (const turn of trace.turns) {
++      const turnId = trace.id + '-turn-' + turn.turnIndex;
++      if (type === 'turn' && turnId === nodeId) return { type, turn, trace };
++      for (const tc of turn.toolCalls) {
++        const tcId = trace.id + '-turn-' + turn.turnIndex + '-tool-' + tc.toolCallId;
++        if (type === 'tool' && tcId === nodeId) return { type, toolCall: tc, turn, trace };
++      }
++    }
++  }
++  return null;
++}
++
++function renderDetailHtml(type, data) {
++  if (type === 'invocation') return renderInvocationDetail(data.trace);
++  if (type === 'turn') return renderTurnDetail(data.turn, data.trace);
++  if (type === 'tool') return renderToolDetail(data.toolCall, data.turn);
++  return '<div class="detail-empty">Unknown type</div>';
++}
++
++function renderInvocationDetail(trace) {
++  const usage = trace.totalUsage || {};
++  const cost = (usage.cost && usage.cost.total) || 0;
++  let html = '<div class="detail-section"><h3>Agent Invocation</h3>';
++  html += '<div class="detail-badges">';
++  html += badge('duration', formatDuration(trace.durationMs || 0));
++  html += badge('tokens', formatTokens(usage.input || 0) + ' in / ' + formatTokens(usage.output || 0) + ' out');
++  html += badge('cost', '$' + cost.toFixed(4));
++  if (trace.model) html += badge('model', trace.model);
++  if (trace.provider) html += badge('model', trace.provider);
++  html += '</div></div>';
++  html += '<div class="detail-section"><h3>Node</h3><div class="detail-text">' + escapeHtml(trace.nodeId) + '</div></div>';
++  html += '<div class="detail-section"><h3>Agent</h3><div class="detail-text">' + escapeHtml(trace.agentId) + '</div></div>';
++  if (trace.workflowIteration) {
++    html += '<div class="detail-section"><h3>Workflow Iteration</h3><div class="detail-text">' + trace.workflowIteration + '</div></div>';
++  }
++  if (trace.skillsLoaded && trace.skillsLoaded.length > 0) {
++    html += '<div class="detail-section"><h3>Skills Loaded</h3><div class="detail-text">' + trace.skillsLoaded.map(escapeHtml).join(', ') + '</div></div>';
++  }
++  if (trace.errorMessage) {
++    html += '<div class="detail-section"><h3>Error</h3><div class="detail-text" style="color:#ff6666">' + escapeHtml(trace.errorMessage) + '</div></div>';
++  }
++  html += '<div class="detail-section"><h3>Prompt (' + trace.prompt.length + ' chars)</h3><div class="detail-prompt">' + escapeHtml(trace.prompt) + '</div></div>';
++  if (trace.systemPrompt) {
++    html += '<div class="detail-section"><h3>System Prompt (' + trace.systemPrompt.length + ' chars)</h3><div class="detail-prompt">' + escapeHtml(trace.systemPrompt) + '</div></div>';
++  }
++  html += '<div class="detail-section"><h3>Turns (' + trace.turns.length + ')</h3>';
++  html += '<div class="detail-text">' + trace.turns.map(function(t) {
++    return 'Turn ' + t.turnIndex + ': ' + (t.toolCalls.length) + ' tool calls, ' + formatDuration(t.durationMs || 0) + ', ' + formatTokens((t.usage && t.usage.input) || 0) + ' in';
++  }).join('\\n') + '</div></div>';
++  return html;
++}
++
++function renderTurnDetail(turn, trace) {
++  const usage = turn.usage || {};
++  const cost = (usage.cost && usage.cost.total) || 0;
++  let html = '<div class="detail-section"><h3>Turn ' + turn.turnIndex + '</h3>';
++  html += '<div class="detail-badges">';
++  html += badge('duration', formatDuration(turn.durationMs || 0));
++  html += badge('tokens', formatTokens(usage.input || 0) + ' in / ' + formatTokens(usage.output || 0) + ' out');
++  if (usage.cacheRead) html += badge('tokens', 'cache: ' + formatTokens(usage.cacheRead));
++  html += badge('cost', '$' + cost.toFixed(4));
++  if (turn.model) html += badge('model', turn.model);
++  if (turn.responseModel && turn.responseModel !== turn.model) html += badge('model', 'resp: ' + turn.responseModel);
++  if (turn.stopReason) html += badge('stop', turn.stopReason);
++  html += '</div></div>';
++  if (turn.thinkingContent) {
++    html += '<div class="detail-section"><h3>Thinking</h3><div class="detail-text">' + escapeHtml(turn.thinkingContent) + '</div></div>';
++  }
++  if (turn.assistantContent) {
++    html += '<div class="detail-section"><h3>Response</h3><div class="detail-text">' + escapeHtml(turn.assistantContent) + '</div></div>';
++  }
++  if (turn.toolCalls && turn.toolCalls.length > 0) {
++    html += '<div class="detail-section"><h3>Tool Calls (' + turn.toolCalls.length + ')</h3>';
++    for (const tc of turn.toolCalls) {
++      html += '<div class="detail-section"><h4 style="color:#c9a227">' + escapeHtml(tc.toolName) + ' · ' + formatDuration(tc.durationMs) + (tc.isError ? ' · ERROR' : '') + '</h4>';
++      html += '<div class="detail-json">' + escapeHtml(JSON.stringify(tc.args, null, 2)) + '</div>';
++      html += '<div class="detail-section"><h3 style="color:#555">Result</h3>';
++      const resultStr = typeof tc.result === 'string' ? tc.result : JSON.stringify(tc.result, null, 2);
++      html += '<div class="detail-json ' + (tc.isError ? 'tool-result-error' : 'tool-result-ok') + '">' + escapeHtml(truncate(resultStr, 8000)) + '</div>';
++      html += '</div></div>';
++    }
++  }
++  return html;
++}
++
++function renderToolDetail(tc, turn) {
++  let html = '<div class="detail-section"><h3>' + escapeHtml(tc.toolName) + '</h3>';
++  html += '<div class="detail-badges">';
++  html += badge('duration', formatDuration(tc.durationMs));
++  if (tc.isError) html += badge('error', 'ERROR');
++  html += '</div></div>';
++  html += '<div class="detail-section"><h3>Input</h3><div class="detail-json">' + escapeHtml(JSON.stringify(tc.args, null, 2)) + '</div></div>';
++  html += '<div class="detail-section"><h3>Result</h3>';
++  const resultStr = typeof tc.result === 'string' ? tc.result : JSON.stringify(tc.result, null, 2);
++  html += '<div class="detail-json ' + (tc.isError ? 'tool-result-error' : 'tool-result-ok') + '">' + escapeHtml(truncate(resultStr, 8000)) + '</div></div>';
++  return html;
++}
++
++function badge(cls, text) {
++  return '<span class="badge badge-' + cls + '">' + escapeHtml(text) + '</span>';
++}
++
++function formatTokens(n) {
++  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
++  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
++  return String(n);
++}
++
++function formatDuration(ms) {
++  if (ms >= 60000) return (ms / 60000).toFixed(1) + 'm';
++  if (ms >= 1000) return (ms / 1000).toFixed(1) + 's';
++  return ms + 'ms';
++}
++
++function truncate(str, max) {
++  if (str.length <= max) return str;
++  return str.substring(0, max) + '\\n... (' + str.length + ' chars total)';
++}
++
++function escapeHtml(str) {
++  if (str === null || str === undefined) return '';
++  return String(str)
++    .replace(/&/g, '&amp;')
++    .replace(/</g, '&lt;')
++    .replace(/>/g, '&gt;')
++    .replace(/"/g, '&quot;')
++    .replace(/'/g, '&#39;');
++}
++
++function filterTree(query) {
++  query = query.toLowerCase();
++  document.querySelectorAll('.tree-node').forEach(function(node) {
++    if (!query) {
++      node.classList.remove('hidden');
++      return;
++    }
++    const text = node.textContent.toLowerCase();
++    if (text.indexOf(query) !== -1) {
++      node.classList.remove('hidden');
++    } else {
++      node.classList.add('hidden');
++    }
++  });
++}
++`;
++
++function escapeHtml(str: string): string {
++  if (str === null || str === undefined) return '';
++  return String(str)
++    .replace(/&/g, '&amp;')
++    .replace(/</g, '&lt;')
++    .replace(/>/g, '&gt;')
++    .replace(/"/g, '&quot;')
++    .replace(/'/g, '&#39;');
++}
++
++function formatTokens(n: number): string {
++  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
++  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
++  return String(n);
++}
++
++function formatDuration(ms: number): string {
++  if (ms >= 60000) return (ms / 60000).toFixed(1) + 'm';
++  if (ms >= 1000) return (ms / 1000).toFixed(1) + 's';
++  return ms + 'ms';
++}

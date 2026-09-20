@@ -1,0 +1,25 @@
+{
+  "category": "compatibility",
+  "confirmingRevision": null,
+  "description": "Canonical review artifacts persist by default while named workflow-artifact output remains opt-in.",
+  "evidence": "The focused two-file change includes behavior tests, green CI, a zero-finding review, and no corrective follow-up.",
+  "fromRevision": "7b2064706469ee19c4c84cea20ebf9c80a2cab6c",
+  "group": "drs-default-review-artifacts",
+  "id": "drs-pr173-default-review-artifacts",
+  "outcome": "clean",
+  "patchBytes": 3224,
+  "patchSha256": "c382ee307983dd81e996e068f1ed16d3c8260601416517406ace4c7514e11163",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 173,
+  "resolvedRevisions": {
+    "7b2064706469ee19c4c84cea20ebf9c80a2cab6c": "7b2064706469ee19c4c84cea20ebf9c80a2cab6c",
+    "a6d6efaf6f6800eefef882921ce7ba4ce991b078": "a6d6efaf6f6800eefef882921ce7ba4ce991b078"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/173",
+  "target": "dev",
+  "toRevision": "a6d6efaf6f6800eefef882921ce7ba4ce991b078"
+}

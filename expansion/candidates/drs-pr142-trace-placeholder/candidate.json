@@ -1,0 +1,25 @@
+{
+  "category": "correctness",
+  "confirmingRevision": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+  "description": "The generated trace viewer leaves TRACE_DATA as a literal placeholder and cannot render node details.",
+  "evidence": "PR 143 identifies the runtime TypeError and replaces the placeholder with serialized trace data.",
+  "fromRevision": "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d",
+  "group": "drs-trace-lifecycle",
+  "id": "drs-pr142-trace-placeholder",
+  "outcome": "defect",
+  "patchBytes": 17664,
+  "patchSha256": "44f50709a4e112d76bb176d7f7e859a719a93793e855826733b28aa064496414",
+  "paths": [
+    "src/lib/trace-html.ts"
+  ],
+  "pullRequest": 142,
+  "resolvedRevisions": {
+    "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d": "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d",
+    "4f4523bc6d291b7cca435ac8ebd2339251fe027e": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+    "b78fe17d34715695871caa8673189dedf5e125f1": "b78fe17d34715695871caa8673189dedf5e125f1"
+  },
+  "severity": "HIGH",
+  "source": "https://github.com/manojlds/drs/pull/142",
+  "target": "train",
+  "toRevision": "b78fe17d34715695871caa8673189dedf5e125f1"
+}

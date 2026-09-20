@@ -1,0 +1,63 @@
+diff --git a/src/lib/review-orchestrator.test.ts b/src/lib/review-orchestrator.test.ts
+index 8881063..1c969c8 100644
+--- a/src/lib/review-orchestrator.test.ts
++++ b/src/lib/review-orchestrator.test.ts
+@@ -742,26 +742,6 @@ describe('review-orchestrator', () => {
+       expect(result.filesReviewed).toBe(2);
+     });
+ 
+-    it('keeps filtered files that do not have an inline patch', async () => {
+-      const { prepareDiffsForAgent } = await import('./context-compression.js');
+-      const source: ReviewSource = {
+-        name: 'PR #123',
+-        files: ['src/app.ts', 'src/app.test.ts', 'assets/logo.png'],
+-        filesWithDiffs: [
+-          { filename: 'src/app.ts', patch: '+ new code' },
+-          { filename: 'src/app.test.ts', patch: '+ ignored test' },
+-        ],
+-        context: {},
+-      };
+-
+-      await executeReview(mockConfig, source);
+-
+-      expect(prepareDiffsForAgent).toHaveBeenCalledWith(
+-        [{ filename: 'src/app.ts', patch: '+ new code' }, { filename: 'assets/logo.png' }],
+-        expect.anything()
+-      );
+-    });
+-
+     it('should filter filesWithDiffs to match filtered files', async () => {
+       const source: ReviewSource = {
+         name: 'PR #123',
+diff --git a/src/lib/review-orchestrator.ts b/src/lib/review-orchestrator.ts
+index 3db86de..f624a4d 100644
+--- a/src/lib/review-orchestrator.ts
++++ b/src/lib/review-orchestrator.ts
+@@ -290,16 +290,17 @@ export async function executeReview(
+     // Build instructions - use provided diffs if available, otherwise fall back to git command
+     const diffCommand = source.staged ? 'git diff --cached -- <file>' : 'git diff -- <file>';
+ 
+-    // Keep the authoritative file list even when a provider omits an inline
+-    // patch for a binary, oversized, or collapsed file.
+-    const patchesByFilename = new Map(
+-      (source.filesWithDiffs ?? []).map((file) => [file.filename, file.patch])
+-    );
+-    const filesForInstructions: FileWithDiff[] = filteredFiles.map((filename) =>
+-      patchesByFilename.has(filename)
+-        ? { filename, patch: patchesByFilename.get(filename)! }
+-        : { filename }
+-    );
++    // Use provided diffs if available (filtered to match filteredFiles)
++    let filesForInstructions: FileWithDiff[];
++    if (source.filesWithDiffs && source.filesWithDiffs.length > 0) {
++      // Filter to only include files that passed ignore patterns
++      filesForInstructions = source.filesWithDiffs.filter((f) =>
++        filteredFiles.includes(f.filename)
++      );
++    } else {
++      // No diffs provided - agents will need to run git diff
++      filesForInstructions = filteredFiles.map((f) => ({ filename: f }));
++    }
+ 
+     // ── Compress diffs once ──────────────────────────────────────────────
+     // Both the describe and review passes consume the same diff content.

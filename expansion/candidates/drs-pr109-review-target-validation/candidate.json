@@ -1,0 +1,25 @@
+{
+  "category": "validation",
+  "confirmingRevision": null,
+  "description": "GitHub and GitLab workflow review sources validate repository and branch inputs while honoring skip options.",
+  "evidence": "The focused implementation has targeted GitHub and GitLab tests, green CI, a zero-finding final review, and no corrective follow-up.",
+  "fromRevision": "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b",
+  "group": "drs-review-target-validation",
+  "id": "drs-pr109-review-target-validation",
+  "outcome": "clean",
+  "patchBytes": 4936,
+  "patchSha256": "b454c01875d8ac7e91e530fa4d811dc251624ddbef5c441d271890f401d3c652",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 109,
+  "resolvedRevisions": {
+    "23f1cd1f42577086c1e2db1b59c21d05f4570f21": "23f1cd1f42577086c1e2db1b59c21d05f4570f21",
+    "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b": "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/109",
+  "target": "train",
+  "toRevision": "23f1cd1f42577086c1e2db1b59c21d05f4570f21"
+}

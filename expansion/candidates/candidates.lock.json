@@ -1,0 +1,520 @@
+{
+  "candidates": [
+    {
+      "category": "security",
+      "confirmingRevision": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+      "description": "The workspace-writing visual artifact tool is enabled for agents that did not request it.",
+      "evidence": "The immediate fix changes the default capability to false and updates the test to require explicit enablement; the remaining final review finding was unrelated.",
+      "fromRevision": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+      "group": "drs-artifact-tool-capability",
+      "id": "drs-pr119-artifact-tool-opt-in",
+      "outcome": "defect",
+      "patchBytes": 1100,
+      "patchSha256": "b9b206c86b0ce6ef05b694196e140cf00cb29b9572d52445dd73c51be3516093",
+      "paths": [
+        "src/pi/sdk.ts",
+        "src/pi/sdk.test.ts"
+      ],
+      "pullRequest": 119,
+      "resolvedRevisions": {
+        "3716311768b5d3e65f2dd7d763d71c07871522f2": "3716311768b5d3e65f2dd7d763d71c07871522f2",
+        "431c8b6e06215b7e3f1923a329d6c7a207da6729": "431c8b6e06215b7e3f1923a329d6c7a207da6729"
+      },
+      "severity": "MEDIUM",
+      "source": "https://github.com/manojlds/drs/pull/119",
+      "target": "train",
+      "toRevision": "431c8b6e06215b7e3f1923a329d6c7a207da6729"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d",
+      "description": "Lowercase workflow severity input is compared directly with uppercase persisted findings.",
+      "evidence": "The reverse-fix patch removes the uppercase normalization and focused regression test that proved lowercase selectors previously updated zero findings.",
+      "fromRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d",
+      "group": "drs-severity-normalization",
+      "id": "drs-pr123-severity-normalization",
+      "outcome": "defect",
+      "patchBytes": 5163,
+      "patchSha256": "8ba546c99aa733701333adcddc920ca432ca0eb4f358e326eba039c35231ca9f",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 123,
+      "resolvedRevisions": {
+        "4937f82c29c575b28cab7ec2fe83ff91996c746b": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+        "827fb59eda9065e2c9db1b09862a657f33b70e1d": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+      },
+      "severity": "MEDIUM",
+      "source": "https://github.com/manojlds/drs/pull/123",
+      "target": "train",
+      "toRevision": "4937f82c29c575b28cab7ec2fe83ff91996c746b"
+    },
+    {
+      "category": "reliability",
+      "confirmingRevision": "37bb16aadca2e22bf62a1dac91df0c4e886c23dc",
+      "description": "Checkpoint serialization truncates long strings and corrupts state needed for exact resume.",
+      "evidence": "The confirming commit removes string truncation because it corrupted resumed state and replaces it with a whole-file size guard.",
+      "fromRevision": "020dad5f52c524a2865c5c849710d95a3bc5feb3",
+      "group": "drs-checkpoint-integrity",
+      "id": "drs-pr125-checkpoint-truncation",
+      "outcome": "defect",
+      "patchBytes": 6847,
+      "patchSha256": "130a6e9a189158c83ef9f59f769b6e94eee4ced212cf502883745d02513800ef",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 125,
+      "resolvedRevisions": {
+        "020dad5f52c524a2865c5c849710d95a3bc5feb3": "020dad5f52c524a2865c5c849710d95a3bc5feb3",
+        "37bb16aadca2e22bf62a1dac91df0c4e886c23dc": "37bb16aadca2e22bf62a1dac91df0c4e886c23dc",
+        "c5360f55c57d08991efcae5958fb9ed50f403da5": "c5360f55c57d08991efcae5958fb9ed50f403da5"
+      },
+      "severity": "HIGH",
+      "source": "https://github.com/manojlds/drs/pull/125",
+      "target": "train",
+      "toRevision": "c5360f55c57d08991efcae5958fb9ed50f403da5"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": "1d9a80e870b680b53a175c31057e2af3bedb3a02",
+      "description": "Fixer tools miss untracked source changes and throw instead of returning structured artifact errors.",
+      "evidence": "The accepted review fix switches to git status for untracked files and wraps artifact loading in the tool's structured error result.",
+      "fromRevision": "1d9a80e870b680b53a175c31057e2af3bedb3a02",
+      "group": "drs-fixer-tool-errors",
+      "id": "drs-pr141-fixer-tool-errors",
+      "outcome": "defect",
+      "patchBytes": 3867,
+      "patchSha256": "36ee795bb5d7258d07b188e0812aed4092aa2c0f724f327d059e4e74c8ff92a7",
+      "paths": [
+        "src/pi/sdk.ts"
+      ],
+      "pullRequest": 141,
+      "resolvedRevisions": {
+        "1d9a80e870b680b53a175c31057e2af3bedb3a02": "1d9a80e870b680b53a175c31057e2af3bedb3a02",
+        "460f13ebbb95842b28eb61a4125fe2cc9a5c0d52": "460f13ebbb95842b28eb61a4125fe2cc9a5c0d52"
+      },
+      "severity": "MEDIUM",
+      "source": "https://github.com/manojlds/drs/pull/141",
+      "target": "train",
+      "toRevision": "460f13ebbb95842b28eb61a4125fe2cc9a5c0d52"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454",
+      "description": "A null YAML action reaches a string-only edit-distance helper and throws an unhelpful TypeError.",
+      "evidence": "The accepted review fix validates that action is a string and adds a regression test for null.",
+      "fromRevision": "987deb8470a0b1d39fbc58269bf839f40b35e65d",
+      "group": "drs-action-validation",
+      "id": "drs-pr134-null-action",
+      "outcome": "defect",
+      "patchBytes": 9330,
+      "patchSha256": "fb6ab97dc0f982ac5611ace650e5353d4d26cdd82247b096b1eb275f4b8f1d6b",
+      "paths": [
+        "src/lib/config.ts",
+        "src/lib/config.test.ts"
+      ],
+      "pullRequest": 134,
+      "resolvedRevisions": {
+        "20a67537bd02c83aefb289ae13b0d3e5c22d75bd": "20a67537bd02c83aefb289ae13b0d3e5c22d75bd",
+        "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454": "7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454",
+        "987deb8470a0b1d39fbc58269bf839f40b35e65d": "987deb8470a0b1d39fbc58269bf839f40b35e65d"
+      },
+      "severity": "MEDIUM",
+      "source": "https://github.com/manojlds/drs/pull/134",
+      "target": "train",
+      "toRevision": "20a67537bd02c83aefb289ae13b0d3e5c22d75bd"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+      "description": "The generated trace viewer leaves TRACE_DATA as a literal placeholder and cannot render node details.",
+      "evidence": "PR 143 identifies the runtime TypeError and replaces the placeholder with serialized trace data.",
+      "fromRevision": "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d",
+      "group": "drs-trace-lifecycle",
+      "id": "drs-pr142-trace-placeholder",
+      "outcome": "defect",
+      "patchBytes": 17664,
+      "patchSha256": "44f50709a4e112d76bb176d7f7e859a719a93793e855826733b28aa064496414",
+      "paths": [
+        "src/lib/trace-html.ts"
+      ],
+      "pullRequest": 142,
+      "resolvedRevisions": {
+        "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d": "42d73e67e06aa9a5a31b7cb9a82546a1155acf3d",
+        "4f4523bc6d291b7cca435ac8ebd2339251fe027e": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+        "b78fe17d34715695871caa8673189dedf5e125f1": "b78fe17d34715695871caa8673189dedf5e125f1"
+      },
+      "severity": "HIGH",
+      "source": "https://github.com/manojlds/drs/pull/142",
+      "target": "train",
+      "toRevision": "b78fe17d34715695871caa8673189dedf5e125f1"
+    },
+    {
+      "category": "concurrency",
+      "confirmingRevision": "5eb537eafe35db9fe3cf031f0eaffa11435ee765",
+      "description": "Global trace finalization loops over and unsubscribes every active trace session instead of one session.",
+      "evidence": "The next accepted fix replaces global finalization with finalizeSession(sessionId), removing only the requested session from the active set.",
+      "fromRevision": "b78fe17d34715695871caa8673189dedf5e125f1",
+      "group": "drs-trace-lifecycle",
+      "id": "drs-pr143-global-trace-finalization",
+      "outcome": "defect",
+      "patchBytes": 10956,
+      "patchSha256": "0ee248944c0752c90604c728011e58b6b03a8db956c4dba595c47dd3b0d17cbf",
+      "paths": [
+        "src/lib/trace-collector.ts",
+        "src/pi/sdk.ts"
+      ],
+      "pullRequest": 143,
+      "resolvedRevisions": {
+        "4f4523bc6d291b7cca435ac8ebd2339251fe027e": "4f4523bc6d291b7cca435ac8ebd2339251fe027e",
+        "5eb537eafe35db9fe3cf031f0eaffa11435ee765": "5eb537eafe35db9fe3cf031f0eaffa11435ee765",
+        "b78fe17d34715695871caa8673189dedf5e125f1": "b78fe17d34715695871caa8673189dedf5e125f1"
+      },
+      "severity": "HIGH",
+      "source": "https://github.com/manojlds/drs/pull/143",
+      "target": "train",
+      "toRevision": "4f4523bc6d291b7cca435ac8ebd2339251fe027e"
+    },
+    {
+      "category": "validation",
+      "confirmingRevision": null,
+      "description": "GitHub and GitLab workflow review sources validate repository and branch inputs while honoring skip options.",
+      "evidence": "The focused implementation has targeted GitHub and GitLab tests, green CI, a zero-finding final review, and no corrective follow-up.",
+      "fromRevision": "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b",
+      "group": "drs-review-target-validation",
+      "id": "drs-pr109-review-target-validation",
+      "outcome": "clean",
+      "patchBytes": 4936,
+      "patchSha256": "b454c01875d8ac7e91e530fa4d811dc251624ddbef5c441d271890f401d3c652",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 109,
+      "resolvedRevisions": {
+        "23f1cd1f42577086c1e2db1b59c21d05f4570f21": "23f1cd1f42577086c1e2db1b59c21d05f4570f21",
+        "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b": "eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/109",
+      "target": "train",
+      "toRevision": "23f1cd1f42577086c1e2db1b59c21d05f4570f21"
+    },
+    {
+      "category": "cli",
+      "confirmingRevision": null,
+      "description": "Workflow discovery records packaged versus project sources and exposes human and JSON listing output.",
+      "evidence": "Direct workflow-discovery and source-classification tests passed on all supported Node versions and the final review reported no findings.",
+      "fromRevision": "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383",
+      "group": "drs-workflow-list",
+      "id": "drs-pr113-workflow-list",
+      "outcome": "clean",
+      "patchBytes": 10459,
+      "patchSha256": "322846499711292ef785efbb04b54a55f210bf181a02853fd8681aa533d99614",
+      "paths": [
+        "src/lib/config.ts",
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts",
+        "src/cli/index.ts"
+      ],
+      "pullRequest": 113,
+      "resolvedRevisions": {
+        "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383": "1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383",
+        "63a61c20c03fe333bdda19f113476e56068d89dd": "63a61c20c03fe333bdda19f113476e56068d89dd"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/113",
+      "target": "train",
+      "toRevision": "63a61c20c03fe333bdda19f113476e56068d89dd"
+    },
+    {
+      "category": "maintainability",
+      "confirmingRevision": null,
+      "description": "Review nodes persist artifacts directly and packaged workflows remove duplicated create/save nodes.",
+      "evidence": "Workflow and configuration tests cover the cohesive persistence shortcut; CI passed and the final review reported no findings.",
+      "fromRevision": "40a008f68597f0d42126a481afd2725f12ed9565",
+      "group": "drs-review-artifact-persistence",
+      "id": "drs-pr140-review-artifact-persistence",
+      "outcome": "clean",
+      "patchBytes": 14682,
+      "patchSha256": "f2a1c401d9c7587b3908799784a19e2e17cf51c8c3b79e59b7d31e42d0af95d4",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts",
+        "src/lib/config.test.ts",
+        ".pi/workflows"
+      ],
+      "pullRequest": 140,
+      "resolvedRevisions": {
+        "40a008f68597f0d42126a481afd2725f12ed9565": "40a008f68597f0d42126a481afd2725f12ed9565",
+        "73c54b0cf570fade8834c4178d936c9d4d077f05": "73c54b0cf570fade8834c4178d936c9d4d077f05"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/140",
+      "target": "train",
+      "toRevision": "73c54b0cf570fade8834c4178d936c9d4d077f05"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": null,
+      "description": "Findings outside changed lines are removed and summary counts are recomputed from retained issues.",
+      "evidence": "The two-file change includes regression coverage for unchanged-line and line-less findings and received a zero-finding final review.",
+      "fromRevision": "bb70ee3a4e3136ae931137c9449ec7f9dc325e23",
+      "group": "drs-changed-line-filter",
+      "id": "drs-pr116-changed-line-filter",
+      "outcome": "clean",
+      "patchBytes": 6413,
+      "patchSha256": "d55749950501ce720131b18eac488ce62a453e50b221e72dba9215e87e9ba73b",
+      "paths": [
+        "src/lib/unified-review-executor.ts",
+        "src/lib/unified-review-executor.test.ts"
+      ],
+      "pullRequest": 116,
+      "resolvedRevisions": {
+        "3d8efebc5b661ea17689fb27b8b9ff2671327de4": "3d8efebc5b661ea17689fb27b8b9ff2671327de4",
+        "bb70ee3a4e3136ae931137c9449ec7f9dc325e23": "bb70ee3a4e3136ae931137c9449ec7f9dc325e23"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/116",
+      "target": "train",
+      "toRevision": "3d8efebc5b661ea17689fb27b8b9ff2671327de4"
+    },
+    {
+      "category": "compatibility",
+      "confirmingRevision": null,
+      "description": "The workflow DSL removes the condition synonym and migrates code, tests, and packaged workflows to if.",
+      "evidence": "Production code, tests, and packaged workflows migrate together; CI and two final reviews reported no issues.",
+      "fromRevision": "14047bd2dfb19c978b8e571102c2f7829a784d7d",
+      "group": "drs-condition-key-migration",
+      "id": "drs-pr146-condition-key-migration",
+      "outcome": "clean",
+      "patchBytes": 7004,
+      "patchSha256": "98cc04f5eac23c0da83c2576b85f273af97e63bd108de1d7c728abf19facc022",
+      "paths": [
+        "src/lib/config.ts",
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts",
+        ".pi/workflows"
+      ],
+      "pullRequest": 146,
+      "resolvedRevisions": {
+        "14047bd2dfb19c978b8e571102c2f7829a784d7d": "14047bd2dfb19c978b8e571102c2f7829a784d7d",
+        "5284ea63be1cf5f9a4e728b553ad6a1d89130445": "5284ea63be1cf5f9a4e728b553ad6a1d89130445"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/146",
+      "target": "train",
+      "toRevision": "5284ea63be1cf5f9a4e728b553ad6a1d89130445"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": null,
+      "description": "Severity selectors are normalized before matching persisted review findings.",
+      "evidence": "A focused regression test exercises lowercase input against uppercase stored severities; CI and final review were clean.",
+      "fromRevision": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+      "group": "drs-severity-normalization",
+      "id": "drs-pr150-case-insensitive-severity",
+      "outcome": "clean",
+      "patchBytes": 5163,
+      "patchSha256": "d9d8ef6595eef8ff9f2bc84f28d6c65ff55edb443e6121d11d471c3da635c2a0",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 150,
+      "resolvedRevisions": {
+        "4937f82c29c575b28cab7ec2fe83ff91996c746b": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+        "827fb59eda9065e2c9db1b09862a657f33b70e1d": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/150",
+      "target": "train",
+      "toRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+    },
+    {
+      "category": "reliability",
+      "confirmingRevision": null,
+      "description": "Non-loop control nodes reject backward routes during validation and runtime execution.",
+      "evidence": "The narrow invariant has explicit invalid-route regression coverage, green CI, and a zero-finding final review.",
+      "fromRevision": "2ec414415de04a72026256e7018b2bf1adff52b4",
+      "group": "drs-forward-control-routing",
+      "id": "drs-pr153-forward-control-routing",
+      "outcome": "clean",
+      "patchBytes": 4180,
+      "patchSha256": "728c03ef81731a55cba700f91e8f7d3ef7978fb23f1110c7bb3e479031f44c31",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 153,
+      "resolvedRevisions": {
+        "2ec414415de04a72026256e7018b2bf1adff52b4": "2ec414415de04a72026256e7018b2bf1adff52b4",
+        "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe": "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/153",
+      "target": "train",
+      "toRevision": "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe"
+    },
+    {
+      "category": "correctness",
+      "confirmingRevision": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05",
+      "description": "Review input is built only from files with inline patches and omits authoritative patchless changed files.",
+      "evidence": "The reverse-fix patch removes the authoritative filename reconstruction and exact patchless-file regression coverage added by PR 206.",
+      "fromRevision": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05",
+      "group": "drs-review-context-completeness",
+      "id": "drs-pr205-patchless-review-files",
+      "outcome": "defect",
+      "patchBytes": 2910,
+      "patchSha256": "c0791350ed4ff6271ccd1247f4e6303eb9e5ee1863ffe6f85c8185e237818fb1",
+      "paths": [
+        "src/lib/review-orchestrator.ts",
+        "src/lib/review-orchestrator.test.ts"
+      ],
+      "pullRequest": 205,
+      "resolvedRevisions": {
+        "c019b56711029e85a5dc87174a1790a6c94fc2b5": "c019b56711029e85a5dc87174a1790a6c94fc2b5",
+        "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05": "f585a8fb5f5a8a45bd572b42abe38d2f2243cc05"
+      },
+      "severity": "HIGH",
+      "source": "https://github.com/manojlds/drs/pull/205",
+      "target": "dev",
+      "toRevision": "c019b56711029e85a5dc87174a1790a6c94fc2b5"
+    },
+    {
+      "category": "reliability",
+      "confirmingRevision": "bfe98957c50c1d31e46b36c852609c3890d422d3",
+      "description": "Release changelog finalization depends on a live model call and can block deterministic release preparation.",
+      "evidence": "Repeated provider timeout and HTTP 400 failures led PR 200 to replace model-driven finalization with deterministic changelog parsing and regression tests.",
+      "fromRevision": "bfe98957c50c1d31e46b36c852609c3890d422d3",
+      "group": "drs-release-finalization",
+      "id": "drs-pr197-model-dependent-release-finalization",
+      "outcome": "defect",
+      "patchBytes": 1180,
+      "patchSha256": "2a9a75f9c1b99266a617247e39b126ca3e7cda115fa71c344aea952b2b9de730",
+      "paths": [
+        ".github/workflows/release-changelog.yml",
+        ".pi/workflows/release-changelog-finalize.yaml"
+      ],
+      "pullRequest": 197,
+      "resolvedRevisions": {
+        "0b6e35a4fddf83ad2dc66727c791100fb082b069": "0b6e35a4fddf83ad2dc66727c791100fb082b069",
+        "bfe98957c50c1d31e46b36c852609c3890d422d3": "bfe98957c50c1d31e46b36c852609c3890d422d3"
+      },
+      "severity": "HIGH",
+      "source": "https://github.com/manojlds/drs/pull/197",
+      "target": "dev",
+      "toRevision": "0b6e35a4fddf83ad2dc66727c791100fb082b069"
+    },
+    {
+      "category": "reliability",
+      "confirmingRevision": "7143fd3202b4dadb622b42c9a4f1186dc181b055",
+      "description": "Empty but valid patches are treated as missing and cause chunk evaluation to fail.",
+      "evidence": "The immediate accepted fix rejects only undefined patches and adds mixed-empty and all-empty regression tests.",
+      "fromRevision": "8aea37eff0ae8ada3ee06185c675f18ff309c369",
+      "group": "drs-jev-chunking",
+      "id": "drs-pr209-empty-patch-chunks",
+      "outcome": "defect",
+      "patchBytes": 11751,
+      "patchSha256": "7a90fb0cb7791db2f3cee289429487caee144f8a60698fa1f547bad8e2a93a28",
+      "paths": [
+        "src/lib/jev/chunks.ts",
+        "src/lib/jev/chunks.test.ts"
+      ],
+      "pullRequest": 209,
+      "resolvedRevisions": {
+        "1ac10730190b3efee1c749fb6140c08434542800": "1ac10730190b3efee1c749fb6140c08434542800",
+        "7143fd3202b4dadb622b42c9a4f1186dc181b055": "7143fd3202b4dadb622b42c9a4f1186dc181b055",
+        "8aea37eff0ae8ada3ee06185c675f18ff309c369": "8aea37eff0ae8ada3ee06185c675f18ff309c369"
+      },
+      "severity": "MEDIUM",
+      "source": "https://github.com/manojlds/drs/pull/209",
+      "target": "dev",
+      "toRevision": "1ac10730190b3efee1c749fb6140c08434542800"
+    },
+    {
+      "category": "observability",
+      "confirmingRevision": null,
+      "description": "Temporal activity lifecycle logs include structured identity, attempt, duration, and failure context.",
+      "evidence": "Focused activity-log coverage and the implementation exercise structured lifecycle output; CI and final review passed without a corrective logging follow-up.",
+      "fromRevision": "cdb54895b42083ec97c01f4f5520872ece6e0e42",
+      "group": "drs-structured-execution-logs",
+      "id": "drs-pr166-structured-execution-logs",
+      "outcome": "clean",
+      "patchBytes": 6319,
+      "patchSha256": "39fa9d6bab90a36ea530c877e8f544bafc644f9b5ec0ac64c5dfe32eab508393",
+      "paths": [
+        "src/temporal/activities.ts",
+        "src/temporal/activities.test.ts"
+      ],
+      "pullRequest": 166,
+      "resolvedRevisions": {
+        "cdb54895b42083ec97c01f4f5520872ece6e0e42": "cdb54895b42083ec97c01f4f5520872ece6e0e42",
+        "f051b6ed15182d2186375508d1a89411ad56e564": "f051b6ed15182d2186375508d1a89411ad56e564"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/166",
+      "target": "dev",
+      "toRevision": "f051b6ed15182d2186375508d1a89411ad56e564"
+    },
+    {
+      "category": "compatibility",
+      "confirmingRevision": null,
+      "description": "Review parsing prefers the latest canonical artifact while preserving explicit pointer and inline JSON precedence.",
+      "evidence": "The focused parser change has extensive precedence tests, green CI, a zero-finding final review, and no corrective follow-up.",
+      "fromRevision": "a6d6efaf6f6800eefef882921ce7ba4ce991b078",
+      "group": "drs-canonical-artifact-parser",
+      "id": "drs-pr174-canonical-artifact-parser",
+      "outcome": "clean",
+      "patchBytes": 4734,
+      "patchSha256": "29d019f70b870f06ad3caa884eb8e5183266c229f27fb340a823494c7cdce532",
+      "paths": [
+        "src/lib/review-parser.ts",
+        "src/lib/review-parser.test.ts"
+      ],
+      "pullRequest": 174,
+      "resolvedRevisions": {
+        "a6d6efaf6f6800eefef882921ce7ba4ce991b078": "a6d6efaf6f6800eefef882921ce7ba4ce991b078",
+        "e32e609701bf566b27f2ea3971e12095b2b10872": "e32e609701bf566b27f2ea3971e12095b2b10872"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/174",
+      "target": "dev",
+      "toRevision": "e32e609701bf566b27f2ea3971e12095b2b10872"
+    },
+    {
+      "category": "compatibility",
+      "confirmingRevision": null,
+      "description": "Canonical review artifacts persist by default while named workflow-artifact output remains opt-in.",
+      "evidence": "The focused two-file change includes behavior tests, green CI, a zero-finding review, and no corrective follow-up.",
+      "fromRevision": "7b2064706469ee19c4c84cea20ebf9c80a2cab6c",
+      "group": "drs-default-review-artifacts",
+      "id": "drs-pr173-default-review-artifacts",
+      "outcome": "clean",
+      "patchBytes": 3224,
+      "patchSha256": "c382ee307983dd81e996e068f1ed16d3c8260601416517406ace4c7514e11163",
+      "paths": [
+        "src/cli/workflow.ts",
+        "src/cli/workflow.test.ts"
+      ],
+      "pullRequest": 173,
+      "resolvedRevisions": {
+        "7b2064706469ee19c4c84cea20ebf9c80a2cab6c": "7b2064706469ee19c4c84cea20ebf9c80a2cab6c",
+        "a6d6efaf6f6800eefef882921ce7ba4ce991b078": "a6d6efaf6f6800eefef882921ce7ba4ce991b078"
+      },
+      "severity": null,
+      "source": "https://github.com/manojlds/drs/pull/173",
+      "target": "dev",
+      "toRevision": "a6d6efaf6f6800eefef882921ce7ba4ce991b078"
+    }
+  ],
+  "frozenHoldout": "pilot-v1:test",
+  "manifest": "drs-candidates-v1",
+  "manifestSha256": "800a0490f50f6b94dfce4f4a5d13e7d40b2b4ba709350d80c1cf9bcf450990fb",
+  "schemaVersion": 1,
+  "sourceDirty": true,
+  "sourceRepository": "https://github.com/manojlds/drs",
+  "sourceRevision": "1665bff3828dcfb388050b5800678a61c7c5d106"
+}

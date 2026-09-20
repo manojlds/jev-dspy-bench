@@ -1,0 +1,25 @@
+{
+  "category": "reliability",
+  "confirmingRevision": null,
+  "description": "Non-loop control nodes reject backward routes during validation and runtime execution.",
+  "evidence": "The narrow invariant has explicit invalid-route regression coverage, green CI, and a zero-finding final review.",
+  "fromRevision": "2ec414415de04a72026256e7018b2bf1adff52b4",
+  "group": "drs-forward-control-routing",
+  "id": "drs-pr153-forward-control-routing",
+  "outcome": "clean",
+  "patchBytes": 4180,
+  "patchSha256": "728c03ef81731a55cba700f91e8f7d3ef7978fb23f1110c7bb3e479031f44c31",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 153,
+  "resolvedRevisions": {
+    "2ec414415de04a72026256e7018b2bf1adff52b4": "2ec414415de04a72026256e7018b2bf1adff52b4",
+    "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe": "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/153",
+  "target": "train",
+  "toRevision": "8a4b2fd6a866bc14bdcabafa9ae628a439affcfe"
+}

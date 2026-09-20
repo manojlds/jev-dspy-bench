@@ -1,0 +1,284 @@
+schemaVersion: 1
+name: drs-candidates-v1
+sourceRepository: https://github.com/manojlds/drs
+frozenHoldout: pilot-v1:test
+candidates:
+  - id: drs-pr119-artifact-tool-opt-in
+    group: drs-artifact-tool-capability
+    target: train
+    outcome: defect
+    description: The workspace-writing visual artifact tool is enabled for agents that did not request it.
+    category: security
+    severity: MEDIUM
+    pullRequest: 119
+    source: https://github.com/manojlds/drs/pull/119
+    fromRevision: 3716311768b5d3e65f2dd7d763d71c07871522f2
+    toRevision: 431c8b6e06215b7e3f1923a329d6c7a207da6729
+    confirmingRevision: 3716311768b5d3e65f2dd7d763d71c07871522f2
+    paths: [src/pi/sdk.ts, src/pi/sdk.test.ts]
+    evidence: The immediate fix changes the default capability to false and updates the test to require explicit enablement; the remaining final review finding was unrelated.
+
+  - id: drs-pr123-severity-normalization
+    group: drs-severity-normalization
+    target: train
+    outcome: defect
+    description: Lowercase workflow severity input is compared directly with uppercase persisted findings.
+    category: correctness
+    severity: MEDIUM
+    pullRequest: 123
+    source: https://github.com/manojlds/drs/pull/123
+    fromRevision: 827fb59eda9065e2c9db1b09862a657f33b70e1d
+    toRevision: 4937f82c29c575b28cab7ec2fe83ff91996c746b
+    confirmingRevision: 827fb59eda9065e2c9db1b09862a657f33b70e1d
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: The reverse-fix patch removes the uppercase normalization and focused regression test that proved lowercase selectors previously updated zero findings.
+
+  - id: drs-pr125-checkpoint-truncation
+    group: drs-checkpoint-integrity
+    target: train
+    outcome: defect
+    description: Checkpoint serialization truncates long strings and corrupts state needed for exact resume.
+    category: reliability
+    severity: HIGH
+    pullRequest: 125
+    source: https://github.com/manojlds/drs/pull/125
+    fromRevision: 020dad5f52c524a2865c5c849710d95a3bc5feb3
+    toRevision: c5360f55c57d08991efcae5958fb9ed50f403da5
+    confirmingRevision: 37bb16aadca2e22bf62a1dac91df0c4e886c23dc
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: The confirming commit removes string truncation because it corrupted resumed state and replaces it with a whole-file size guard.
+
+  - id: drs-pr141-fixer-tool-errors
+    group: drs-fixer-tool-errors
+    target: train
+    outcome: defect
+    description: Fixer tools miss untracked source changes and throw instead of returning structured artifact errors.
+    category: correctness
+    severity: MEDIUM
+    pullRequest: 141
+    source: https://github.com/manojlds/drs/pull/141
+    fromRevision: 1d9a80e870b680b53a175c31057e2af3bedb3a02
+    toRevision: 460f13ebbb95842b28eb61a4125fe2cc9a5c0d52
+    confirmingRevision: 1d9a80e870b680b53a175c31057e2af3bedb3a02
+    paths: [src/pi/sdk.ts]
+    evidence: The accepted review fix switches to git status for untracked files and wraps artifact loading in the tool's structured error result.
+
+  - id: drs-pr134-null-action
+    group: drs-action-validation
+    target: train
+    outcome: defect
+    description: A null YAML action reaches a string-only edit-distance helper and throws an unhelpful TypeError.
+    category: correctness
+    severity: MEDIUM
+    pullRequest: 134
+    source: https://github.com/manojlds/drs/pull/134
+    fromRevision: 987deb8470a0b1d39fbc58269bf839f40b35e65d
+    toRevision: 20a67537bd02c83aefb289ae13b0d3e5c22d75bd
+    confirmingRevision: 7a5f394a95b28c5705876aeeb2bd0fa0f9bf7454
+    paths: [src/lib/config.ts, src/lib/config.test.ts]
+    evidence: The accepted review fix validates that action is a string and adds a regression test for null.
+
+  - id: drs-pr142-trace-placeholder
+    group: drs-trace-lifecycle
+    target: train
+    outcome: defect
+    description: The generated trace viewer leaves TRACE_DATA as a literal placeholder and cannot render node details.
+    category: correctness
+    severity: HIGH
+    pullRequest: 142
+    source: https://github.com/manojlds/drs/pull/142
+    fromRevision: 42d73e67e06aa9a5a31b7cb9a82546a1155acf3d
+    toRevision: b78fe17d34715695871caa8673189dedf5e125f1
+    confirmingRevision: 4f4523bc6d291b7cca435ac8ebd2339251fe027e
+    paths: [src/lib/trace-html.ts]
+    evidence: PR 143 identifies the runtime TypeError and replaces the placeholder with serialized trace data.
+
+  - id: drs-pr143-global-trace-finalization
+    group: drs-trace-lifecycle
+    target: train
+    outcome: defect
+    description: Global trace finalization loops over and unsubscribes every active trace session instead of one session.
+    category: concurrency
+    severity: HIGH
+    pullRequest: 143
+    source: https://github.com/manojlds/drs/pull/143
+    fromRevision: b78fe17d34715695871caa8673189dedf5e125f1
+    toRevision: 4f4523bc6d291b7cca435ac8ebd2339251fe027e
+    confirmingRevision: 5eb537eafe35db9fe3cf031f0eaffa11435ee765
+    paths: [src/lib/trace-collector.ts, src/pi/sdk.ts]
+    evidence: The next accepted fix replaces global finalization with finalizeSession(sessionId), removing only the requested session from the active set.
+
+  - id: drs-pr109-review-target-validation
+    group: drs-review-target-validation
+    target: train
+    outcome: clean
+    description: GitHub and GitLab workflow review sources validate repository and branch inputs while honoring skip options.
+    category: validation
+    pullRequest: 109
+    source: https://github.com/manojlds/drs/pull/109
+    fromRevision: eb0a3d2eb140177d0a21a28ad44914b1c5d22d3b
+    toRevision: 23f1cd1f42577086c1e2db1b59c21d05f4570f21
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: The focused implementation has targeted GitHub and GitLab tests, green CI, a zero-finding final review, and no corrective follow-up.
+
+  - id: drs-pr113-workflow-list
+    group: drs-workflow-list
+    target: train
+    outcome: clean
+    description: Workflow discovery records packaged versus project sources and exposes human and JSON listing output.
+    category: cli
+    pullRequest: 113
+    source: https://github.com/manojlds/drs/pull/113
+    fromRevision: 1b213c99f0afc49acd40a5f0b0ce4ff63a4c0383
+    toRevision: 63a61c20c03fe333bdda19f113476e56068d89dd
+    paths: [src/lib/config.ts, src/cli/workflow.ts, src/cli/workflow.test.ts, src/cli/index.ts]
+    evidence: Direct workflow-discovery and source-classification tests passed on all supported Node versions and the final review reported no findings.
+
+  - id: drs-pr140-review-artifact-persistence
+    group: drs-review-artifact-persistence
+    target: train
+    outcome: clean
+    description: Review nodes persist artifacts directly and packaged workflows remove duplicated create/save nodes.
+    category: maintainability
+    pullRequest: 140
+    source: https://github.com/manojlds/drs/pull/140
+    fromRevision: 40a008f68597f0d42126a481afd2725f12ed9565
+    toRevision: 73c54b0cf570fade8834c4178d936c9d4d077f05
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts, src/lib/config.test.ts, .pi/workflows]
+    evidence: Workflow and configuration tests cover the cohesive persistence shortcut; CI passed and the final review reported no findings.
+
+  - id: drs-pr116-changed-line-filter
+    group: drs-changed-line-filter
+    target: train
+    outcome: clean
+    description: Findings outside changed lines are removed and summary counts are recomputed from retained issues.
+    category: correctness
+    pullRequest: 116
+    source: https://github.com/manojlds/drs/pull/116
+    fromRevision: bb70ee3a4e3136ae931137c9449ec7f9dc325e23
+    toRevision: 3d8efebc5b661ea17689fb27b8b9ff2671327de4
+    paths: [src/lib/unified-review-executor.ts, src/lib/unified-review-executor.test.ts]
+    evidence: The two-file change includes regression coverage for unchanged-line and line-less findings and received a zero-finding final review.
+
+  - id: drs-pr146-condition-key-migration
+    group: drs-condition-key-migration
+    target: train
+    outcome: clean
+    description: The workflow DSL removes the condition synonym and migrates code, tests, and packaged workflows to if.
+    category: compatibility
+    pullRequest: 146
+    source: https://github.com/manojlds/drs/pull/146
+    fromRevision: 14047bd2dfb19c978b8e571102c2f7829a784d7d
+    toRevision: 5284ea63be1cf5f9a4e728b553ad6a1d89130445
+    paths: [src/lib/config.ts, src/cli/workflow.ts, src/cli/workflow.test.ts, .pi/workflows]
+    evidence: Production code, tests, and packaged workflows migrate together; CI and two final reviews reported no issues.
+
+  - id: drs-pr150-case-insensitive-severity
+    group: drs-severity-normalization
+    target: train
+    outcome: clean
+    description: Severity selectors are normalized before matching persisted review findings.
+    category: correctness
+    pullRequest: 150
+    source: https://github.com/manojlds/drs/pull/150
+    fromRevision: 4937f82c29c575b28cab7ec2fe83ff91996c746b
+    toRevision: 827fb59eda9065e2c9db1b09862a657f33b70e1d
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: A focused regression test exercises lowercase input against uppercase stored severities; CI and final review were clean.
+
+  - id: drs-pr153-forward-control-routing
+    group: drs-forward-control-routing
+    target: train
+    outcome: clean
+    description: Non-loop control nodes reject backward routes during validation and runtime execution.
+    category: reliability
+    pullRequest: 153
+    source: https://github.com/manojlds/drs/pull/153
+    fromRevision: 2ec414415de04a72026256e7018b2bf1adff52b4
+    toRevision: 8a4b2fd6a866bc14bdcabafa9ae628a439affcfe
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: The narrow invariant has explicit invalid-route regression coverage, green CI, and a zero-finding final review.
+
+  - id: drs-pr205-patchless-review-files
+    group: drs-review-context-completeness
+    target: dev
+    outcome: defect
+    description: Review input is built only from files with inline patches and omits authoritative patchless changed files.
+    category: correctness
+    severity: HIGH
+    pullRequest: 205
+    source: https://github.com/manojlds/drs/pull/205
+    fromRevision: f585a8fb5f5a8a45bd572b42abe38d2f2243cc05
+    toRevision: c019b56711029e85a5dc87174a1790a6c94fc2b5
+    confirmingRevision: f585a8fb5f5a8a45bd572b42abe38d2f2243cc05
+    paths: [src/lib/review-orchestrator.ts, src/lib/review-orchestrator.test.ts]
+    evidence: The reverse-fix patch removes the authoritative filename reconstruction and exact patchless-file regression coverage added by PR 206.
+
+  - id: drs-pr197-model-dependent-release-finalization
+    group: drs-release-finalization
+    target: dev
+    outcome: defect
+    description: Release changelog finalization depends on a live model call and can block deterministic release preparation.
+    category: reliability
+    severity: HIGH
+    pullRequest: 197
+    source: https://github.com/manojlds/drs/pull/197
+    fromRevision: bfe98957c50c1d31e46b36c852609c3890d422d3
+    toRevision: 0b6e35a4fddf83ad2dc66727c791100fb082b069
+    confirmingRevision: bfe98957c50c1d31e46b36c852609c3890d422d3
+    paths: [.github/workflows/release-changelog.yml, .pi/workflows/release-changelog-finalize.yaml]
+    evidence: Repeated provider timeout and HTTP 400 failures led PR 200 to replace model-driven finalization with deterministic changelog parsing and regression tests.
+
+  - id: drs-pr209-empty-patch-chunks
+    group: drs-jev-chunking
+    target: dev
+    outcome: defect
+    description: Empty but valid patches are treated as missing and cause chunk evaluation to fail.
+    category: reliability
+    severity: MEDIUM
+    pullRequest: 209
+    source: https://github.com/manojlds/drs/pull/209
+    fromRevision: 8aea37eff0ae8ada3ee06185c675f18ff309c369
+    toRevision: 1ac10730190b3efee1c749fb6140c08434542800
+    confirmingRevision: 7143fd3202b4dadb622b42c9a4f1186dc181b055
+    paths: [src/lib/jev/chunks.ts, src/lib/jev/chunks.test.ts]
+    evidence: The immediate accepted fix rejects only undefined patches and adds mixed-empty and all-empty regression tests.
+
+  - id: drs-pr166-structured-execution-logs
+    group: drs-structured-execution-logs
+    target: dev
+    outcome: clean
+    description: Temporal activity lifecycle logs include structured identity, attempt, duration, and failure context.
+    category: observability
+    pullRequest: 166
+    source: https://github.com/manojlds/drs/pull/166
+    fromRevision: cdb54895b42083ec97c01f4f5520872ece6e0e42
+    toRevision: f051b6ed15182d2186375508d1a89411ad56e564
+    paths: [src/temporal/activities.ts, src/temporal/activities.test.ts]
+    evidence: Focused activity-log coverage and the implementation exercise structured lifecycle output; CI and final review passed without a corrective logging follow-up.
+
+  - id: drs-pr174-canonical-artifact-parser
+    group: drs-canonical-artifact-parser
+    target: dev
+    outcome: clean
+    description: Review parsing prefers the latest canonical artifact while preserving explicit pointer and inline JSON precedence.
+    category: compatibility
+    pullRequest: 174
+    source: https://github.com/manojlds/drs/pull/174
+    fromRevision: a6d6efaf6f6800eefef882921ce7ba4ce991b078
+    toRevision: e32e609701bf566b27f2ea3971e12095b2b10872
+    paths: [src/lib/review-parser.ts, src/lib/review-parser.test.ts]
+    evidence: The focused parser change has extensive precedence tests, green CI, a zero-finding final review, and no corrective follow-up.
+
+  - id: drs-pr173-default-review-artifacts
+    group: drs-default-review-artifacts
+    target: dev
+    outcome: clean
+    description: Canonical review artifacts persist by default while named workflow-artifact output remains opt-in.
+    category: compatibility
+    pullRequest: 173
+    source: https://github.com/manojlds/drs/pull/173
+    fromRevision: 7b2064706469ee19c4c84cea20ebf9c80a2cab6c
+    toRevision: a6d6efaf6f6800eefef882921ce7ba4ce991b078
+    paths: [src/cli/workflow.ts, src/cli/workflow.test.ts]
+    evidence: The focused two-file change includes behavior tests, green CI, a zero-finding review, and no corrective follow-up.

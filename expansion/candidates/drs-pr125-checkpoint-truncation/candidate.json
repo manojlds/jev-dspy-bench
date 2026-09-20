@@ -1,0 +1,26 @@
+{
+  "category": "reliability",
+  "confirmingRevision": "37bb16aadca2e22bf62a1dac91df0c4e886c23dc",
+  "description": "Checkpoint serialization truncates long strings and corrupts state needed for exact resume.",
+  "evidence": "The confirming commit removes string truncation because it corrupted resumed state and replaces it with a whole-file size guard.",
+  "fromRevision": "020dad5f52c524a2865c5c849710d95a3bc5feb3",
+  "group": "drs-checkpoint-integrity",
+  "id": "drs-pr125-checkpoint-truncation",
+  "outcome": "defect",
+  "patchBytes": 6847,
+  "patchSha256": "130a6e9a189158c83ef9f59f769b6e94eee4ced212cf502883745d02513800ef",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 125,
+  "resolvedRevisions": {
+    "020dad5f52c524a2865c5c849710d95a3bc5feb3": "020dad5f52c524a2865c5c849710d95a3bc5feb3",
+    "37bb16aadca2e22bf62a1dac91df0c4e886c23dc": "37bb16aadca2e22bf62a1dac91df0c4e886c23dc",
+    "c5360f55c57d08991efcae5958fb9ed50f403da5": "c5360f55c57d08991efcae5958fb9ed50f403da5"
+  },
+  "severity": "HIGH",
+  "source": "https://github.com/manojlds/drs/pull/125",
+  "target": "train",
+  "toRevision": "c5360f55c57d08991efcae5958fb9ed50f403da5"
+}

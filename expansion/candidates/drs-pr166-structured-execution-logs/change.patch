@@ -1,0 +1,188 @@
+diff --git a/src/temporal/activities.test.ts b/src/temporal/activities.test.ts
+index c39cb17..17ad604 100644
+--- a/src/temporal/activities.test.ts
++++ b/src/temporal/activities.test.ts
+@@ -11,6 +11,7 @@ import {
+ import type { RunWorkflowNodeActivityInput } from './types.js';
+ import type { WorkflowTemplateContext } from '../lib/workflow/types.js';
+ import { isArtifactRef, LocalWorkflowArtifactStore } from '../lib/workflow/artifact-store.js';
++import { configureLogger } from '../lib/logger.js';
+ 
+ vi.mock('../cli/workflow.js', () => ({
+   runWorkflowNodeLocally: vi.fn(),
+@@ -145,6 +146,10 @@ describe('activities artifact offloading', () => {
+ });
+ 
+ describe('resolveActivityIdempotencyContext', () => {
++  afterEach(() => {
++    configureLogger({ level: 'info', format: 'human', timestamps: false, colors: false });
++  });
++
+   it('returns undefined when no scheduled idempotency context is present', () => {
+     const input: RunWorkflowNodeActivityInput = {
+       workingDir: '/repo',
+@@ -232,6 +237,61 @@ describe('resolveActivityIdempotencyContext', () => {
+       input.context
+     );
+   });
++
++  it('logs Temporal activity context for node execution', async () => {
++    configureLogger({ level: 'debug', format: 'json', timestamps: true, colors: false });
++    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
++    const nodeResult = { id: 'test', type: 'action' as const, action: 'git-diff', output: 'diff' };
++    vi.mocked(runWorkflowNodeLocally).mockResolvedValue(nodeResult);
++    const input: RunWorkflowNodeActivityInput = {
++      workingDir: '/repo',
++      nodeId: 'test',
++      node: { action: 'git-diff' },
++      context: { inputs: {}, nodes: {}, artifacts: {}, loop: {} },
++      idempotencyContext: {
++        workflowId: 'workflow-1',
++        runId: 'run-1',
++        nodeId: 'test',
++        attempt: 2,
++        idempotencyKey: 'workflow-1:run-1:test',
++      },
++    };
++
++    try {
++      await runWorkflowNodeActivity(input);
++
++      const entries = logSpy.mock.calls.map(([line]) => JSON.parse(String(line)));
++      expect(entries).toEqual([
++        expect.objectContaining({
++          level: 'debug',
++          message: 'Temporal activity started',
++          context: expect.objectContaining({
++            component: 'temporal-activity',
++            workflowId: 'workflow-1',
++            runId: 'run-1',
++            nodeId: 'test',
++            attempt: 2,
++            action: 'git-diff',
++          }),
++        }),
++        expect.objectContaining({
++          level: 'debug',
++          message: 'Temporal activity completed',
++          context: expect.objectContaining({
++            component: 'temporal-activity',
++            workflowId: 'workflow-1',
++            runId: 'run-1',
++            nodeId: 'test',
++            attempt: 2,
++            action: 'git-diff',
++          }),
++          data: expect.objectContaining({ status: 'success' }),
++        }),
++      ]);
++    } finally {
++      logSpy.mockRestore();
++    }
++  });
+ });
+ 
+ describe('hydrateContextActivity', () => {
+diff --git a/src/temporal/activities.ts b/src/temporal/activities.ts
+index 996f7bb..0c293b2 100644
+--- a/src/temporal/activities.ts
++++ b/src/temporal/activities.ts
+@@ -1,6 +1,7 @@
+ import { Context } from '@temporalio/activity';
+ import { loadConfig } from '../lib/config.js';
+ import { runWorkflowNodeLocally } from '../cli/workflow.js';
++import { getLogger } from '../lib/logger.js';
+ import {
+   type ArtifactInliningPolicy,
+   isArtifactRef,
+@@ -52,39 +53,63 @@ export async function runWorkflowNodeActivity(
+ ): Promise<WorkflowNodeResult> {
+   const config = loadConfig(input.workingDir);
+   const idempotencyContext = resolveActivityIdempotencyContext(input);
++  const startedAt = Date.now();
++  const logContext = {
++    component: 'temporal-activity',
++    workflowId: idempotencyContext?.workflowId,
++    runId: idempotencyContext?.runId,
++    nodeId: input.nodeId,
++    attempt: idempotencyContext?.attempt,
++    action: input.node.action,
++    agent: input.node.agent,
++  };
++  const logger = getLogger();
++
++  logger.debug('Temporal activity started', logContext);
+ 
+   // Hydrate artifact refs in the node context so template rendering can
+   // access actual artifact values. The workflow passes hydrated artifacts,
+   // but hydrating here makes the activity resilient when called directly.
+   const store = new LocalWorkflowArtifactStore(input.workingDir, input.nodeId);
+-  await hydrateContext(input.context.artifacts, store);
+-
+-  const result = await runWorkflowNodeLocally(
+-    config,
+-    input.nodeId,
+-    input.node,
+-    {
+-      debug: input.options?.debug,
+-      thinkingLevel: input.options?.thinkingLevel,
+-      idempotencyContext,
+-      workingDir: input.workingDir,
+-      jsonOutput: true,
+-      trace: false,
+-    },
+-    input.workingDir,
+-    input.context
+-  );
+-
+-  if (!input.offloadArtifacts) {
+-    return result;
+-  }
+-
+-  const policy: ArtifactInliningPolicy = {
+-    mode: 'ref-large-values',
+-    inlineMaxBytes: input.artifactInlineMaxBytes ?? 64 * 1024,
+-  };
++  try {
++    await hydrateContext(input.context.artifacts, store);
++
++    const result = await runWorkflowNodeLocally(
++      config,
++      input.nodeId,
++      input.node,
++      {
++        debug: input.options?.debug,
++        thinkingLevel: input.options?.thinkingLevel,
++        idempotencyContext,
++        workingDir: input.workingDir,
++        jsonOutput: true,
++        trace: false,
++      },
++      input.workingDir,
++      input.context
++    );
+ 
+-  return offloadNodeResult(result, input.nodeId, store, policy);
++    const finalResult = input.offloadArtifacts
++      ? await offloadNodeResult(result, input.nodeId, store, {
++          mode: 'ref-large-values',
++          inlineMaxBytes: input.artifactInlineMaxBytes ?? 64 * 1024,
++        })
++      : result;
++
++    logger.debug('Temporal activity completed', logContext, {
++      durationMs: Date.now() - startedAt,
++      status: finalResult.status ?? 'success',
++    });
++
++    return finalResult;
++  } catch (error) {
++    logger.error('Temporal activity failed', logContext, {
++      durationMs: Date.now() - startedAt,
++      error: error instanceof Error ? error.message : String(error),
++    });
++    throw error;
++  }
+ }
+ 
+ async function offloadNodeResult(

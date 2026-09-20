@@ -1,0 +1,189 @@
+diff --git a/.pi/workflows/github-pr-review.yaml b/.pi/workflows/github-pr-review.yaml
+index 833708d..524348e 100644
+--- a/.pi/workflows/github-pr-review.yaml
++++ b/.pi/workflows/github-pr-review.yaml
+@@ -231,7 +231,7 @@ nodes:
+     control: loop
+     needs:
+       - verify-fix
+-    condition: artifacts.verify-fix.shouldContinue == true
++    if: artifacts.verify-fix.shouldContinue == true
+     target: fix-issues
+     exit: post-fix-status-internal
+     maxIterations: '{{inputs.fixMaxIterations}}'
+diff --git a/.pi/workflows/gitlab-mr-review.yaml b/.pi/workflows/gitlab-mr-review.yaml
+index 7f56deb..1794f02 100644
+--- a/.pi/workflows/gitlab-mr-review.yaml
++++ b/.pi/workflows/gitlab-mr-review.yaml
+@@ -235,7 +235,7 @@ nodes:
+     control: loop
+     needs:
+       - verify-fix
+-    condition: artifacts.verify-fix.shouldContinue == true
++    if: artifacts.verify-fix.shouldContinue == true
+     target: fix-issues
+     exit: post-fix-status-internal
+     maxIterations: '{{inputs.fixMaxIterations}}'
+diff --git a/.pi/workflows/local-fix-review-issues.yaml b/.pi/workflows/local-fix-review-issues.yaml
+index f8f5977..a603ca3 100644
+--- a/.pi/workflows/local-fix-review-issues.yaml
++++ b/.pi/workflows/local-fix-review-issues.yaml
+@@ -99,7 +99,7 @@ nodes:
+     control: loop
+     needs:
+       - verify-fix
+-    condition: artifacts.verify-fix.shouldContinue == true
++    if: artifacts.verify-fix.shouldContinue == true
+     target: fix-issues
+     exit: done
+     maxIterations: '{{inputs.fixMaxIterations}}'
+diff --git a/src/cli/workflow.test.ts b/src/cli/workflow.test.ts
+index fa28a8d..3917716 100644
+--- a/src/cli/workflow.test.ts
++++ b/src/cli/workflow.test.ts
+@@ -3235,7 +3235,7 @@ describe('workflow runner', () => {
+     expect(logs.some((log) => log.includes('Running node start...'))).toBe(true);
+     expect(
+       logs.some((log) =>
+-        log.includes('Skipping node optional (condition false: {{inputs.enabled}} == true)')
++        log.includes('Skipping node optional (if false: {{inputs.enabled}} == true)')
+       )
+     ).toBe(true);
+     expect(
+@@ -3449,7 +3449,7 @@ describe('workflow runner', () => {
+             repeat: {
+               control: 'loop',
+               needs: ['fix'],
+-              condition: '{{artifacts.review}} != clean',
++              if: '{{artifacts.review}} != clean',
+               target: 'review',
+               exit: 'done',
+               maxIterations: 3,
+@@ -3505,7 +3505,7 @@ describe('workflow runner', () => {
+             repeat: {
+               control: 'loop',
+               needs: ['fix'],
+-              condition: '{{artifacts.review}} != clean',
++              if: '{{artifacts.review}} != clean',
+               target: 'review',
+               exit: 'done',
+               maxIterations: 2,
+@@ -3564,7 +3564,7 @@ describe('workflow runner', () => {
+             repeat: {
+               control: 'loop',
+               needs: ['check'],
+-              condition: '{{artifacts.check}} != done',
++              if: '{{artifacts.check}} != done',
+               target: 'fix',
+               exit: 'done',
+               maxIterations: 2,
+diff --git a/src/cli/workflow.ts b/src/cli/workflow.ts
+index 8f3c533..be7679c 100644
+--- a/src/cli/workflow.ts
++++ b/src/cli/workflow.ts
+@@ -313,7 +313,6 @@ function validateWorkflowPassThroughShape(nodeId: string, node: WorkflowNodeConf
+     'if',
+     'then',
+     'else',
+-    'condition',
+     'exit',
+     'cases',
+     'default',
+@@ -337,7 +336,6 @@ const WORKFLOW_NODE_FIELDS = new Set([
+   'with',
+   'needs',
+   'if',
+-  'condition',
+   'target',
+   'exit',
+   'maxIterations',
+@@ -358,7 +356,6 @@ const EXECUTABLE_NODE_FIELDS = new Set([
+   'with',
+   'needs',
+   'if',
+-  'condition',
+   'input',
+   'output',
+   'writes',
+@@ -370,7 +367,6 @@ const CONTROL_NODE_FIELDS: Record<string, Set<string>> = {
+     'control',
+     'needs',
+     'if',
+-    'condition',
+     'target',
+     'exit',
+     'maxIterations',
+@@ -4053,7 +4049,7 @@ function getWorkflowNodeRunCondition(node: WorkflowNodeConfig): string | undefin
+     return undefined;
+   }
+ 
+-  return node.if ?? node.condition;
++  return node.if;
+ }
+ 
+ function getSkippedWorkflowDependencies(
+@@ -4072,9 +4068,9 @@ function getWorkflowNodeSkipReason(
+     return `dependency skipped: ${skippedDependencies.join(', ')}`;
+   }
+ 
+-  const condition = getWorkflowNodeRunCondition(node);
+-  if (condition !== undefined && !evaluateWorkflowExpression(condition, context)) {
+-    return `condition false: ${condition}`;
++  const ifExpression = getWorkflowNodeRunCondition(node);
++  if (ifExpression !== undefined && !evaluateWorkflowExpression(ifExpression, context)) {
++    return `if false: ${ifExpression}`;
+   }
+ 
+   return undefined;
+@@ -4233,9 +4229,9 @@ function runControlWorkflowNode(
+   context: WorkflowTemplateContext
+ ): { result: WorkflowNodeResult; nextNodeId?: string; ended?: boolean } {
+   if (node.control === 'loop') {
+-    const expression = node.condition ?? node.if;
++    const expression = node.if;
+     if (!expression) {
+-      throw new Error(`Workflow loop node "${nodeId}" must define condition or if.`);
++      throw new Error(`Workflow loop node "${nodeId}" must define if.`);
+     }
+     if (!node.target || !node.exit) {
+       throw new Error(`Workflow loop node "${nodeId}" must define target and exit.`);
+@@ -4758,7 +4754,6 @@ export interface WorkflowNodeDetail {
+   action?: string;
+   control?: string;
+   if?: string;
+-  condition?: string;
+   input?: string;
+   with?: Record<string, string | number | boolean | undefined>;
+   output?: string;
+@@ -4898,7 +4893,6 @@ function buildWorkflowDetail(
+       action: node.action,
+       control: node.control,
+       if: node.if,
+-      condition: node.condition,
+       input: node.input,
+       with: node.with,
+       output: node.output,
+@@ -4959,7 +4953,6 @@ export function showWorkflow(
+     if (node.action) console.log(`    action: ${node.action}`);
+     if (node.control) console.log(`    control: ${node.control}`);
+     if (node.if) console.log(`    if: ${node.if}`);
+-    if (node.condition) console.log(`    condition: ${node.condition}`);
+     if (node.output) console.log(`    output: ${node.output}`);
+     if (node.writes) console.log(`    writes: ${node.writes}`);
+     if (node.input) console.log(`    input: ${node.input.split('\n')[0]}`);
+diff --git a/src/lib/config.ts b/src/lib/config.ts
+index f190b69..05659cc 100644
+--- a/src/lib/config.ts
++++ b/src/lib/config.ts
+@@ -86,10 +86,8 @@ export interface WorkflowNodeConfig {
+   with?: Record<string, string | number | boolean | undefined>;
+   /** Node ids that must complete before this node starts. */
+   needs?: string[];
+-  /** Expression evaluated before running executable nodes. */
++  /** Expression evaluated before running executable nodes and loop control nodes. */
+   if?: string;
+-  /** Alias for if on executable and loop nodes. */
+-  condition?: string;
+   /** Target node when a loop continues. */
+   target?: string;
+   /** Target node when a loop exits. */

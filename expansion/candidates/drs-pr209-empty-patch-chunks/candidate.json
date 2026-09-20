@@ -1,0 +1,26 @@
+{
+  "category": "reliability",
+  "confirmingRevision": "7143fd3202b4dadb622b42c9a4f1186dc181b055",
+  "description": "Empty but valid patches are treated as missing and cause chunk evaluation to fail.",
+  "evidence": "The immediate accepted fix rejects only undefined patches and adds mixed-empty and all-empty regression tests.",
+  "fromRevision": "8aea37eff0ae8ada3ee06185c675f18ff309c369",
+  "group": "drs-jev-chunking",
+  "id": "drs-pr209-empty-patch-chunks",
+  "outcome": "defect",
+  "patchBytes": 11751,
+  "patchSha256": "7a90fb0cb7791db2f3cee289429487caee144f8a60698fa1f547bad8e2a93a28",
+  "paths": [
+    "src/lib/jev/chunks.ts",
+    "src/lib/jev/chunks.test.ts"
+  ],
+  "pullRequest": 209,
+  "resolvedRevisions": {
+    "1ac10730190b3efee1c749fb6140c08434542800": "1ac10730190b3efee1c749fb6140c08434542800",
+    "7143fd3202b4dadb622b42c9a4f1186dc181b055": "7143fd3202b4dadb622b42c9a4f1186dc181b055",
+    "8aea37eff0ae8ada3ee06185c675f18ff309c369": "8aea37eff0ae8ada3ee06185c675f18ff309c369"
+  },
+  "severity": "MEDIUM",
+  "source": "https://github.com/manojlds/drs/pull/209",
+  "target": "dev",
+  "toRevision": "1ac10730190b3efee1c749fb6140c08434542800"
+}

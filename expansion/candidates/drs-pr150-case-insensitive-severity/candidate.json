@@ -1,0 +1,25 @@
+{
+  "category": "correctness",
+  "confirmingRevision": null,
+  "description": "Severity selectors are normalized before matching persisted review findings.",
+  "evidence": "A focused regression test exercises lowercase input against uppercase stored severities; CI and final review were clean.",
+  "fromRevision": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+  "group": "drs-severity-normalization",
+  "id": "drs-pr150-case-insensitive-severity",
+  "outcome": "clean",
+  "patchBytes": 5163,
+  "patchSha256": "d9d8ef6595eef8ff9f2bc84f28d6c65ff55edb443e6121d11d471c3da635c2a0",
+  "paths": [
+    "src/cli/workflow.ts",
+    "src/cli/workflow.test.ts"
+  ],
+  "pullRequest": 150,
+  "resolvedRevisions": {
+    "4937f82c29c575b28cab7ec2fe83ff91996c746b": "4937f82c29c575b28cab7ec2fe83ff91996c746b",
+    "827fb59eda9065e2c9db1b09862a657f33b70e1d": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+  },
+  "severity": null,
+  "source": "https://github.com/manojlds/drs/pull/150",
+  "target": "train",
+  "toRevision": "827fb59eda9065e2c9db1b09862a657f33b70e1d"
+}
