@@ -123,6 +123,24 @@ make check
 
 This runs formatting, linting, type checking, and offline tests. Tests never make provider calls.
 
+## Manual Adjudication
+
+Import a completed run, seed optional output-independent agent drafts, and start the service:
+
+```bash
+uv run jev-dspy adjudicate import artifacts/runs/<run>.json
+uv run jev-dspy adjudicate seed-agent <study-id> --annotator opencode-agent
+vaibhav dev start adjudication
+```
+
+`vaibhav dev start` runs the service on localhost and publishes it to a tailnet-only Tailscale HTTPS
+port. Use `vaibhav dev status` to find the URL. Annotation data is stored under
+`artifacts/adjudication/` and is intentionally ignored because it can contain source code.
+
+Each annotator must submit an immutable reference judgment before seeing anonymized evaluator
+outputs. Completing the comparison reveals evaluator identities. Human and agent annotations use
+separate annotator IDs and every save or submission is recorded in the audit log.
+
 ## Expansion Protocol
 
 Before making comparative quality claims:

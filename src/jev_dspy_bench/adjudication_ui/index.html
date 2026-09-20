@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bench Adjudication</title>
+  <style>
+    :root { --ink:#17211b; --muted:#667068; --paper:#f3f0e7; --panel:#fffdf7; --line:#d5d0c3; --accent:#d64b2a; --green:#1f7250; --blue:#315d78; }
+    * { box-sizing:border-box } body { margin:0; max-width:100%; overflow-x:hidden; color:var(--ink); background:var(--paper); font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace }
+    button,input,select,textarea { font:inherit } button { cursor:pointer }
+    header { background:var(--ink); color:#fff; padding:18px 24px; display:flex; align-items:center; gap:18px; justify-content:space-between; position:sticky; top:0; z-index:5 }
+    header h1 { font:700 19px/1.1 Georgia,serif; letter-spacing:.04em; margin:0 } .identity { display:flex; gap:8px; align-items:center }
+    .identity input { width:180px; min-width:0; padding:7px 9px; border:1px solid #67746b; background:#26342b; color:#fff } header .secondary { color:#fff; border-color:#fff }
+    .layout { min-height:calc(100vh - 65px); display:grid; grid-template-columns:280px 1fr }
+    aside { min-width:0; border-right:1px solid var(--line); padding:20px 14px; background:#e8e4d9 } aside select { max-width:100% }
+    main { min-width:0; max-width:1380px; width:100%; padding:30px 36px 80px }
+    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:.13em; font-size:11px; font-weight:800 }
+    h2 { font:700 32px/1.15 Georgia,serif; margin:6px 0 16px } h3 { font:700 20px/1.2 Georgia,serif }
+    .case-list { display:grid; gap:6px; margin-top:15px } .case-link { text-align:left; border:1px solid transparent; background:transparent; padding:10px; color:var(--ink) }
+    .case-link:hover,.case-link.active { border-color:var(--ink); background:var(--panel) } .case-link small { display:block; color:var(--muted); margin-top:3px }
+    .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#a29d91; margin-right:7px } .completed .dot { background:var(--green) } .reference_submitted .dot { background:var(--blue) } .draft .dot { background:#d58c24 }
+    .panel { background:var(--panel); border:1px solid var(--line); padding:22px; margin:18px 0; box-shadow:3px 3px 0 #ded9cd }
+    .meta { display:flex; flex-wrap:wrap; gap:7px } .tag { background:#e9e5d9; border-radius:2px; padding:3px 7px; font-size:12px }
+    .tabs { display:flex; gap:5px; margin-top:15px } .tabs button { border:1px solid var(--line); background:#e8e4d9; padding:8px 12px } .tabs button.active { color:#fff; background:var(--ink) }
+    pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:500px; overflow:auto; background:#202a24; color:#e9eee8; padding:17px; font-size:12px }
+    label { display:block; font-weight:700; margin:13px 0 5px } select,input,textarea { border:1px solid #aaa497; background:#fff; padding:9px; color:var(--ink) } textarea { width:100%; min-height:95px; resize:vertical }
+    .fields { display:grid; grid-template-columns:repeat(3,1fr); gap:14px } .fields label { margin-top:0 }
+    .metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line) } .metric { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border-bottom:1px solid var(--line) } .metric:nth-child(odd) { border-right:1px solid var(--line) } .metric select { padding:5px }
+    .actions { display:flex; align-items:center; gap:10px; margin-top:18px } .primary { border:0; color:#fff; background:var(--accent); padding:10px 15px; font-weight:800 } .secondary { border:1px solid var(--ink); background:transparent; padding:9px 14px }
+    .notice { border-left:4px solid var(--blue); padding:10px 13px; background:#e6eef0 } .error { border-color:var(--accent); color:#922f18 }
+    .outputs { display:grid; grid-template-columns:1fr 1fr; gap:16px } .output { min-width:0 } .score { display:grid; grid-template-columns:1fr auto; gap:6px; padding:6px 0; border-bottom:1px dotted var(--line) } .score p { grid-column:1/-1; margin:0; color:var(--muted); font-size:12px }
+    .slot { display:inline-grid; place-items:center; background:var(--ink); color:#fff; width:36px; height:36px; font-size:20px }
+    .hidden { display:none!important } #empty { color:var(--muted); margin:80px auto; text-align:center }
+    @media(max-width:800px) { header { align-items:flex-start; flex-direction:column } .identity { width:100% } .identity input { flex:1 } .layout { display:block } aside { border:0; border-bottom:1px solid var(--line) } .case-list { grid-template-columns:repeat(2,1fr) } main { padding:22px 14px 60px } .fields,.outputs,.metrics { grid-template-columns:1fr } .metric:nth-child(odd) { border-right:0 } }
+  </style>
+</head>
+<body>
+  <header><h1>JEV / DSPY<br>ADJUDICATION DESK</h1><div class="identity"><span>Annotator</span><input id="annotator" value="human-reviewer" aria-label="Annotator ID"><button class="secondary" id="identityBtn">Load</button></div></header>
+  <div class="layout"><aside><div class="eyebrow">Review queue</div><select id="study" style="width:100%;margin-top:8px"></select><div id="progress" style="margin-top:12px;color:var(--muted)"></div><nav id="caseList" class="case-list"></nav></aside>
+  <main><div id="empty">Select a case to begin.</div><div id="workspace" class="hidden"></div></main></div>
+  <script>
+    const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let studies=[], cases=[], current=null; const saved=localStorage.getItem('adjudicator'); if(saved) $('#annotator').value=saved;
+    async function api(path, options={}) { const r=await fetch(path,{headers:{'content-type':'application/json'},...options}); if(!r.ok){let d;try{d=await r.json()}catch{};throw Error(d?.detail||r.statusText)} return r.json() }
+    async function init(){ studies=await api('/api/studies'); $('#study').innerHTML=studies.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${esc(s.id)}</option>`).join(''); if(studies.length) await loadCases() }
+    async function loadCases(){ const id=$('#study').value,a=$('#annotator').value.trim(); if(!a)return; localStorage.setItem('adjudicator',a); cases=await api(`/api/studies/${id}/cases?annotator=${encodeURIComponent(a)}`); const done=cases.filter(c=>c.status==='completed').length; $('#progress').textContent=`${done}/${cases.length} complete`; $('#caseList').innerHTML=cases.map(c=>`<button class="case-link ${c.status}" data-id="${esc(c.case_id)}"><span class="dot"></span>${esc(c.case_id)}<small>${esc(c.status.replace('_',' '))}</small></button>`).join(''); document.querySelectorAll('.case-link').forEach(b=>b.onclick=()=>loadCase(b.dataset.id)); if(current&&cases.some(c=>c.case_id===current)) await loadCase(current) }
+    async function loadCase(id){ current=id; document.querySelectorAll('.case-link').forEach(b=>b.classList.toggle('active',b.dataset.id===id)); const d=await api(`/api/studies/${$('#study').value}/cases/${id}?annotator=${encodeURIComponent($('#annotator').value.trim())}`); render(d) }
+    function metricRows(metrics, values={}, mode='reference'){ const opts=mode==='reference'?['weak','acceptable','not_applicable','uncertain']:['A','B','tie','uncertain']; return metrics.map(m=>`<div class="metric"><span>${esc(m)}</span><select data-metric="${m}">${opts.map(v=>`<option ${(values[m]||'uncertain')===v?'selected':''}>${v}</option>`).join('')}</select></div>`).join('') }
+    function render(d){ const ref=d.annotation?.reference||{}, comp=d.annotation?.comparison||{}; const locked=d.status!=='unstarted'&&d.status!=='draft'; $('#empty').classList.add('hidden'); $('#workspace').classList.remove('hidden'); $('#workspace').innerHTML=`
+      <div class="eyebrow">${esc(d.status.replace('_',' '))} · ${esc(d.case_id)}</div><h2>${esc(d.metadata.description)}</h2><div class="meta">${(d.metadata.dimensions||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>
+      <section class="panel"><div class="tabs"><button class="active" data-tab="diff">Canonical state</button><button data-tab="truth">Held-out evidence</button></div><pre id="diffPane">${esc(d.state.diff)}</pre><pre id="truthPane" class="hidden">${esc(JSON.stringify({expected:d.metadata.expected,evidence:d.evidence},null,2))}</pre></section>
+      <section class="panel"><div class="eyebrow">Phase 1 · output independent</div><h3>Reference judgment</h3><p class="notice">Evaluator outputs remain unavailable until this judgment is submitted. Submission is immutable.</p>
+        <div class="fields"><div><label>Disposition</label><select id="disposition"><option value="clean">clean</option><option value="material_issue">material issue</option><option value="indeterminate">indeterminate</option></select></div><div><label>Reviewability</label><select id="reviewability"><option>sufficient</option><option>insufficient</option></select></div><div><label>Confidence (1–5)</label><input id="refConfidence" type="number" min="1" max="5" value="${ref.confidence||3}"></div></div>
+        <label>Rationale</label><textarea id="refRationale">${esc(ref.rationale||'')}</textarea><label>Dimension classifications</label><div id="refMetrics" class="metrics">${metricRows(d.metrics,ref.dimensions)}</div><label>Priorities (up to 5 weak dimensions, comma-separated)</label><input id="priorities" style="width:100%" value="${esc((ref.priorities||[]).join(', '))}">
+        <div class="actions"><button class="secondary" id="saveRef">Save draft</button><button class="primary" id="submitRef">Submit & reveal outputs</button><span id="refMsg"></span></div></section>
+      ${d.outputs?comparisonHtml(d,comp):''}`;
+      $('#disposition').value=ref.disposition||'indeterminate'; $('#reviewability').value=ref.reviewability||'sufficient';
+      if(locked) document.querySelectorAll('#disposition,#reviewability,#refConfidence,#refRationale,#priorities,#refMetrics select,#saveRef,#submitRef').forEach(x=>x.disabled=true);
+      document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b)); $('#diffPane').classList.toggle('hidden',b.dataset.tab!=='diff'); $('#truthPane').classList.toggle('hidden',b.dataset.tab!=='truth')});
+      if(!locked){ $('#saveRef').onclick=()=>saveReference(d,false); $('#submitRef').onclick=()=>saveReference(d,true) }
+      if(d.outputs&&d.status!=='completed'){ $('#saveComp').onclick=()=>saveComparison(d,false); $('#submitComp').onclick=()=>saveComparison(d,true) }
+    }
+    function comparisonHtml(d,comp){ const cards=d.outputs.map(o=>`<article class="panel output"><span class="slot">${o.slot}</span>${o.evaluator?` <strong>${esc(o.evaluator)}</strong>`:''}<div>${Object.entries(o.result.scorecard.metrics).map(([m,v])=>`<div class="score"><span>${esc(m)}</span><strong>${v.applicable?Number(v.score).toFixed(1):'N/A'}</strong>${v.summary?`<p>${esc(v.summary)}</p>`:''}</div>`).join('')}</div></article>`).join(''); const complete=d.status==='completed'; return `<section><div class="eyebrow">Phase 2 · blinded comparison</div><h3>Which output best matches your reference?</h3><div class="outputs">${cards}</div><section class="panel"><div class="fields"><div><label>Preferred output</label><select id="preferred">${['A','B','tie','neither','indeterminate'].map(x=>`<option ${comp.preferred===x?'selected':''}>${x}</option>`).join('')}</select></div><div><label>Confidence (1–5)</label><input id="compConfidence" type="number" min="1" max="5" value="${comp.confidence||3}"></div></div><label>Rationale</label><textarea id="compRationale">${esc(comp.rationale||'')}</textarea><label>Per-dimension preference</label><div id="compMetrics" class="metrics">${metricRows(d.metrics,comp.metric_preferences,'comparison')}</div><div class="actions"><button class="secondary" id="saveComp" ${complete?'disabled':''}>Save comparison</button><button class="primary" id="submitComp" ${complete?'disabled':''}>Complete & reveal identities</button><span id="compMsg"></span></div></section></section>` }
+    function values(root){ return Object.fromEntries([...document.querySelectorAll(`${root} [data-metric]`)].map(x=>[x.dataset.metric,x.value])) }
+    async function saveReference(d,submit){ const body={annotator:$('#annotator').value.trim(),actor_type:d.annotation?.actor_type||'human',submit,reference:{disposition:$('#disposition').value,reviewability:$('#reviewability').value,confidence:Number($('#refConfidence').value),rationale:$('#refRationale').value.trim(),dimensions:values('#refMetrics'),priorities:$('#priorities').value.split(',').map(x=>x.trim()).filter(Boolean)}}; try{await api(`/api/studies/${$('#study').value}/cases/${d.case_id}/reference`,{method:'PUT',body:JSON.stringify(body)});await loadCases()}catch(e){$('#refMsg').textContent=e.message;$('#refMsg').className='error'} }
+    async function saveComparison(d,submit){ const body={annotator:$('#annotator').value.trim(),submit,comparison:{preferred:$('#preferred').value,confidence:Number($('#compConfidence').value),rationale:$('#compRationale').value.trim(),metric_preferences:values('#compMetrics')}}; try{await api(`/api/studies/${$('#study').value}/cases/${d.case_id}/comparison`,{method:'PUT',body:JSON.stringify(body)});await loadCases()}catch(e){$('#compMsg').textContent=e.message;$('#compMsg').className='error'} }
+    $('#study').onchange=loadCases; $('#identityBtn').onclick=loadCases; init().catch(e=>{$('#empty').textContent=e.message});
+  </script>
+</body>
+</html>

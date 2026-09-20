@@ -15,7 +15,9 @@ from .runner import enrich_report_costs, format_report, run_experiment
 
 app = typer.Typer(no_args_is_help=True, help="Benchmark Jev against DSPy-optimized LLM evaluators.")
 corpus_app = typer.Typer(no_args_is_help=True, help="Manage immutable benchmark corpus snapshots.")
+adjudicate_app = typer.Typer(no_args_is_help=True, help="Run blinded manual adjudication.")
 app.add_typer(corpus_app, name="corpus")
+app.add_typer(adjudicate_app, name="adjudicate")
 
 
 def _root() -> Path:
@@ -98,6 +100,43 @@ def report(
     output = artifact.with_suffix(".md")
     output.write_text(format_report(data))
     typer.echo(output)
+
+
+@adjudicate_app.command("import")
+def adjudicate_import(
+    artifact: Path = typer.Argument(..., exists=True, dir_okay=False, resolve_path=True),
+    database: Path = typer.Option(Path("artifacts/adjudication/adjudication.sqlite")),
+) -> None:
+    from .adjudication import AdjudicationStore
+
+    store = AdjudicationStore(_root() / database)
+    study_id = store.import_artifact(artifact, _root() / "corpus")
+    typer.echo(study_id)
+
+
+@adjudicate_app.command("seed-agent")
+def adjudicate_seed_agent(
+    study: str = typer.Argument(...),
+    annotator: str = typer.Option("opencode-agent"),
+    database: Path = typer.Option(Path("artifacts/adjudication/adjudication.sqlite")),
+) -> None:
+    from .adjudication import AdjudicationStore
+
+    count = AdjudicationStore(_root() / database).seed_agent_references(study, annotator)
+    typer.echo(f"Seeded {count} blinded agent reference drafts.")
+
+
+@adjudicate_app.command("serve")
+def adjudicate_serve(
+    host: str = typer.Option("127.0.0.1"),
+    port: int = typer.Option(8765),
+    database: Path = typer.Option(Path("artifacts/adjudication/adjudication.sqlite")),
+) -> None:
+    import uvicorn
+
+    from .adjudication_web import create_app
+
+    uvicorn.run(create_app(_root() / database), host=host, port=port)
 
 
 if __name__ == "__main__":

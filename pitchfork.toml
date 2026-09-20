@@ -1,0 +1,7 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+
+[daemons.adjudication]
+run = "uv run jev-dspy adjudicate serve --host 127.0.0.1 --port 8765"
+ready_http = "http://127.0.0.1:8765/health"
+ready_delay = 1
+retry = 3
